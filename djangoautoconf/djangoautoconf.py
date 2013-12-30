@@ -7,32 +7,59 @@ import base_settings
 from utils import dump_attrs
 
 
-class BaseDirNotExist(Exception):
+class RootDirNotExist(Exception):
+    pass
+
+
+class KeyDirNotExist(Exception):
     pass
 
 
 class DjangoAutoConf(object):
-    def __init__(self, default_settings_import_str, base_dir):
-        if not os.path.exists(base_dir):
-            raise BaseDirNotExist
-        self.base_dir = base_dir
+    def __init__(self, default_settings_import_str=None, root_dir=None, key_dir=None):
         self.default_settings_import_str = default_settings_import_str
-        #Default keys is located at ../keys relative to universal_settings module
-        self.key_dir = os.path.abspath(os.path.join(base_dir, "keys"))
+        self.root_dir = root_dir
+        #Default keys is located at ../keys relative to universal_settings module?
+        self.key_dir = key_dir
+        self.extra_settings = []
 
-    def set_base_dir(self, base_dir):
-        self.base_dir = base_dir
+    def set_default_settings(self, default_settings_import_str):
+        self.default_settings_import_str = default_settings_import_str
+
+    def set_root_dir(self, root_dir):
+        self.root_dir = root_dir
+        self.key_dir = os.path.abspath(os.path.join(root_dir, "keys"))
 
     def set_key_dir(self, key_dir):
         self.key_dir = key_dir
 
-    def configure(self):
+    def add_extra_settings(self, extra_setting_list):
+        self.extra_settings.extend(extra_setting_list)
+
+    def check_params(self):
+        if not os.path.exists(self.root_dir):
+            raise RootDirNotExist
+        if not os.path.exists(self.key_dir):
+            raise KeyDirNotExist
+
+    def configure(self, features=[]):
+        self.check_params()
+
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangoautoconf.base_settings")
 
         self.import_based_on_base_settings(self.default_settings_import_str)
         #dump_attrs(base_settings)
         self.import_based_on_base_settings("djangoautoconf.mysql_database")
         #dump_attrs(base_settings)
+        for one_settings in self.extra_settings:
+            self.import_based_on_base_settings(one_settings)
+
+        secret_key = get_or_create_secret_key(self.key_dir)
+        PROJECT_PATH = os.path.abspath(os.path.abspath(self.root_dir))
+        setattr(base_settings, "SECRET_KEY", secret_key)
+        setattr(base_settings, "PROJECT_PATH", PROJECT_PATH)
+        setattr(base_settings, "STATIC_ROOT", os.path.abspath(os.path.join(PROJECT_PATH, 'static')))
+        dump_attrs(base_settings)
 
     def import_based_on_base_settings(self, module_import_path):
         #######
@@ -73,3 +100,27 @@ def update_base_settings(new_base_settings):
             continue
         value = getattr(new_base_settings, attr)
         setattr(base_settings, attr, value)
+
+
+def get_or_create_secret_key(key_folder_path):
+    #######################
+    # Set secret key
+    try:
+        from secret_key import SECRET_KEY
+    except ImportError:
+        try:
+            from django.utils.crypto import get_random_string
+            chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+            secret_key = get_random_string(50, chars)
+
+            secret_file = open(os.path.join(key_folder_path, 'secret_key.py'), 'w')
+            secret_file.write("SECRET_KEY='%s'" % secret_key)
+            secret_file.close()
+            from secret_key import SECRET_KEY
+        except Exception:
+            import traceback
+            traceback.print_exc()
+            #In case the above not work, use the following.
+            # Make this unique, and don't share it with anybody.
+            SECRET_KEY = 'd&amp;x%x+^l@qfxm^2o9x)6ct5*cftlcu8xps9b7l3c$ul*n&amp;%p-k'
+    return SECRET_KEY
