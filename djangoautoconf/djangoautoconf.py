@@ -59,7 +59,7 @@ class DjangoAutoConf(object):
         setattr(base_settings, "SECRET_KEY", secret_key)
         setattr(base_settings, "PROJECT_PATH", PROJECT_PATH)
         setattr(base_settings, "STATIC_ROOT", os.path.abspath(os.path.join(PROJECT_PATH, 'static')))
-        dump_attrs(base_settings)
+        #dump_attrs(base_settings)
 
     def import_based_on_base_settings(self, module_import_path):
         #######
