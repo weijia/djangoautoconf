@@ -47,12 +47,17 @@ class DjangoAutoConf(object):
 
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangoautoconf.base_settings")
 
-        self.import_based_on_base_settings(self.default_settings_import_str)
-        #dump_attrs(base_settings)
-        self.import_based_on_base_settings("djangoautoconf.mysql_database")
-        #dump_attrs(base_settings)
-        for one_settings in self.extra_settings:
-            self.import_based_on_base_settings(one_settings)
+        ordered_import_list = [self.default_settings_import_str,
+                               "djangoautoconf.sqlite_database"
+                               #"djangoautoconf.mysql_database"
+                                ]
+
+        ordered_import_list.extend(self.extra_settings)
+        for one_setting in ordered_import_list:
+            self.import_based_on_base_settings(one_setting)
+
+        for feature in features:
+            self.import_based_on_base_settings("djangoautoconf.features."+feature)
 
         secret_key = get_or_create_secret_key(self.key_dir)
         PROJECT_PATH = os.path.abspath(os.path.abspath(self.root_dir))
