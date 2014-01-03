@@ -27,6 +27,7 @@ setup(
     url='https://github.com/weijia/djangoautoconf',
     packages=[
         'djangoautoconf',
+        'djangoautoconf.features'
     ],
     package_dir={'djangoautoconf': 'djangoautoconf'},
     include_package_data=True,
