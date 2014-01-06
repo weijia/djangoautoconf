@@ -1,7 +1,6 @@
 ##################################
 # Added for BAE
 ##################################
-from rootapp.separated_settings import bae_secrets
 
 try:
     CACHES = {
@@ -33,6 +32,10 @@ except:
     pass
     
 EMAIL_BACKEND = 'django.core.mail.backends.bcms.EmailBackend'
-EMAIL_BCMS_QNAME = bae_secrets.bcm_q_name
 
+try:
+    from objsys.baidu_mail import EmailBackend
+    EMAIL_BACKEND = 'objsys.baidu_mail.EmailBackend'
+except:
+    EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
