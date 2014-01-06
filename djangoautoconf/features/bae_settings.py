@@ -2,6 +2,7 @@
 # Added for BAE
 ##################################
 
+
 try:
     CACHES = {
         'default': {
@@ -14,6 +15,7 @@ except:
     pass
 try:
     from bae.core import const
+    import bae_secrets
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
