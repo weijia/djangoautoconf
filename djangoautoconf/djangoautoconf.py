@@ -4,7 +4,6 @@ import importlib
 import os
 import sys
 import base_settings
-from libs.utils.syspath import include
 from utils import dump_attrs
 
 
@@ -117,7 +116,10 @@ def get_or_create_secret_key(key_folder_path):
     try:
         if not (key_folder_path in sys.path):
             sys.path.append(key_folder_path)
-        from secret_key import SECRET_KEY
+            from secret_key import SECRET_KEY
+            sys.path.remove(key_folder_path)
+        else:
+            from secret_key import SECRET_KEY
     except ImportError:
         try:
             from django.utils.crypto import get_random_string
