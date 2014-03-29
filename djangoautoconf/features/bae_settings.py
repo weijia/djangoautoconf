@@ -16,6 +16,7 @@ except:
 try:
     from bae.core import const
     import bae_secrets
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -32,12 +33,12 @@ try:
     ##################################
 except:
     pass
-    
+
 EMAIL_BACKEND = 'django.core.mail.backends.bcms.EmailBackend'
 
 try:
     from objsys.baidu_mail import EmailBackend
+
     EMAIL_BACKEND = 'objsys.baidu_mail.EmailBackend'
 except:
     EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
-

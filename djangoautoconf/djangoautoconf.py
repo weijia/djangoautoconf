@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import importlib
+import logging
 import os
 import sys
 import base_settings
 from utils import dump_attrs
+
+
+log = logging.getLogger(__name__)
 
 
 class RootDirNotExist(Exception):
@@ -41,7 +45,7 @@ class DjangoAutoConf(object):
             raise RootDirNotExist
         if not os.path.exists(self.key_dir):
             #logging.getLogger().error("key dir not exist: "+self.key_dir)
-            print "key dir not exist: "+self.key_dir
+            print "key dir not exist: " + self.key_dir
             raise KeyDirNotExist
 
     def configure(self, features=[]):
@@ -53,24 +57,24 @@ class DjangoAutoConf(object):
         ordered_import_list = [self.default_settings_import_str,
                                "djangoautoconf.sqlite_database"
                                #"djangoautoconf.mysql_database"
-                                ]
+        ]
 
         ordered_import_list.extend(self.extra_settings)
         for one_setting in ordered_import_list:
             self.import_based_on_base_settings(one_setting)
 
         for feature in features:
-            self.import_based_on_base_settings("djangoautoconf.features."+feature)
+            self.import_based_on_base_settings("djangoautoconf.features." + feature)
 
         secret_key = get_or_create_secret_key(self.key_dir)
         PROJECT_PATH = os.path.abspath(os.path.abspath(self.root_dir))
         setattr(base_settings, "SECRET_KEY", secret_key)
         setattr(base_settings, "PROJECT_PATH", PROJECT_PATH)
         setattr(base_settings, "STATIC_ROOT", os.path.abspath(os.path.join(PROJECT_PATH, 'static')))
-        #dump_attrs(base_settings)
+        dump_attrs(base_settings)
 
     def get_settings(self):
-           return base_settings
+        return base_settings
 
     def import_based_on_base_settings(self, module_import_path):
         #######
@@ -78,7 +82,11 @@ class DjangoAutoConf(object):
         # Ref: http://stackoverflow.com/questions/11813287/insert-variable-into-global-namespace-from-within-a-function
         self.init_builtin()
         self.inject_attr()
-        new_base_settings = importlib.import_module(module_import_path)
+        try:
+            new_base_settings = importlib.import_module(module_import_path)
+        except:
+            print "Import module error:", module_import_path
+            raise
         self.remove_attr()
         update_base_settings(new_base_settings)
 
@@ -120,12 +128,14 @@ def get_or_create_secret_key(key_folder_path):
         if not (key_folder_path in sys.path):
             sys.path.append(key_folder_path)
             from secret_key import SECRET_KEY
+
             sys.path.remove(key_folder_path)
         else:
             from secret_key import SECRET_KEY
     except ImportError:
         try:
             from django.utils.crypto import get_random_string
+
             chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
             secret_key = get_random_string(50, chars)
 
@@ -135,6 +145,7 @@ def get_or_create_secret_key(key_folder_path):
             from secret_key import SECRET_KEY
         except Exception:
             import traceback
+
             traceback.print_exc()
             #In case the above not work, use the following.
             # Make this unique, and don't share it with anybody.
