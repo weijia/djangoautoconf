@@ -39,6 +39,7 @@ except:
 EMAIL_BACKEND = 'django.core.mail.backends.bcms.EmailBackend'
 
 try:
+    from bae.core import const
     from objsys.baidu_mail import EmailBackend
 
     EMAIL_BACKEND = 'objsys.baidu_mail.EmailBackend'
@@ -46,5 +47,5 @@ except:
     EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.bcms.EmailBackend'
-EMAIL_BCMS_QNAME = 'fe417333f4c4f34d6e0d07c76f179ba1'
+#EMAIL_BACKEND = 'django.core.mail.backends.bcms.EmailBackend'
+#EMAIL_BCMS_QNAME = 'fe417333f4c4f34d6e0d07c76f179ba1'
