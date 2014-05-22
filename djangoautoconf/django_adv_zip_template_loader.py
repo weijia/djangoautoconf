@@ -6,6 +6,9 @@ from django.template import TemplateDoesNotExist
 import sys
 from django.utils.importlib import import_module
 from django.core.exceptions import ImproperlyConfigured
+import logging
+from django.template.loader import BaseLoader
+
 
 # At compile time, cache the directories to search.
 fs_encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
@@ -22,27 +25,43 @@ for app in settings.INSTALLED_APPS:
 app_template_dirs = tuple(app_template_dirs)
 
 
-def load_template_source(template_name, template_dirs=None):
-    """Template loader that loads templates from zipped modules."""
-    #Get every app's folder
+def get_zip_file_and_relative_path(full_path_into_zip):
+    full_path_into_zip = full_path_into_zip.replace("\\", "/")
+    zip_ext = ".zip"
+    zip_ext_start_index = full_path_into_zip.find(zip_ext + "/")
+    lib_path = full_path_into_zip[0:zip_ext_start_index]+ zip_ext
+    inner_path = full_path_into_zip[zip_ext_start_index+len(zip_ext)+2:]
+    return lib_path, inner_path
 
 
-    template_zipfiles = getattr(settings, "TEMPLATE_ZIP_FILES", [])
+log = logging.getLogger(__name__)
 
-    # Try each ZIP file in TEMPLATE_ZIP_FILES.
-    for fname in template_zipfiles:
-        try:
-            z = zipfile.ZipFile(fname)
-            source = z.read(template_name)
-        except (IOError, KeyError):
-            continue
-        z.close()
-        # We found a template, so return the source.
-        template_path = "%s:%s" % (fname, template_name)
-        return (source, template_path)
 
-    # If we reach here, the template couldn't be loaded
-    raise TemplateDoesNotExist(template_name)
+class Loader(BaseLoader):
+    is_usable = True
+    def load_template_source(self, template_name, template_dirs=None):
+        """Template loader that loads templates from zipped modules."""
+        #Get every app's folder
+        log.error("Calling zip loader")
+        for folder in app_template_dirs:
+            lib_file, relative_folder = get_zip_file_and_relative_path(folder)
+            log.error(lib_file, relative_folder)
+            try:
+                z = zipfile.ZipFile(lib_file)
+                log.error(relative_folder+template_name)
+                template_path_in_zip = os.path.join(relative_folder, template_name).replace("\\", "/")
+                source = z.read(template_path_in_zip)
+            except (IOError, KeyError):
+                import traceback
+                log.error(traceback.format_exc())
+                continue
+            z.close()
+            # We found a template, so return the source.
+            template_path = "%s:%s" % (lib_file, template_path_in_zip)
+            return (source, template_path)
 
-# This loader is always usable (since zipfile is included with Python)
-load_template_source.is_usable = True
+        # If we reach here, the template couldn't be loaded
+        raise TemplateDoesNotExist(template_name)
+
+
+_loader = Loader()
