@@ -54,12 +54,12 @@ class Loader(BaseLoader):
                     log.error(relative_folder+template_name)
                     template_path_in_zip = os.path.join(relative_folder, template_name).replace("\\", "/")
                     source = z.read(template_path_in_zip)
-	            except (IOError, KeyError):
-	                import traceback
-	                log.error(traceback.format_exc())
-	                z.close()
-					continue
-				z.close()
+                except (IOError, KeyError):
+                    import traceback
+                    log.error(traceback.format_exc())
+                    z.close()
+                    continue
+                z.close()
                 # We found a template, so return the source.
                 template_path = "%s:%s" % (lib_file, template_path_in_zip)
                 return (source, template_path)
