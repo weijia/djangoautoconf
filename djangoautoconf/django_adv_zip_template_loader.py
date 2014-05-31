@@ -31,7 +31,7 @@ def get_zip_file_and_relative_path(full_path_into_zip):
     zip_ext = ".zip"
     zip_ext_start_index = full_path_into_zip.find(zip_ext + "/")
     lib_path = full_path_into_zip[0:zip_ext_start_index] + zip_ext
-    inner_path = full_path_into_zip[zip_ext_start_index+len(zip_ext)+1:]
+    inner_path = full_path_into_zip[zip_ext_start_index + len(zip_ext) + 1:]
     return lib_path, inner_path
 
 
@@ -51,13 +51,16 @@ class Loader(BaseLoader):
                 log.error(lib_file, relative_folder)
                 try:
                     z = zipfile.ZipFile(lib_file)
-                    log.error(relative_folder+template_name)
+                    log.error(relative_folder + template_name)
                     template_path_in_zip = os.path.join(relative_folder, template_name).replace("\\", "/")
                     source = z.read(template_path_in_zip)
-                except (IOError, KeyError):
+                except (IOError, KeyError) as e:
                     import traceback
                     log.error(traceback.format_exc())
-                    z.close()
+                    try:
+                        z.close()
+                    except:
+                        pass
                     continue
                 z.close()
                 # We found a template, so return the source.
@@ -66,6 +69,5 @@ class Loader(BaseLoader):
 
         # If we reach here, the template couldn't be loaded
         raise TemplateDoesNotExist(template_name)
-
 
 _loader = Loader()
