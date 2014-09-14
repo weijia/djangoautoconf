@@ -6,7 +6,6 @@ from django.contrib import admin
 
 
 def register_to_sys(class_inst, admin_class=None):
-
     if admin_class is None:
         admin_class = type(class_inst.__name__ + "Admin", (GuardedModelAdmin, ), {})
     try:
