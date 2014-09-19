@@ -59,5 +59,5 @@ WEIBO_CLIENT_SECRET = ''
 
 #LOGIN_URL          = '/login-form/'
 LOGIN_URL          = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/objsys/manager/'
+LOGIN_REDIRECT_URL = '/obj_sys/manager/'
 LOGIN_ERROR_URL    = '/login-error/'
