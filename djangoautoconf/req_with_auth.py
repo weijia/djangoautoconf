@@ -33,3 +33,30 @@ class RequestWithAuth(object):
 
     def get_error_json(self):
         return self.error_json
+
+
+
+try:
+    # noinspection PyUnresolvedReferences
+    from packages.tastypie.authentication import Authentication
+
+    class DjangoUserAuthentication(Authentication):
+        def is_authenticated(self, request, **kwargs):
+            data = retrieve_param(request)
+            if not request.user.is_authenticated():
+                username = data['username']
+                password = data['password']
+                user = authenticate(username=username, password=password)
+                if user is not None:
+                    if user.is_active:
+                        login(request, user)
+                        return True
+            else:
+                return True
+            return False
+
+        # Optional but recommended
+        def get_identifier(self, request):
+            return request.user.username
+except ImportError:
+    pass
