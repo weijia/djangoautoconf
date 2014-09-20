@@ -40,7 +40,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.bcms.EmailBackend'
 
 try:
     from bae.core import const
-    #from objsys.baidu_mail import EmailBackend
+    #from obj_sys.baidu_mail import EmailBackend
 
     EMAIL_BACKEND = 'obj_sys.baidu_mail.EmailBackend'
 except:
