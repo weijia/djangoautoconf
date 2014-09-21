@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth import authenticate, login
 from django_utils import retrieve_param
 
@@ -6,7 +7,7 @@ class RequestWithAuth(object):
     def __init__(self, request):
         self.request = request
         self.data = retrieve_param(self.request)
-        self.error_json = ''
+        self.error_dict = {}
 
     def is_authenticated(self):
         if ('username' in self.data) and ('password' in self.data):
@@ -21,20 +22,21 @@ class RequestWithAuth(object):
                 else:
                     # Return a 'disabled account' error message
                     print 'disabled account'
-                    self.error_json = '{"error": "disabled account"}'
+                    self.error_dict = {"error": "disabled account"}
             else:
                 # Return an 'invalid login' error message.
                 print 'invalid login'
-                self.error_json = '{"error": "invalid login", "username": "%s", "password": "%s"}' % (
-                    username, password)
+                self.error_dict = {"error": "invalid login"}
+
                 return False
-        self.error_json = '{"error": "no username and password"}'
+        self.error_dict = {"error": "no username and password"}
         return False
 
     def get_error_json(self):
-        return self.error_json
+        return json.dumps(self.error_dict)
 
-
+    def get_error_dict(self):
+        return self.error_dict
 
 try:
     # noinspection PyUnresolvedReferences
