@@ -2,9 +2,7 @@ import json
 import logging
 from django.contrib.auth import authenticate, login
 from django_utils import retrieve_param
-from provider.oauth2.models import AccessToken
 from django.utils import timezone
-from provider.views import OAuthError
 
 
 class UserInactive(Exception):
@@ -19,17 +17,27 @@ class NoLoginInfo(Exception):
     pass
 
 
+class AccessTokenExpire(Exception):
+    pass
+
+
+class AccessTokenNotExist(Exception):
+    pass
+
+
 #Code from https://github.com/ianalexander/django-oauth2-tastypie
 def verify_access_token(key):
     # Check if key is in AccessToken key
     try:
+        from provider.oauth2.models import AccessToken
+
         token = AccessToken.objects.get(token=key)
 
         # Check if token has expired
         if token.expires < timezone.now():
-            raise OAuthError('AccessToken has expired.')
+            raise AccessTokenExpire()
     except AccessToken.DoesNotExist, e:
-        raise OAuthError("AccessToken not found at all.")
+        raise AccessTokenNotExist()
 
     logging.info('Valid access')
     return token
@@ -39,11 +47,8 @@ def authenticate_req_throw_exception(request):
     if not request.user.is_authenticated():
         data = retrieve_param(request)
         if 'consumer_key' in data:
-            try:
-                verify_access_token(data['consumer_key'])
-                return True
-            except OAuthError:
-                pass
+            verify_access_token(data['consumer_key'])
+            return True
         if not (('username' in data) and ('password' in data)):
             raise NoLoginInfo
         username = data['username']
@@ -96,7 +101,7 @@ class RequestWithAuth(object):
 
 try:
     # noinspection PyUnresolvedReferences
-    from packages.tastypie.authentication import Authentication
+    from tastypie.authentication import Authentication
 
     class DjangoUserAuthentication(Authentication):
         def is_authenticated(self, request, **kwargs):
@@ -105,5 +110,5 @@ try:
         # Optional but recommended
         def get_identifier(self, request):
             return request.user.username
-except ImportError:
-    pass
+except ImportError, e:
+    logging.warn("tastypie not installed, so no DjangoUserAuthentication defined" + e.message)

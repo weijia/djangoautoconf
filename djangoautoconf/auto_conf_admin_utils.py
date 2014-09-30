@@ -1,8 +1,9 @@
 import inspect
+from django.conf import settings
 
-try:
+if "guardian" in settings.INSTALLED_APPS:
     from guardian.admin import GuardedModelAdmin as ModelAdmin
-except ImportError:
+else:
     from django.contrib.admin import ModelAdmin
 
 from django.contrib import admin
