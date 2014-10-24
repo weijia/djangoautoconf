@@ -45,9 +45,11 @@ def register_all(class_list):
         register_to_sys(i)
 
 
-def register_all_in_module(module_instance):
+def register_all_in_module(module_instance, exclude_name=[]):
     class_list = []
     for name, obj in inspect.getmembers(module_instance):
         if inspect.isclass(obj):
+            if obj.__name__ in exclude_name:
+                continue
             class_list.append(obj)
     register_all(class_list)
