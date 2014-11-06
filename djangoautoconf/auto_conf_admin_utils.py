@@ -33,7 +33,9 @@ def register_admin(admin_class, class_inst):
     try:
         admin.site.register(class_inst, admin_class)
     except:
-        pass
+        print class_inst, admin_class
+        import traceback
+        traceback.print_exc()
 
 
 def register_to_sys(class_inst, admin_class=None):
@@ -43,27 +45,34 @@ def register_to_sys(class_inst, admin_class=None):
 
 
 def get_valid_admin_class_with_list(admin_list, class_inst):
-    final_parents = admin_list.append(ModelAdmin)
-    admin_class = type(class_inst.__name__ + "Admin", set(final_parents), {})
+    #print admin_list
+    admin_list.append(ModelAdmin)
+    #print ModelAdmin
+    #print final_parents
+    admin_class = type(class_inst.__name__ + "Admin", tuple(admin_list), {})
     return admin_class
 
 
-def register_to_sys_with_admin_list(class_inst, admin_list=[]):
-    admin_class = get_valid_admin_class_with_list(admin_list, class_inst)
+def register_to_sys_with_admin_list(class_inst, admin_list=None):
+    if admin_list is None:
+        admin_class = get_valid_admin_class_with_list([], class_inst)
+    else:
+        admin_class = get_valid_admin_class_with_list(admin_list, class_inst)
     register_admin(admin_class, class_inst)
     register_normal_admin(admin_class, class_inst)
 
 
-def register_all(class_list, admin_class_list=[]):
+def register_all(class_list, admin_class_list=None):
     for i in class_list:
         register_to_sys_with_admin_list(i, admin_class_list)
 
 
-def register_all_in_module(module_instance, exclude_name=[], admin_class_list=[]):
+def register_all_in_module(module_instance, exclude_name=[], admin_class_list=None):
     class_list = []
     for name, obj in inspect.getmembers(module_instance):
         if inspect.isclass(obj):
             if obj.__name__ in exclude_name:
                 continue
             class_list.append(obj)
+    print class_list, admin_class_list
     register_all(class_list, admin_class_list)
