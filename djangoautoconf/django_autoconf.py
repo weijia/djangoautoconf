@@ -91,6 +91,7 @@ class DjangoAutoConf(object):
         update_base_settings(new_base_settings)
 
     def inject_attr(self):
+        self.builtin["PROJECT_ROOT"] = self.root_dir
         for attr in dir(base_settings):
             if attr != attr.upper():
                 continue
