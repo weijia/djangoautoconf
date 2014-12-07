@@ -67,11 +67,11 @@ def register_all(class_list, admin_class_list=None):
         register_to_sys_with_admin_list(i, admin_class_list)
 
 
-def register_all_in_module(module_instance, exclude_name=[], admin_class_list=None):
+def register_all_in_module(module_instance, exclude_name_list=[], admin_class_list=None):
     class_list = []
     for name, obj in inspect.getmembers(module_instance):
         if inspect.isclass(obj):
-            if obj.__name__ in exclude_name:
+            if obj.__name__ in exclude_name_list:
                 continue
             class_list.append(obj)
     print class_list, admin_class_list
