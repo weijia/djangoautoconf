@@ -32,10 +32,11 @@ def get_valid_admin_class(admin_class, class_inst):
 def register_admin(admin_class, class_inst):
     try:
         admin.site.register(class_inst, admin_class)
-    except:
-        print class_inst, admin_class
-        import traceback
-        traceback.print_exc()
+    except Exception, e:
+        if True:  # not (' is already registered' in e.message):
+            print class_inst, admin_class
+            import traceback
+            traceback.print_exc()
 
 
 def register_to_sys(class_inst, admin_class=None):
