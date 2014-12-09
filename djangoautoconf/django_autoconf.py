@@ -48,6 +48,29 @@ class DjangoAutoConf(object):
             print "key dir not exist: " + self.key_dir
             raise KeyDirNotExist
 
+    # noinspection PyMethodMayBeStatic
+    def path_exists(self, path):
+        return os.path.exists(path)
+
+    def add_secret_key(self):
+        secret_key = get_or_create_secret_key(self.key_dir)
+        setattr(base_settings, "SECRET_KEY", secret_key)
+
+    def update_installed_apps_etc(self):
+        PROJECT_PATH = os.path.abspath(os.path.abspath(self.root_dir))
+        setattr(base_settings, "PROJECT_PATH", PROJECT_PATH)
+        setattr(base_settings, "STATIC_ROOT", os.path.abspath(os.path.join(PROJECT_PATH, 'static')))
+        installed_apps = list(getattr(base_settings, "INSTALLED_APPS"))
+        external_git_folder = os.path.join(PROJECT_PATH, "external_git")
+        for folder in os.listdir(external_git_folder):
+            app_folder = os.path.join(external_git_folder, folder)
+            for app_module_folder_name in os.listdir(app_folder):
+                app_module_folder_full_path = os.path.join(app_folder, app_module_folder_name)
+                target_setting_path = os.path.join(app_module_folder_full_path, "default_settings.py")
+                if self.path_exists(target_setting_path):
+                    installed_apps.append(app_module_folder_name)
+        setattr(base_settings, "INSTALLED_APPS", tuple(installed_apps))
+
     def configure(self, features=[]):
         self.check_params()
 
@@ -66,13 +89,11 @@ class DjangoAutoConf(object):
         for feature in features:
             self.import_based_on_base_settings("djangoautoconf.features." + feature)
 
-        secret_key = get_or_create_secret_key(self.key_dir)
-        PROJECT_PATH = os.path.abspath(os.path.abspath(self.root_dir))
-        setattr(base_settings, "SECRET_KEY", secret_key)
-        setattr(base_settings, "PROJECT_PATH", PROJECT_PATH)
-        setattr(base_settings, "STATIC_ROOT", os.path.abspath(os.path.join(PROJECT_PATH, 'static')))
+        self.add_secret_key()
+        self.update_installed_apps_etc()
         dump_attrs(base_settings)
 
+    # noinspection PyMethodMayBeStatic
     def get_settings(self):
         return base_settings
 
