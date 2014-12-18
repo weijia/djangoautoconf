@@ -17,7 +17,8 @@ def register_normal_admin(admin_class, class_inst):
     # admin.site.register(class_inst)
     try:
         from normal_admin.admin import user_admin_site
-        user_admin_site.register(class_inst, admin_class)
+        if not (class_inst in user_admin_site):
+            user_admin_site.register(class_inst, admin_class)
     except:
         pass
         #register(class_inst)
@@ -31,11 +32,13 @@ def get_valid_admin_class(admin_class, class_inst):
 
 def register_admin(admin_class, class_inst):
     try:
-        admin.site.register(class_inst, admin_class)
-    except:
-        print class_inst, admin_class
-        import traceback
-        traceback.print_exc()
+        if not (class_inst in admin.site._registry):
+            admin.site.register(class_inst, admin_class)
+    except Exception, e:
+        if True:  # not (' is already registered' in e.message):
+            print class_inst, admin_class
+            import traceback
+            traceback.print_exc()
 
 
 def register_to_sys(class_inst, admin_class=None):
@@ -74,5 +77,5 @@ def register_all_in_module(module_instance, exclude_name_list=[], admin_class_li
             if obj.__name__ in exclude_name_list:
                 continue
             class_list.append(obj)
-    print class_list, admin_class_list
+    #print class_list, admin_class_list
     register_all(class_list, admin_class_list)

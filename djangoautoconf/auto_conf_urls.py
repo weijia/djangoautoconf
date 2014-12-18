@@ -7,7 +7,6 @@ from django.conf.urls import patterns, include, url
 def add_default_root_url(default_url_root_path):
     from django.conf import settings
     from django.utils.importlib import import_module
-    import os
     root_url = import_module(settings.ROOT_URLCONF)
     frame = inspect.getouterframes(inspect.currentframe())
     include_url = url(default_url_root_path, include(frame[1][0].f_locals["__name__"]))
@@ -26,6 +25,10 @@ def autodiscover():
         mod = import_module(app)
         # Attempt to import the app's admin module.
         try:
-            import_module('%s.urls' % app)
-        except:
-            pass
+            urls_module = '%s.urls' % app
+            import_module(urls_module)
+        except Exception, e:
+            if e.message != 'No module named urls':
+                import traceback
+                traceback.print_exc()
+
