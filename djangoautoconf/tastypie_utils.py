@@ -15,10 +15,10 @@ def create_tastypie_resource_class(class_inst, resource_name=None):
         resource_name = class_name_to_low_case(class_inst.__name__)
     attributes = {"queryset": class_inst.objects.all(), "resource_name": resource_name,
                   "authentication": DjangoUserAuthentication(), "authorization": DjangoAuthorization(),
-                  "filtering": {}}
+                  "filtering": {}, "always_return_data": True}
     for field in class_inst.__dict__['_meta'].fields:
         attributes["filtering"].update({field.name: ALL})
-    resource_class = type(class_inst.__name__ + "Resource", (ModelResource, ), {
+    resource_class = type(class_inst.__name__ + "AutoResource", (ModelResource, ), {
         "Meta": type("Meta", (), attributes)
     })
     return resource_class
