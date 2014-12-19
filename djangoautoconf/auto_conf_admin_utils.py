@@ -7,7 +7,7 @@ else:
     from django.contrib.admin import ModelAdmin as SingleModelAdmin
 
 
-from django.contrib.admin import ModelAdmin
+#from django.contrib.admin import ModelAdmin
 from django.contrib import admin
 #The following not work with guardian?
 #import xadmin as admin
@@ -49,7 +49,7 @@ def register_to_sys(class_inst, admin_class=None):
 
 def get_valid_admin_class_with_list(admin_list, class_inst):
     #print admin_list
-    admin_list.append(ModelAdmin)
+    admin_list.append(SingleModelAdmin)
     #print ModelAdmin
     #print final_parents
     admin_class = type(class_inst.__name__ + "Admin", tuple(admin_list), {})

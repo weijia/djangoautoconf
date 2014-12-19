@@ -31,4 +31,3 @@ def autodiscover():
             if e.message != 'No module named urls':
                 import traceback
                 traceback.print_exc()
-
