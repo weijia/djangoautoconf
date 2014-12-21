@@ -1,5 +1,6 @@
 import importlib
 import logging
+import os
 
 
 log = logging.getLogger(__name__)
@@ -45,3 +46,19 @@ def get_class_name_from_str(importing_class_name):
 def validate_required_attributes(setting_class_instance):
     if setting_class_instance.DATABASES["default"]["ENGINE"] == 'django.db.backends.dummy':
         raise "Invalid database"
+
+
+def path_exists(path):
+    return os.path.exists(path)
+
+
+def is_at_least_one_sub_filesystem_item_exists(full_path, filename_list):
+    for filename in filename_list:
+        target_path = os.path.join(full_path, filename)
+        if path_exists(target_path):
+            return True
+    return False
+
+
+def get_module_path(mod):
+    return os.path.dirname(mod.__file__)

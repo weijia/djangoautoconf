@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 import base_settings
-from auto_conf_utils import dump_attrs
+from auto_conf_utils import dump_attrs, path_exists, is_at_least_one_sub_filesystem_item_exists
 
 
 log = logging.getLogger(__name__)
@@ -20,56 +20,29 @@ class KeyDirNotExist(Exception):
 
 
 class DjangoAutoConf(object):
-    def __init__(self, default_settings_import_str=None, root_dir=None, key_dir=None):
+    def __init__(self, default_settings_import_str=None):
         self.default_settings_import_str = default_settings_import_str
-        self.root_dir = root_dir
+        self.root_dir = None
         #Default keys is located at ../keys relative to universal_settings module?
-        self.key_dir = key_dir
+        self.key_dir = None
         self.extra_settings = []
+        self.project_path = None
 
     def set_default_settings(self, default_settings_import_str):
         self.default_settings_import_str = default_settings_import_str
 
     def set_root_dir(self, root_dir):
-        self.root_dir = root_dir
-        self.key_dir = os.path.abspath(os.path.join(root_dir, "keys"))
+        self.root_dir = os.path.abspath(root_dir)
+        if self.key_dir is None:
+            #Default key dir is located in root dir key folder
+            self.key_dir = os.path.abspath(os.path.join(root_dir, "keys"))
+        self.project_path = os.path.abspath(os.path.abspath(self.root_dir))
 
     def set_key_dir(self, key_dir):
         self.key_dir = key_dir
 
     def add_extra_settings(self, extra_setting_list):
         self.extra_settings.extend(extra_setting_list)
-
-    def check_params(self):
-        if not os.path.exists(self.root_dir):
-            raise RootDirNotExist
-        if not os.path.exists(self.key_dir):
-            #logging.getLogger().error("key dir not exist: "+self.key_dir)
-            print "key dir not exist: " + self.key_dir
-            raise KeyDirNotExist
-
-    # noinspection PyMethodMayBeStatic
-    def path_exists(self, path):
-        return os.path.exists(path)
-
-    def add_secret_key(self):
-        secret_key = get_or_create_secret_key(self.key_dir)
-        setattr(base_settings, "SECRET_KEY", secret_key)
-
-    def update_installed_apps_etc(self):
-        PROJECT_PATH = os.path.abspath(os.path.abspath(self.root_dir))
-        setattr(base_settings, "PROJECT_PATH", PROJECT_PATH)
-        setattr(base_settings, "STATIC_ROOT", os.path.abspath(os.path.join(PROJECT_PATH, 'static')))
-        installed_apps = list(getattr(base_settings, "INSTALLED_APPS"))
-        external_git_folder = os.path.join(PROJECT_PATH, "external_git")
-        for folder in os.listdir(external_git_folder):
-            app_folder = os.path.join(external_git_folder, folder)
-            for app_module_folder_name in os.listdir(app_folder):
-                app_module_folder_full_path = os.path.join(app_folder, app_module_folder_name)
-                target_setting_path = os.path.join(app_module_folder_full_path, "default_settings.py")
-                if self.path_exists(target_setting_path):
-                    installed_apps.append(app_module_folder_name)
-        setattr(base_settings, "INSTALLED_APPS", tuple(installed_apps))
 
     def configure(self, features=[]):
         self.check_params()
@@ -92,6 +65,41 @@ class DjangoAutoConf(object):
         self.add_secret_key()
         self.update_installed_apps_etc()
         dump_attrs(base_settings)
+
+    def check_params(self):
+        if not os.path.exists(self.root_dir):
+            raise RootDirNotExist
+        if not os.path.exists(self.key_dir):
+            #logging.getLogger().error("key dir not exist: "+self.key_dir)
+            print "key dir not exist: " + self.key_dir
+            raise KeyDirNotExist
+
+    def add_secret_key(self):
+        secret_key = get_or_create_secret_key(self.key_dir)
+        setattr(base_settings, "SECRET_KEY", secret_key)
+
+    def get_project_path(self):
+        return self.project_path
+
+    def is_valid_app_module(self, app_module_folder_full_path):
+        signature_filename_list = ["default_settings.py", "default_urls.py"]
+        return is_at_least_one_sub_filesystem_item_exists(app_module_folder_full_path, signature_filename_list)
+
+    def install_auto_detected_apps(self):
+        installed_apps = list(getattr(base_settings, "INSTALLED_APPS"))
+        external_git_folder = os.path.join(self.get_project_path(), "external_git")
+        for folder in os.listdir(external_git_folder):
+            app_folder = os.path.join(external_git_folder, folder)
+            for app_module_folder_name in os.listdir(app_folder):
+                app_module_folder_full_path = os.path.join(app_folder, app_module_folder_name)
+                if self.is_valid_app_module(app_module_folder_full_path):
+                    installed_apps.append(app_module_folder_name)
+        setattr(base_settings, "INSTALLED_APPS", tuple(installed_apps))
+
+    def update_installed_apps_etc(self):
+        setattr(base_settings, "PROJECT_PATH", self.get_project_path())
+        setattr(base_settings, "STATIC_ROOT", os.path.abspath(os.path.join(self.get_project_path(), 'static')))
+        self.install_auto_detected_apps()
 
     # noinspection PyMethodMayBeStatic
     def get_settings(self):
