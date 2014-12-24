@@ -93,10 +93,11 @@ class DjangoAutoConf(object):
         external_git_folder = os.path.join(self.get_project_path(), "external_git")
         for folder in os.listdir(external_git_folder):
             app_folder = os.path.join(external_git_folder, folder)
-            for app_module_folder_name in os.listdir(app_folder):
-                app_module_folder_full_path = os.path.join(app_folder, app_module_folder_name)
-                if self.is_valid_app_module(app_module_folder_full_path):
-                    installed_apps.append(app_module_folder_name)
+            if os.path.isdir(app_folder):
+                for app_module_folder_name in os.listdir(app_folder):
+                    app_module_folder_full_path = os.path.join(app_folder, app_module_folder_name)
+                    if self.is_valid_app_module(app_module_folder_full_path):
+                        installed_apps.append(app_module_folder_name)
         setattr(base_settings, "INSTALLED_APPS", tuple(installed_apps))
 
     def update_installed_apps_etc(self):
@@ -154,14 +155,9 @@ def update_base_settings(new_base_settings):
         setattr(base_settings, attr, value)
 
 
-def import_existing_secret_key(secret_key_folder):
-    if is_folder_in_sys_path(secret_key_folder):
-        include(secret_key_folder)
-        from secret_key import SECRET_KEY
-
-        remove_folder_in_sys_path(secret_key_folder)
-    else:
-        from secret_key import SECRET_KEY
+def get_existing_secret_key(secret_key_folder):
+    from keys.local_keys.secret_key import SECRET_KEY
+    logging.info("load existing secret key OK")
     return SECRET_KEY
 
 
@@ -172,20 +168,21 @@ def create_secret_file_and_get_it(local_key_folder):
     secret_file = open(os.path.join(local_key_folder, 'secret_key.py'), 'w')
     secret_file.write("SECRET_KEY='%s'" % secret_key)
     secret_file.close()
-    return import_existing_secret_key(local_key_folder)
+    return get_existing_secret_key(local_key_folder)
 
 
 def get_or_create_secret_key(key_folder_path):
     local_key_folder = os.path.join(key_folder_path, "local_keys")
-    if os.path.exists(local_key_folder):
-        try:
-            return import_existing_secret_key(local_key_folder)
-        except ImportError:
-            pass
+    try:
+        return get_existing_secret_key(local_key_folder)
+    except ImportError:
+        print "No existing secret key"
+        pass
 
     try:
         return create_secret_file_and_get_it(local_key_folder)
     except Exception:
+        print "Try to create secret key failed"
         import traceback
 
         traceback.print_exc()
