@@ -4,8 +4,11 @@ import importlib
 import logging
 import os
 import sys
+from django.utils.crypto import get_random_string
 import base_settings
 from auto_conf_utils import dump_attrs, path_exists, is_at_least_one_sub_filesystem_item_exists
+from libtool.basic_lib_tool import is_folder_in_sys_path, include, remove_folder_in_sys_path
+from libtool.folder_tool import ensure_dir
 
 
 log = logging.getLogger(__name__)
@@ -151,33 +154,41 @@ def update_base_settings(new_base_settings):
         setattr(base_settings, attr, value)
 
 
-def get_or_create_secret_key(key_folder_path):
-    #######################
-    # Set secret key
-    try:
-        if not (key_folder_path in sys.path):
-            sys.path.append(key_folder_path)
-            from secret_key import SECRET_KEY
+def import_existing_secret_key(secret_key_folder):
+    if is_folder_in_sys_path(secret_key_folder):
+        include(secret_key_folder)
+        from secret_key import SECRET_KEY
 
-            sys.path.remove(key_folder_path)
-        else:
-            from secret_key import SECRET_KEY
-    except ImportError:
-        try:
-            from django.utils.crypto import get_random_string
-
-            chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
-            secret_key = get_random_string(50, chars)
-
-            secret_file = open(os.path.join(key_folder_path, 'secret_key.py'), 'w')
-            secret_file.write("SECRET_KEY='%s'" % secret_key)
-            secret_file.close()
-            from secret_key import SECRET_KEY
-        except Exception:
-            import traceback
-
-            traceback.print_exc()
-            #In case the above not work, use the following.
-            # Make this unique, and don't share it with anybody.
-            SECRET_KEY = 'd&amp;x%x+^l@qfxm^2o9x)6ct5*cftlcu8xps9b7l3c$ul*n&amp;%p-k'
+        remove_folder_in_sys_path(secret_key_folder)
+    else:
+        from secret_key import SECRET_KEY
     return SECRET_KEY
+
+
+def create_secret_file_and_get_it(local_key_folder):
+    chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+    ensure_dir(local_key_folder)
+    secret_key = get_random_string(50, chars)
+    secret_file = open(os.path.join(local_key_folder, 'secret_key.py'), 'w')
+    secret_file.write("SECRET_KEY='%s'" % secret_key)
+    secret_file.close()
+    return import_existing_secret_key(local_key_folder)
+
+
+def get_or_create_secret_key(key_folder_path):
+    local_key_folder = os.path.join(key_folder_path, "local_keys")
+    if os.path.exists(local_key_folder):
+        try:
+            return import_existing_secret_key(local_key_folder)
+        except ImportError:
+            pass
+
+    try:
+        return create_secret_file_and_get_it(local_key_folder)
+    except Exception:
+        import traceback
+
+        traceback.print_exc()
+        #In case the above not work, use the following.
+        # Make this unique, and don't share it with anybody.
+        return 'd&amp;x%x+^l@qfxm^2o9x)6ct5*cftlcu8xps9b7l3c$ul*n&amp;%p-k'
