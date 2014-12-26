@@ -26,7 +26,7 @@ class DjangoAutoConf(object):
     def __init__(self, default_settings_import_str=None):
         self.default_settings_import_str = default_settings_import_str
         self.root_dir = None
-        #Default keys is located at ../keys relative to universal_settings module?
+        # Default keys is located at ../keys relative to universal_settings module?
         self.key_dir = None
         self.extra_settings = []
         self.project_path = None
@@ -37,7 +37,7 @@ class DjangoAutoConf(object):
     def set_root_dir(self, root_dir):
         self.root_dir = os.path.abspath(root_dir)
         if self.key_dir is None:
-            #Default key dir is located in root dir key folder
+            # Default key dir is located in root dir key folder
             self.key_dir = os.path.abspath(os.path.join(root_dir, "keys"))
         self.project_path = os.path.abspath(os.path.abspath(self.root_dir))
 
@@ -47,33 +47,37 @@ class DjangoAutoConf(object):
     def add_extra_settings(self, extra_setting_list):
         self.extra_settings.extend(extra_setting_list)
 
+    def get_setting_module_list(self, features):
+        ordered_import_list = [self.default_settings_import_str,
+                               "djangoautoconf.sqlite_database"
+                               # "djangoautoconf.mysql_database"
+        ]
+        ordered_import_list.extend(self.extra_settings)
+        for feature in features:
+            self.ordered_import_list.append("djangoautoconf.features." + feature)
+        return ordered_import_list
+
     def configure(self, features=[]):
         self.check_params()
 
-        #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangoautoconf.base_settings")
+        # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangoautoconf.base_settings")
         os.environ["DJANGO_SETTINGS_MODULE"] = "djangoautoconf.base_settings"
 
-        ordered_import_list = [self.default_settings_import_str,
-                               "djangoautoconf.sqlite_database"
-                               #"djangoautoconf.mysql_database"
-        ]
+        ordered_import_list = self.get_setting_module_list(features)
 
-        ordered_import_list.extend(self.extra_settings)
         for one_setting in ordered_import_list:
             self.import_based_on_base_settings(one_setting)
 
-        for feature in features:
-            self.import_based_on_base_settings("djangoautoconf.features." + feature)
-
         self.add_secret_key()
         self.update_installed_apps_etc()
+
         dump_attrs(base_settings)
 
     def check_params(self):
         if not os.path.exists(self.root_dir):
             raise RootDirNotExist
         if not os.path.exists(self.key_dir):
-            #logging.getLogger().error("key dir not exist: "+self.key_dir)
+            # logging.getLogger().error("key dir not exist: "+self.key_dir)
             print "key dir not exist: " + self.key_dir
             raise KeyDirNotExist
 
@@ -110,7 +114,7 @@ class DjangoAutoConf(object):
         return base_settings
 
     def import_based_on_base_settings(self, module_import_path):
-        #######
+        # ######
         # Inject attributes to builtin and import all other modules
         # Ref: http://stackoverflow.com/questions/11813287/insert-variable-into-global-namespace-from-within-a-function
         self.init_builtin()
@@ -157,6 +161,7 @@ def update_base_settings(new_base_settings):
 
 def get_existing_secret_key(secret_key_folder):
     from keys.local_keys.secret_key import SECRET_KEY
+
     logging.info("load existing secret key OK")
     return SECRET_KEY
 
@@ -186,6 +191,6 @@ def get_or_create_secret_key(key_folder_path):
         import traceback
 
         traceback.print_exc()
-        #In case the above not work, use the following.
+        # In case the above not work, use the following.
         # Make this unique, and don't share it with anybody.
         return 'd&amp;x%x+^l@qfxm^2o9x)6ct5*cftlcu8xps9b7l3c$ul*n&amp;%p-k'
