@@ -35,6 +35,13 @@ def include_urls():
                 traceback.print_exc()
 
 
+def add_app_urls_no_exception(app):
+    try:
+        add_url_pattern("^%s/" % app, include('%s.urls' % app))
+    except:
+        pass
+
+
 def include_default_urls():
     from django.utils.importlib import import_module
 
@@ -42,7 +49,7 @@ def include_default_urls():
         mod = import_module(app)
         # Attempt to import the app's admin module.
         if is_at_least_one_sub_filesystem_item_exists(get_module_path(mod), ["default_settings.py"]):
-            add_url_pattern("^%s/" % app, include('%s.urls' % app))
+            add_app_urls_no_exception(app)
 
 
 def enum_apps():
