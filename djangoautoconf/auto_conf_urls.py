@@ -6,6 +6,13 @@ from django.conf.urls import patterns, include, url
 
 
 def add_url_pattern(default_url_root_path, urls_module):
+    """
+    default_url_root_path: target URL to be matched
+    urls_module:
+                include('provider.oauth2.urls') or
+                include(admin.site.urls) or
+                RedirectView.as_view(url='/resource_bookmarks') etc.
+    """
     from django.conf import settings
     from django.utils.importlib import import_module
     include_url = url(default_url_root_path, urls_module)
