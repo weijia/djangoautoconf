@@ -20,3 +20,5 @@ if sae_app_name != "":
             'PORT': MYSQL_PORT, 
         }
     }
+
+    EMAIL_BACKEND = 'backends.mail_backend.EmailBackend'

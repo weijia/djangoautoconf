@@ -1,6 +1,7 @@
 import json
 import logging
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django_utils import retrieve_param
 from django.utils import timezone
 
@@ -25,6 +26,10 @@ class AccessTokenNotExist(Exception):
     pass
 
 
+class InvalidEmailAddress(Exception):
+    pass
+
+
 #Code from https://github.com/ianalexander/django-oauth2-tastypie
 def verify_access_token(key):
     # Check if key is in AccessToken key
@@ -43,15 +48,28 @@ def verify_access_token(key):
     return token
 
 
-def authenticate_req_throw_exception(request):
-    if not request.user.is_authenticated():
-        data = retrieve_param(request)
-        if 'consumer_key' in data:
-            verify_access_token(data['consumer_key'])
-            return True
-        if not (('username' in data) and ('password' in data)):
+def get_username(data):
+    if "email" in data:
+        user = User.objects.filter(email=data["email"])
+        if user.exists():
+            return user[0].username
+        else:
+            raise InvalidEmailAddress
+    elif "username" in data:
+        return data["username"]
+    raise NoLoginInfo
+
+
+def complex_login(request):
+    data = retrieve_param(request)
+    if 'consumer_key' in data:
+        verify_access_token(data['consumer_key'])
+    else:
+        username = get_username(data)
+
+        if not ('password' in data):
             raise NoLoginInfo
-        username = data['username']
+
         password = data['password']
         user = authenticate(username=username, password=password)
         if user is not None:
@@ -61,6 +79,11 @@ def authenticate_req_throw_exception(request):
                 raise UserInactive
         else:
             raise InvalidLogin
+
+
+def authenticate_req_throw_exception(request):
+    if not request.user.is_authenticated():
+        complex_login(request)
     return True
 
 

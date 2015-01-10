@@ -66,11 +66,22 @@ def register_to_sys_with_admin_list(class_inst, admin_list=None):
 
 
 def register_all(class_list, admin_class_list=None):
+    """
+    :param class_list: list of class need to be registered to admin
+    :param admin_class_list: parent of admin model class
+    :return: no
+    """
     for i in class_list:
         register_to_sys_with_admin_list(i, admin_class_list)
 
 
 def register_all_in_module(module_instance, exclude_name_list=[], admin_class_list=None):
+    """
+    :param module_instance: mostly the models module
+    :param exclude_name_list: class does not need to register or is already registered
+    :param admin_class_list:
+    :return:
+    """
     class_list = []
     for name, obj in inspect.getmembers(module_instance):
         if inspect.isclass(obj):
