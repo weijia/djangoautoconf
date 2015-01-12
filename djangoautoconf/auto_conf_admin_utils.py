@@ -35,15 +35,17 @@ def register_all_type_of_admin(admin_class, class_inst):
     register_admin(admin_class, class_inst)
     try:
         from normal_admin.admin import user_admin_site
-
         register_admin(admin_class, class_inst, user_admin_site)
     except ImportError:
         pass
 
 
-def register_to_sys(class_inst, admin_class=None):
+def register_to_sys(class_inst, admin_class=None, is_normal_admin_needed=False):
     admin_class = get_valid_admin_class(admin_class, class_inst)
-    register_all_type_of_admin(admin_class, class_inst)
+    if is_normal_admin_needed:
+        register_all_type_of_admin(admin_class, class_inst)
+    else:
+        register_admin(admin_class, class_inst)
 
 
 def get_valid_admin_class_with_list(admin_list, class_inst):
@@ -56,12 +58,21 @@ def get_valid_admin_class_with_list(admin_list, class_inst):
     return admin_class
 
 
-def register_to_sys_with_admin_list(class_inst, admin_list=None):
+def register_to_sys_with_admin_list(class_inst, admin_list=None, is_normal_admin_needed=False):
+    """
+    :param class_inst: model class
+    :param admin_list: admin class
+    :param is_normal_admin_needed: is normal admin registration needed
+    :return:
+    """
     if admin_list is None:
         admin_class = get_valid_admin_class_with_list([], class_inst)
     else:
         admin_class = get_valid_admin_class_with_list(admin_list, class_inst)
-    register_all_type_of_admin(admin_class, class_inst)
+    if is_normal_admin_needed:
+        register_all_type_of_admin(admin_class, class_inst)
+    else:
+        register_admin(admin_class, class_inst)
 
 
 def register_all(class_list, admin_class_list=None):

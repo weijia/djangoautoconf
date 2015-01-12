@@ -100,7 +100,7 @@ class DjangoAutoConf(object):
             if os.path.isdir(app_folder):
                 for app_module_folder_name in os.listdir(app_folder):
                     app_module_folder_full_path = os.path.join(app_folder, app_module_folder_name)
-                    if self.is_valid_app_module(app_module_folder_full_path):
+                    if os.path.isdir(app_module_folder_full_path) and self.is_valid_app_module(app_module_folder_full_path):
                         installed_apps.append(app_module_folder_name)
         setattr(base_settings, "INSTALLED_APPS", tuple(installed_apps))
 

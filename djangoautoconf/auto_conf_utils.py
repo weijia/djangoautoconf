@@ -55,7 +55,7 @@ def path_exists(path):
 def is_at_least_one_sub_filesystem_item_exists(full_path, filename_list):
     for filename in filename_list:
         target_path = os.path.join(full_path, filename)
-        if path_exists(target_path):
+        if os.path.isdir(full_path) and path_exists(target_path):
             return True
     return False
 
