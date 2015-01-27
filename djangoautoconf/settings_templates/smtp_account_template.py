@@ -1,5 +1,5 @@
-__author__ = 'q19420'
+__author__ = 'weijia'
 
 
-smtp_username = "test"
-smtp_password = "testpass"
+smtp_username = None
+smtp_password = None
