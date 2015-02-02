@@ -1,6 +1,8 @@
 import copy
 import inspect
 
+
+
 __author__ = 'q19420'
 from django.conf import settings
 from django.contrib.admin import ModelAdmin
@@ -26,8 +28,13 @@ class AdminRegister(object):
     def __init__(self, parent_admin_list=[]):
         super(AdminRegister, self).__init__()
         self.parent_admin_list = parent_admin_list
-        self.base_model_admin = ModelAdmin
+        try:
+            from import_export.admin import ImportExportActionModelAdmin
+            self.base_model_admin = ImportExportActionModelAdmin
+        except:
+            self.base_model_admin = ModelAdmin
         self.admin_class_attributes = {}
+        #self.is_import_export_supported = False
 
     def get_admin_class(self, class_instance):
         if self.admin_list is None:
@@ -37,6 +44,7 @@ class AdminRegister(object):
         #print admin_list
         copied_admin_list = copy.copy(self.parent_admin_list)
         copied_admin_list.append(self.base_model_admin)
+        self.include_additional_admin_mixins(class_inst, copied_admin_list)
         #print ModelAdmin
         #print final_parents
         admin_class = type(class_inst.__name__ + "Admin", tuple(copied_admin_list), self.admin_class_attributes)
@@ -76,4 +84,14 @@ class AdminRegister(object):
         """
         for class_instance in self.class_enumerator(module_instance, exclude_name_list):
             self.register_with_all_in_list_display(class_instance)
+
+    def include_additional_admin_mixins(self, class_instance, existing_list):
+        try:
+            from djangoautoconf.import_export_utils import get_import_export_admin_mixin
+            existing_list.append(get_import_export_admin_mixin(class_instance))
+            #from import_export.admin import ImportExportActionModelAdmin
+            #existing_list.append(ImportExportActionModelAdmin)
+        except ImportError:
+            pass
+
 
