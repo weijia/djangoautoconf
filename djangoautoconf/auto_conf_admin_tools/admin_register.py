@@ -45,7 +45,7 @@ class AdminRegister(object):
             self.admin_class_attributes.update({
                 "resource_class": resource_class
             })
-        except:
+        except ImportError:
             pass
         copied_admin_list = copy.copy(self.parent_admin_list)
         copied_admin_list.append(self.base_model_admin)
