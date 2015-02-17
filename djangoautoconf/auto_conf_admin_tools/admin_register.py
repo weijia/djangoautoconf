@@ -16,7 +16,7 @@ if "guardian" in settings.INSTALLED_APPS:
 
 def register_admin_without_duplicated_register(class_inst, admin_class, admin_site=admin.site):
     try:
-        if not (class_inst in admin_site._registry):
+        if (not (class_inst in admin_site._registry)) and (not class_inst._meta.abstract):
             admin_site.register(class_inst, admin_class)
     except Exception, e:
         if True:  # not (' is already registered' in e.message):
