@@ -1,5 +1,6 @@
 import inspect
 from djangoautoconf.auto_conf_utils import get_module_path, is_at_least_one_sub_filesystem_item_exists
+from libtool.short_decorator.ignore_exception import ignore_exc_with_result
 
 __author__ = 'weijia'
 from django.conf.urls import patterns, include, url
@@ -72,6 +73,14 @@ def enum_apps():
     from django.conf import settings
     for app in settings.INSTALLED_APPS:
         yield app
+
+
+def exc_wrapper_for_url_pattern(func):
+    @ignore_exc_with_result([], ImportError)
+    def wrapped_func():
+        return func()
+
+    return wrapped_func
 
 
 def autodiscover():
