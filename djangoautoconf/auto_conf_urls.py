@@ -5,6 +5,15 @@ __author__ = 'weijia'
 from django.conf.urls import patterns, include, url
 
 
+def get_custom_root_url_pattern_container():
+    from django.conf import settings
+    from django.utils.importlib import import_module
+
+    root_url = import_module(settings.ROOT_URLCONF)
+    root_url_pattern_list = root_url.default_app_url_patterns
+    return root_url_pattern_list
+
+
 def add_url_pattern(default_url_root_path, urls_module):
     """
     default_url_root_path: target URL to be matched
@@ -13,11 +22,11 @@ def add_url_pattern(default_url_root_path, urls_module):
                 include(admin.site.urls) or
                 RedirectView.as_view(url='/resource_bookmarks') etc.
     """
-    from django.conf import settings
-    from django.utils.importlib import import_module
-    include_url = url(default_url_root_path, urls_module)
-    root_url = import_module(settings.ROOT_URLCONF)
-    root_url.default_app_url_patterns.append(include_url)
+    (get_custom_root_url_pattern_container()).append(url(default_url_root_path, urls_module))
+
+
+def add_to_root_url_pattern(url_pattern_list):
+    (get_custom_root_url_pattern_container()).extend(url_pattern_list)
 
 
 def add_default_root_url(default_url_root_path):
