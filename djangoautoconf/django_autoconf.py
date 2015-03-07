@@ -4,10 +4,12 @@ import importlib
 import logging
 import os
 import sys
+
 from django.utils.crypto import get_random_string
+import re
+
 import base_settings
-from auto_conf_utils import dump_attrs, path_exists, is_at_least_one_sub_filesystem_item_exists
-from libtool.basic_lib_tool import is_folder_in_sys_path, include, remove_folder_in_sys_path
+from auto_conf_utils import dump_attrs, is_at_least_one_sub_filesystem_item_exists
 from libtool.folder_tool import ensure_dir
 
 
@@ -18,7 +20,7 @@ class RootDirNotExist(Exception):
     pass
 
 
-class KeyDirNotExist(Exception):
+class LocalKeyFolderNotExist(Exception):
     pass
 
 
@@ -28,6 +30,7 @@ class DjangoAutoConf(object):
         self.root_dir = None
         # Default keys is located at ../keys relative to universal_settings module?
         self.key_dir = None
+        self.local_key_folder = None
         self.extra_settings = []
         self.project_path = None
 
@@ -43,6 +46,22 @@ class DjangoAutoConf(object):
 
     def set_key_dir(self, key_dir):
         self.key_dir = key_dir
+
+    def set_local_key_folder(self, local_key_folder):
+        self.local_key_folder = local_key_folder
+
+    @staticmethod
+    def enum_modules(folder):
+        for filename in os.listdir(folder):
+            is_py = re.search('\.py$', filename)
+            if is_py and (filename != "__init__.py"):
+                yield filename.replace(".py", "")
+
+    def add_extra_settings_from_folder(self, local_setting_dir):
+        extra_setting_list = ["extra_settings.settings"]
+        for module_name in self.enum_modules(local_setting_dir):
+            extra_setting_list.append("local_settings.%s" % module_name)
+        self.add_extra_settings(extra_setting_list)
 
     def add_extra_settings(self, extra_setting_list):
         self.extra_settings.extend(extra_setting_list)
@@ -76,13 +95,18 @@ class DjangoAutoConf(object):
     def check_params(self):
         if not os.path.exists(self.root_dir):
             raise RootDirNotExist
-        if not os.path.exists(self.key_dir):
+        if not os.path.exists(self.local_key_folder):
             # logging.getLogger().error("key dir not exist: "+self.key_dir)
-            print "key dir not exist: " + self.key_dir
-            raise KeyDirNotExist
+            print "key dir not exist: " + self.local_key_folder
+            raise LocalKeyFolderNotExist
+
+    def get_local_key_folder(self):
+        if self.local_key_folder is None:
+            return os.path.join(self.key_dir, "local_keys")
+        return self.local_key_folder
 
     def add_secret_key(self):
-        secret_key = get_or_create_secret_key(self.key_dir)
+        secret_key = get_or_create_secret_key(self.get_local_key_folder())
         setattr(base_settings, "SECRET_KEY", secret_key)
 
     def get_project_path(self):
@@ -94,7 +118,7 @@ class DjangoAutoConf(object):
 
     def install_auto_detected_apps(self):
         installed_apps = list(getattr(base_settings, "INSTALLED_APPS"))
-        external_git_folder = os.path.join(self.get_project_path(), "external_git")
+        external_git_folder = os.path.join(self.get_project_path(), "server_base_packages")
         for folder in os.listdir(external_git_folder):
             app_folder = os.path.join(external_git_folder, folder)
             if os.path.isdir(app_folder):
@@ -160,7 +184,7 @@ def update_base_settings(new_base_settings):
 
 
 def get_existing_secret_key(secret_key_folder):
-    from keys.local_keys.secret_key import SECRET_KEY
+    from local_keys.secret_key import SECRET_KEY
 
     logging.info("load existing secret key OK")
     return SECRET_KEY
@@ -176,8 +200,7 @@ def create_secret_file_and_get_it(local_key_folder):
     return get_existing_secret_key(local_key_folder)
 
 
-def get_or_create_secret_key(key_folder_path):
-    local_key_folder = os.path.join(key_folder_path, "local_keys")
+def get_or_create_secret_key(local_key_folder):
     try:
         return get_existing_secret_key(local_key_folder)
     except ImportError:

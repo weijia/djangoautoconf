@@ -1,13 +1,17 @@
 # coding=utf-8
-__author__ = 'q19420'
-try:
-    from keys.local_keys.smtp_account import smtp_username, smtp_password
-except:
-    from djangoautoconf.settings_templates.smtp_account_template import smtp_username, smtp_password
 
+# try:
+#     from keys.local_keys.smtp_account import smtp_username, smtp_password
+# except:
+#     from djangoautoconf.settings_templates.smtp_account_template import smtp_username, smtp_password
+from djangoautoconf.local_key_manager import get_local_key, ConfigurableAttributeGetter
+
+getter = ConfigurableAttributeGetter("smtp_account")
+smtp_username = getter.get_attr("smtp_username")
+smtp_password = getter.get_attr("smtp_password")
 
 try:
-    from extra_settings.smtp_settings import smtp_server, smtp_port, smtp_use_tls
+    from server_base_packages.others.extra_settings.smtp_settings import smtp_server, smtp_port, smtp_use_tls
 except ImportError:
     from djangoautoconf.settings_templates.smtp_settings_template import smtp_server, smtp_port, smtp_use_tls
 
