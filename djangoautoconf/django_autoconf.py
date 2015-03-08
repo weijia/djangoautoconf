@@ -34,19 +34,24 @@ class DjangoAutoConf(object):
         self.extra_settings = []
         self.project_path = None
         self.external_app_folder_name = "external_apps"
+        self.local_key_folder_name = "local_keys"
+        self.local_folder_name = "local"
+        self.local_key_folder_relative_to_root = os.path.join(self.local_folder_name, self.local_key_folder_name)
+        self.local_settings_relative_folder = "local/local_settings"
+        self.local_app_setting_folder = None
 
     def set_default_settings(self, default_settings_import_str):
         self.default_settings_import_str = default_settings_import_str
 
     def set_root_dir(self, root_dir):
         self.root_dir = os.path.abspath(root_dir)
-        if self.key_dir is None:
-            # Default key dir is located in root dir key folder
-            self.key_dir = os.path.abspath(os.path.join(root_dir, "keys"))
         self.project_path = os.path.abspath(os.path.abspath(self.root_dir))
+        self.local_key_folder = os.path.join(self.root_dir, self.local_key_folder_relative_to_root)
+        self.local_app_setting_folder = os.path.join(self.root_dir, self.local_settings_relative_folder)
 
     def set_key_dir(self, key_dir):
         self.key_dir = key_dir
+        self.local_key_folder = os.path.join(self.key_dir, self.local_key_folder_name)
 
     def set_local_key_folder(self, local_key_folder):
         self.local_key_folder = local_key_folder
@@ -58,10 +63,12 @@ class DjangoAutoConf(object):
             if is_py and (filename != "__init__.py"):
                 yield filename.replace(".py", "")
 
-    def add_extra_settings_from_folder(self, local_setting_dir):
+    def add_extra_settings_from_folder(self, local_setting_dir=None):
         extra_setting_list = ["extra_settings.settings"]
+        if local_setting_dir is None:
+            local_setting_dir = self.local_app_setting_folder
         for module_name in self.enum_modules(local_setting_dir):
-            extra_setting_list.append("local_settings.%s" % module_name)
+            extra_setting_list.append("local.local_settings.%s" % module_name)
         self.add_extra_settings(extra_setting_list)
 
     def add_extra_settings(self, extra_setting_list):
@@ -107,7 +114,7 @@ class DjangoAutoConf(object):
         return self.local_key_folder
 
     def add_secret_key(self):
-        secret_key = get_or_create_secret_key(self.get_local_key_folder())
+        secret_key = self.get_or_create_secret_key(self.get_local_key_folder())
         setattr(base_settings, "SECRET_KEY", secret_key)
 
     def get_project_path(self):
@@ -175,6 +182,40 @@ class DjangoAutoConf(object):
         except KeyError:
             self.__dict__['builtin'] = sys.modules['builtins'].__dict__
 
+    def get_existing_secret_key(self, secret_key_folder):
+        #from local_keys.secret_key import SECRET_KEY
+        m = importlib.import_module("%s.%s.secret_key" % (self.local_folder_name, self.local_key_folder_name))
+        logging.info("load existing secret key OK")
+        return m.SECRET_KEY
+
+
+    def create_secret_file_and_get_it(self, local_key_folder):
+        chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+        ensure_dir(local_key_folder)
+        secret_key = get_random_string(50, chars)
+        secret_file = open(os.path.join(local_key_folder, 'secret_key.py'), 'w')
+        secret_file.write("SECRET_KEY='%s'" % secret_key)
+        secret_file.close()
+        return self.get_existing_secret_key(local_key_folder)
+
+    def get_or_create_secret_key(self, local_key_folder):
+        try:
+            return self.get_existing_secret_key(local_key_folder)
+        except ImportError:
+            print "No existing secret key"
+            pass
+
+        try:
+            return self.create_secret_file_and_get_it(local_key_folder)
+        except Exception:
+            print "Try to create secret key failed"
+            import traceback
+
+            traceback.print_exc()
+            # In case the above not work, use the following.
+            # Make this unique, and don't share it with anybody.
+            return 'd&amp;x%x+^l@qfxm^2o9x)6ct5*cftlcu8xps9b7l3c$ul*n&amp;%p-k'
+
 
 def update_base_settings(new_base_settings):
     for attr in dir(new_base_settings):
@@ -182,39 +223,3 @@ def update_base_settings(new_base_settings):
             continue
         value = getattr(new_base_settings, attr)
         setattr(base_settings, attr, value)
-
-
-def get_existing_secret_key(secret_key_folder):
-    from local_keys.secret_key import SECRET_KEY
-
-    logging.info("load existing secret key OK")
-    return SECRET_KEY
-
-
-def create_secret_file_and_get_it(local_key_folder):
-    chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
-    ensure_dir(local_key_folder)
-    secret_key = get_random_string(50, chars)
-    secret_file = open(os.path.join(local_key_folder, 'secret_key.py'), 'w')
-    secret_file.write("SECRET_KEY='%s'" % secret_key)
-    secret_file.close()
-    return get_existing_secret_key(local_key_folder)
-
-
-def get_or_create_secret_key(local_key_folder):
-    try:
-        return get_existing_secret_key(local_key_folder)
-    except ImportError:
-        print "No existing secret key"
-        pass
-
-    try:
-        return create_secret_file_and_get_it(local_key_folder)
-    except Exception:
-        print "Try to create secret key failed"
-        import traceback
-
-        traceback.print_exc()
-        # In case the above not work, use the following.
-        # Make this unique, and don't share it with anybody.
-        return 'd&amp;x%x+^l@qfxm^2o9x)6ct5*cftlcu8xps9b7l3c$ul*n&amp;%p-k'

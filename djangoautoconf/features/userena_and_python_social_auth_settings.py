@@ -8,12 +8,12 @@ INSTALLED_APPS += (
     'userenabootstrap',
     'userena',
     'social.apps.django_app.default',
+    'guardian',
 )
 
 
 AUTHENTICATION_BACKENDS = (
     'userena.backends.UserenaAuthenticationBackend',
-    'guardian.backends.ObjectPermissionBackend',
     'social.backends.open_id.OpenIdAuth',
     'social.backends.google.GoogleOpenId',
     'social.backends.google.GoogleOAuth2',
@@ -22,6 +22,7 @@ AUTHENTICATION_BACKENDS = (
     'social.backends.yahoo.YahooOpenId',
     'social.backends.weibo.WeiboOAuth2',
     'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
 )
 
 AUTH_PROFILE_MODULE = 'webmanager.MyProfile'
@@ -52,3 +53,4 @@ SOCIAL_AUTH_WEIBO_KEY = weibo_api_key
 SOCIAL_AUTH_WEIBO_SECRET = weibo_api_secret
 
 SOCIAL_AUTH_WEIBO_DOMAIN_AS_USERNAME = True
+
