@@ -33,6 +33,7 @@ class DjangoAutoConf(object):
         self.local_key_folder = None
         self.extra_settings = []
         self.project_path = None
+        self.external_app_folder_name = "external_apps"
 
     def set_default_settings(self, default_settings_import_str):
         self.default_settings_import_str = default_settings_import_str
@@ -118,7 +119,7 @@ class DjangoAutoConf(object):
 
     def install_auto_detected_apps(self):
         installed_apps = list(getattr(base_settings, "INSTALLED_APPS"))
-        external_git_folder = os.path.join(self.get_project_path(), "server_base_packages")
+        external_git_folder = os.path.join(self.get_project_path(), self.external_app_folder_name)
         for folder in os.listdir(external_git_folder):
             app_folder = os.path.join(external_git_folder, folder)
             if os.path.isdir(app_folder):
