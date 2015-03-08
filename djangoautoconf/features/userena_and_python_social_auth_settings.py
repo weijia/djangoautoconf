@@ -21,6 +21,7 @@ AUTHENTICATION_BACKENDS = (
     'social.backends.twitter.TwitterOAuth',
     'social.backends.yahoo.YahooOpenId',
     'social.backends.weibo.WeiboOAuth2',
+    'social.backends.qq.QQOauth2',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
