@@ -63,7 +63,10 @@ def get_username(data):
 def complex_login(request):
     data = retrieve_param(request)
     if 'consumer_key' in data:
-        verify_access_token(data['consumer_key'])
+        token = verify_access_token(data['consumer_key'])
+        request.user = token.user
+        request.user.backend = 'django.contrib.auth.backends.ModelBackend'
+        login(request, None)
     else:
         username = get_username(data)
 
