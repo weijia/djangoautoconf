@@ -17,3 +17,20 @@ def python_2_unicode_compatible(klass):
         klass.__unicode__ = klass.__str__
         klass.__str__ = lambda self: self.__unicode__().encode('utf-8')
     return klass
+
+
+def mptt_work_around():
+    import sys
+    #import django_six
+    #from django.utils.six.moves import zip
+    import django.utils as utils
+    utils.six = six
+    sys.modules["django.utils.six"] = six
+    sys.modules["django.utils.six.moves"] = six.moves
+    # from six.moves import zip
+    # utils.six.moves.zip = zip
+    # from django.utils import six as django_six
+    # django_six.moves = six.moves
+    # from django.utils.six.moves import zip
+    #
+    # import mptt.templatetags.mptt_tags
