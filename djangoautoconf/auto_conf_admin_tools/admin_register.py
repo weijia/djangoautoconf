@@ -65,6 +65,23 @@ class AdminRegister(object):
         admin_class = self.get_valid_admin_class_with_list(class_inst)
         register_admin_without_duplicated_register(class_inst, admin_class)
 
+    def register_all_with_additional_attributes(self, class_inst, admin_class_attributes={}):
+        attr_list = self.get_class_attributes(class_inst)
+        self.admin_class_attributes = copy.copy(admin_class_attributes)
+        self.admin_class_attributes.update({"list_display": attr_list})
+        self.admin_class_attributes.update({"search_fields": attr_list})
+        admin_class = self.get_valid_admin_class_with_list(class_inst)
+        register_admin_without_duplicated_register(class_inst, admin_class)
+
+    def get_class_attributes(self, class_inst):
+        res = []
+        for field in class_inst.__dict__['_meta'].fields:
+            if type(field) == DateTimeField:
+                continue
+            res.append(field.name)
+        return res
+
+
     def register_with_all_in_list_display(self, class_inst):
         self.admin_class_attributes["list_display"] = []
         self.admin_class_attributes["search_fields"] = []
@@ -92,6 +109,11 @@ class AdminRegister(object):
         """
         for class_instance in self.class_enumerator(module_instance, exclude_name_list):
             self.register_with_all_in_list_display(class_instance)
+
+    def add_list_filter(self, filter_field):
+        if not ("list_filter" in self.admin_class_attributes):
+            self.admin_class_attributes["list_display"] = []
+        self.admin_class_attributes["list_display"].append(filter_field)
 
     # def include_additional_admin_mixins(self, class_instance, existing_list):
     #     try:
