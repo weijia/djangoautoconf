@@ -1,8 +1,31 @@
 import inspect
 from djangoautoconf.auto_conf_utils import get_module_path, is_at_least_one_sub_filesystem_item_exists
+from libtool.short_decorator.ignore_exception import ignore_exc_with_result
 
 __author__ = 'weijia'
 from django.conf.urls import patterns, include, url
+
+
+class EasyList(object):
+    def __init__(self, original_list):
+        super(EasyList, self).__init__()
+        self.list = original_list
+
+    def append_list_to_head(self, list_to_head):
+        for item in list_to_head:
+            self.list.insert(0, item)
+
+    def append(self, item):
+        self.list.insert(0, item)
+
+
+def get_custom_root_url_pattern_container():
+    from django.conf import settings
+    from django.utils.importlib import import_module
+
+    root_url = import_module(settings.ROOT_URLCONF)
+    root_url_pattern_list = root_url.default_app_url_patterns
+    return EasyList(root_url_pattern_list)
 
 
 def add_url_pattern(default_url_root_path, urls_module):
@@ -13,11 +36,11 @@ def add_url_pattern(default_url_root_path, urls_module):
                 include(admin.site.urls) or
                 RedirectView.as_view(url='/resource_bookmarks') etc.
     """
-    from django.conf import settings
-    from django.utils.importlib import import_module
-    include_url = url(default_url_root_path, urls_module)
-    root_url = import_module(settings.ROOT_URLCONF)
-    root_url.default_app_url_patterns.append(include_url)
+    (get_custom_root_url_pattern_container()).append(url(default_url_root_path, urls_module))
+
+
+def add_to_root_url_pattern(url_pattern_list):
+    (get_custom_root_url_pattern_container()).append_list_to_head(url_pattern_list)
 
 
 def add_default_root_url(default_url_root_path):
@@ -65,13 +88,22 @@ def enum_apps():
         yield app
 
 
+def exc_wrapper_for_url_pattern(func):
+    @ignore_exc_with_result([], ImportError)
+    def wrapped_func():
+        return func()
+
+    return wrapped_func
+
+
 def autodiscover():
     """
     Auto-discover INSTALLED_APPS urls.py modules and fail silently when
     not present. This forces an import on them to register any urls jobs they
     may want.
     """
-    include_urls()
+    #Include default urls first so the root url patterns will not take over the default urls.
     include_default_urls()
+    include_urls()
 
 
