@@ -7,9 +7,19 @@ class ConfigurableAttributeGetter(object):
         self.module_of_attribute = module_of_attribute
         self.default_module = default_module
 
+    def get_module_of_local_keys(self):
+        exception = None
+        for module_path in ["local.local_keys", "keys.local_keys"]:
+            try:
+                m = importlib.import_module("%s.%s" % (module_path, self.module_of_attribute))
+                return m
+            except ImportError, e:
+                exception = e
+        raise exception
+
     def get_attr(self, attr_name):
         try:
-            m = importlib.import_module("local.local_keys.%s" % self.module_of_attribute)
+            m = self.get_module_of_local_keys()
             #return getattr(m, attr_name)
         except ImportError:
             #from management.commands.keys_default.admin_pass import default_admin_password, default_admin_user
@@ -31,4 +41,4 @@ def get_local_key(key_name, default_module=None):
     module_name = key_name_module_path[0]
     attr_name = key_name_module_path[1]
     c = ConfigurableAttributeGetter(module_name, default_module)
-    c.get_attr(attr_name)
+    return c.get_attr(attr_name)
