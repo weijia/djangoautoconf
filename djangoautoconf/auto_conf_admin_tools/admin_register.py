@@ -40,12 +40,13 @@ class AdminRegister(object):
     def get_valid_admin_class_with_list(self, class_inst):
         #print admin_list
         try:
-            from import_export.admin import ImportExportActionModelAdmin
-            self.base_model_admin = ImportExportActionModelAdmin
-            resource_class = get_import_export_resource(class_inst)
-            self.admin_class_attributes.update({
-                "resource_class": resource_class
-            })
+            if "import_export" in settings.INSTALLED_APPS:
+                from import_export.admin import ImportExportActionModelAdmin
+                self.base_model_admin = ImportExportActionModelAdmin
+                resource_class = get_import_export_resource(class_inst)
+                self.admin_class_attributes.update({
+                    "resource_class": resource_class
+                })
         except ImportError:
             pass
         copied_admin_list = copy.copy(self.parent_admin_list)
