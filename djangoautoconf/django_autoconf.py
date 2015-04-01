@@ -138,6 +138,9 @@ class DjangoAutoConf(object):
 
     def update_installed_apps_etc(self):
         setattr(base_settings, "PROJECT_PATH", self.get_project_path())
+        #setattr(base_settings, "TEMPLATE_CONTEXT_PROCESSORS", tuple())
+        setattr(base_settings, "DJANGO_AUTO_CONF_LOCAL_DIR", os.path.join(
+            self.get_project_path(), self.local_folder_name))
         setattr(base_settings, "STATIC_ROOT", os.path.abspath(os.path.join(self.get_project_path(), 'static')))
         self.install_auto_detected_apps()
 

@@ -1,4 +1,8 @@
+import importlib
 import inspect
+import os
+import sys
+from djangoautoconf import DjangoAutoConf
 from djangoautoconf.auto_conf_utils import get_module_path, is_at_least_one_sub_filesystem_item_exists
 from libtool.short_decorator.ignore_exception import ignore_exc_with_result
 
@@ -64,11 +68,26 @@ def include_urls():
                 import traceback
                 traceback.print_exc()
 
+    sys.path.append(settings.DJANGO_AUTO_CONF_LOCAL_DIR)
+    all_local_url_patterns = []
+    for url_module_name in DjangoAutoConf.enum_modules(os.path.join(settings.DJANGO_AUTO_CONF_LOCAL_DIR, "local_urls")):
+        #m = __import__("local_urls.%s" % url_module_name)
+        m = importlib.import_module("local_urls.%s" % url_module_name)
+        #m = importlib.import_module("%s.%s" % (module_path, self.module_of_attribute))
+        urlpatterns = getattr(m, "urlpatterns")
+        for p in urlpatterns:
+            all_local_url_patterns.append(p)
+    sys.path.remove(settings.DJANGO_AUTO_CONF_LOCAL_DIR)
+    add_to_root_url_pattern(all_local_url_patterns)
+
+
 
 def add_app_urls_no_exception(app):
     try:
         add_url_pattern("^%s/" % app, include('%s.urls' % app))
-    except:
+    except Exception, e:
+        import traceback
+        traceback.print_exc()
         pass
 
 
