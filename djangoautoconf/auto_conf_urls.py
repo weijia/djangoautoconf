@@ -70,13 +70,15 @@ def include_urls():
 
     sys.path.append(settings.DJANGO_AUTO_CONF_LOCAL_DIR)
     all_local_url_patterns = []
-    for url_module_name in DjangoAutoConf.enum_modules(os.path.join(settings.DJANGO_AUTO_CONF_LOCAL_DIR, "local_urls")):
-        #m = __import__("local_urls.%s" % url_module_name)
-        m = importlib.import_module("local_urls.%s" % url_module_name)
-        #m = importlib.import_module("%s.%s" % (module_path, self.module_of_attribute))
-        urlpatterns = getattr(m, "urlpatterns")
-        for p in urlpatterns:
-            all_local_url_patterns.append(p)
+    local_urls_full_path = os.path.join(settings.DJANGO_AUTO_CONF_LOCAL_DIR, "local_urls")
+    if os.path.exists(local_urls_full_path) and os.path.isdir(local_urls_full_path):
+        for url_module_name in DjangoAutoConf.enum_modules(local_urls_full_path):
+            #m = __import__("local_urls.%s" % url_module_name)
+            m = importlib.import_module("local_urls.%s" % url_module_name)
+            #m = importlib.import_module("%s.%s" % (module_path, self.module_of_attribute))
+            urlpatterns = getattr(m, "urlpatterns")
+            for p in urlpatterns:
+                all_local_url_patterns.append(p)
     sys.path.remove(settings.DJANGO_AUTO_CONF_LOCAL_DIR)
     add_to_root_url_pattern(all_local_url_patterns)
 
