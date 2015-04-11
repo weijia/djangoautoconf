@@ -74,6 +74,7 @@ class AdminRegister(object):
         admin_class = self.get_valid_admin_class_with_list(class_inst)
         register_admin_without_duplicated_register(class_inst, admin_class)
 
+    # noinspection PyMethodMayBeStatic
     def get_class_attributes(self, class_inst):
         res = []
         for field in class_inst.__dict__['_meta'].fields:
@@ -81,7 +82,6 @@ class AdminRegister(object):
                 continue
             res.append(field.name)
         return res
-
 
     def register_with_all_in_list_display(self, class_inst):
         self.admin_class_attributes["list_display"] = []
@@ -94,6 +94,7 @@ class AdminRegister(object):
         admin_class = self.get_valid_admin_class_with_list(class_inst)
         register_admin_without_duplicated_register(class_inst, admin_class)
 
+    # noinspection PyMethodMayBeStatic
     def class_enumerator(self, module_instance, exclude_name_list):
         for name, obj in inspect.getmembers(module_instance):
             if inspect.isclass(obj):
