@@ -7,7 +7,8 @@ from djangoautoconf.auto_conf_utils import get_module_path, is_at_least_one_sub_
 from libtool.short_decorator.ignore_exception import ignore_exc_with_result
 
 __author__ = 'weijia'
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
+from django.utils.importlib import import_module
 
 
 class EasyList(object):
@@ -81,10 +82,12 @@ def include_urls():
     add_to_root_url_pattern(all_local_url_patterns)
 
 
-
 def add_app_urls_no_exception(app):
     try:
+        importlib.import_module("%s.urls" % app)
         add_url_pattern("^%s/" % app, include('%s.urls' % app))
+    except ImportError:
+        print "%s does not have urls config (%s.urls does not exists)." % (app, app)
     except Exception, e:
         import traceback
         traceback.print_exc()
@@ -92,8 +95,6 @@ def add_app_urls_no_exception(app):
 
 
 def include_default_urls():
-    from django.utils.importlib import import_module
-
     for app in enum_apps():
         mod = import_module(app)
         # Attempt to import the app's admin module.
