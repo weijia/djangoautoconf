@@ -1,3 +1,4 @@
+from django.utils.encoding import force_unicode
 import six
 
 
@@ -34,3 +35,13 @@ def mptt_work_around():
     # from django.utils.six.moves import zip
     #
     # import mptt.templatetags.mptt_tags
+
+
+def force_text_work_around():
+    import django.utils.encoding as encoding
+    encoding.force_text = force_unicode
+
+
+def sae_work_around():
+    mptt_work_around()
+    force_text_work_around()
