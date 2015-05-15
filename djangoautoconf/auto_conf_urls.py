@@ -74,9 +74,9 @@ def include_urls():
     local_urls_full_path = os.path.join(settings.DJANGO_AUTO_CONF_LOCAL_DIR, "local_urls")
     if os.path.exists(local_urls_full_path) and os.path.isdir(local_urls_full_path):
         for url_module_name in DjangoAutoConf.enum_modules(local_urls_full_path):
-            #m = __import__("local_urls.%s" % url_module_name)
+            # m = __import__("local_urls.%s" % url_module_name)
             m = importlib.import_module("local_urls.%s" % url_module_name)
-            #m = importlib.import_module("%s.%s" % (module_path, self.module_of_attribute))
+            # m = importlib.import_module("%s.%s" % (module_path, self.module_of_attribute))
             urlpatterns = getattr(m, "urlpatterns")
             for p in urlpatterns:
                 all_local_url_patterns.append(p)
@@ -86,8 +86,9 @@ def include_urls():
 
 def add_app_urls_no_exception(app):
     try:
-        importlib.import_module("%s.urls" % app)
-        add_url_pattern("^%s/" % app, include('%s.urls' % app))
+        if not ("." in app):
+            importlib.import_module("%s.urls" % app)
+            add_url_pattern("^%s/" % app, include('%s.urls' % app))
     except ImportError:
         print "%s does not have urls config (%s.urls does not exists)." % (app, app)
     except Exception, e:
