@@ -40,7 +40,7 @@ class DjangoAutoConf(object):
         self.local_settings_relative_folder = "local/local_settings"
         self.external_apps_folder = None
         self.local_app_setting_folder = None
-        self.external_settings_root_folder_name = "other"
+        self.external_settings_root_folder_name = "others"
         self.external_settings_folder_name = "external_settings"
 
     def set_default_settings(self, default_settings_import_str):
