@@ -38,7 +38,10 @@ class DjangoAutoConf(object):
         self.local_folder_name = "local"
         self.local_key_folder_relative_to_root = os.path.join(self.local_folder_name, self.local_key_folder_name)
         self.local_settings_relative_folder = "local/local_settings"
+        self.external_apps_folder = None
         self.local_app_setting_folder = None
+        self.external_settings_root_folder_name = "other"
+        self.external_settings_folder_name = "external_settings"
 
     def set_default_settings(self, default_settings_import_str):
         self.default_settings_import_str = default_settings_import_str
@@ -55,7 +58,12 @@ class DjangoAutoConf(object):
 
     def set_local_key_folder(self, local_key_folder):
         self.local_key_folder = local_key_folder
-
+        
+    def get_folder_for_settings_in_external_apps_folder():
+        external_settings_root_folder = os.path.join(self.get_external_apps_folder(), self.external_settings_root_folder_name)
+        folder_for_external_apps_settings = os.path.join(external_settings_root_folder, self.external_settings_folder_name)
+        return folder_for_external_apps_settings
+        
     @staticmethod
     def enum_modules(folder):
         for filename in os.listdir(folder):
@@ -69,6 +77,11 @@ class DjangoAutoConf(object):
             local_setting_dir = self.local_app_setting_folder
         for module_name in self.enum_modules(local_setting_dir):
             extra_setting_list.append("local.local_settings.%s" % module_name)
+        
+        #Add external settings in external apps folder
+        settings_folder_in_external_apps_folder = self.get_folder_for_settings_in_external_apps_folder()
+        for module_name in self.enum_modules(settings_folder_in_external_apps_folder):
+            extra_setting_list.append("%s.%s" % (self.external_settings_folder_name, module_name)
         self.add_extra_settings(extra_setting_list)
 
     def add_extra_settings(self, extra_setting_list):
@@ -118,17 +131,24 @@ class DjangoAutoConf(object):
         setattr(base_settings, "SECRET_KEY", secret_key)
 
     def get_project_path(self):
+        if self.project_path is None:
+            raise "Root path is not set"
         return self.project_path
 
     def is_valid_app_module(self, app_module_folder_full_path):
         signature_filename_list = ["default_settings.py", "default_urls.py"]
         return is_at_least_one_sub_filesystem_item_exists(app_module_folder_full_path, signature_filename_list)
+    
+    def get_external_apps_folder(self):
+        if self.external_apps_folder is None:
+            self.external_apps_folder = os.path.join(self.get_project_path(), self.external_app_folder_name)
+        return self.self.external_apps_folder
 
     def install_auto_detected_apps(self):
         installed_apps = list(getattr(base_settings, "INSTALLED_APPS"))
-        external_git_folder = os.path.join(self.get_project_path(), self.external_app_folder_name)
-        for folder in os.listdir(external_git_folder):
-            app_folder = os.path.join(external_git_folder, folder)
+        
+        for folder in os.listdir(self.get_external_apps_folder()):
+            app_folder = os.path.join(self.get_external_apps_folder(), folder)
             if os.path.isdir(app_folder):
                 for app_module_folder_name in os.listdir(app_folder):
                     app_module_folder_full_path = os.path.join(app_folder, app_module_folder_name)
