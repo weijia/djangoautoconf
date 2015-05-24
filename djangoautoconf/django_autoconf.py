@@ -59,9 +59,11 @@ class DjangoAutoConf(object):
     def set_local_key_folder(self, local_key_folder):
         self.local_key_folder = local_key_folder
         
-    def get_folder_for_settings_in_external_apps_folder():
-        external_settings_root_folder = os.path.join(self.get_external_apps_folder(), self.external_settings_root_folder_name)
-        folder_for_external_apps_settings = os.path.join(external_settings_root_folder, self.external_settings_folder_name)
+    def get_folder_for_settings_in_external_apps_folder(self):
+        external_settings_root_folder = os.path.join(self.get_external_apps_folder(),
+            self.external_settings_root_folder_name)
+        folder_for_external_apps_settings = os.path.join(external_settings_root_folder,
+                                                         self.external_settings_folder_name)
         return folder_for_external_apps_settings
         
     @staticmethod
@@ -80,8 +82,9 @@ class DjangoAutoConf(object):
         
         #Add external settings in external apps folder
         settings_folder_in_external_apps_folder = self.get_folder_for_settings_in_external_apps_folder()
-        for module_name in self.enum_modules(settings_folder_in_external_apps_folder):
-            extra_setting_list.append("%s.%s" % (self.external_settings_folder_name, module_name)
+        if os.path.exists(settings_folder_in_external_apps_folder):
+            for module_name in self.enum_modules(settings_folder_in_external_apps_folder):
+                extra_setting_list.append("%s.%s" % (self.external_settings_folder_name, module_name))
         self.add_extra_settings(extra_setting_list)
 
     def add_extra_settings(self, extra_setting_list):
@@ -142,7 +145,7 @@ class DjangoAutoConf(object):
     def get_external_apps_folder(self):
         if self.external_apps_folder is None:
             self.external_apps_folder = os.path.join(self.get_project_path(), self.external_app_folder_name)
-        return self.self.external_apps_folder
+        return self.external_apps_folder
 
     def install_auto_detected_apps(self):
         installed_apps = list(getattr(base_settings, "INSTALLED_APPS"))
