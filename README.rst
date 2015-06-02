@@ -53,10 +53,14 @@ Create Poject
 Features
 --------
 
+::
+
+    r = AdminRegister()
+    r.register(UserDefinedModel)
 
 Default behavior
 --------
-* When "/“  is not defined, redirect to all_login app if it is added to INSTALLED_APPS
+* When "/"  is not defined, redirect to all_login app if it is added to INSTALLED_APPS
 
 
 
