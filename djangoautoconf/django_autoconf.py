@@ -80,7 +80,7 @@ class DjangoAutoConf(object):
         for module_name in self.enum_modules(local_setting_dir):
             extra_setting_list.append("local.local_settings.%s" % module_name)
         
-        #Add external settings in external apps folder
+        # Add external settings in external apps folder
         settings_folder_in_external_apps_folder = self.get_folder_for_settings_in_external_apps_folder()
         if os.path.exists(settings_folder_in_external_apps_folder):
             for module_name in self.enum_modules(settings_folder_in_external_apps_folder):
@@ -138,6 +138,7 @@ class DjangoAutoConf(object):
             raise "Root path is not set"
         return self.project_path
 
+    # noinspection PyMethodMayBeStatic
     def is_valid_app_module(self, app_module_folder_full_path):
         signature_filename_list = ["default_settings.py", "default_urls.py"]
         return is_at_least_one_sub_filesystem_item_exists(app_module_folder_full_path, signature_filename_list)
@@ -161,7 +162,7 @@ class DjangoAutoConf(object):
 
     def update_installed_apps_etc(self):
         setattr(base_settings, "PROJECT_PATH", self.get_project_path())
-        #setattr(base_settings, "TEMPLATE_CONTEXT_PROCESSORS", tuple())
+        # setattr(base_settings, "TEMPLATE_CONTEXT_PROCESSORS", tuple())
         setattr(base_settings, "DJANGO_AUTO_CONF_LOCAL_DIR", os.path.join(
             self.get_project_path(), self.local_folder_name))
         setattr(base_settings, "STATIC_ROOT", os.path.abspath(os.path.join(self.get_project_path(), 'static')))
@@ -209,7 +210,7 @@ class DjangoAutoConf(object):
             self.__dict__['builtin'] = sys.modules['builtins'].__dict__
 
     def get_existing_secret_key(self, secret_key_folder):
-        #from local_keys.secret_key import SECRET_KEY
+        # from local_keys.secret_key import SECRET_KEY
         m = importlib.import_module("%s.%s.secret_key" % (self.local_folder_name, self.local_key_folder_name))
         logging.info("load existing secret key OK")
         return m.SECRET_KEY
