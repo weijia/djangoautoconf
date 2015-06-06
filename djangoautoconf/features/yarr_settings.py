@@ -17,7 +17,7 @@ INSTALLED_APPS += (
     'bootstrap_pagination',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
+TEMPLATE_CONTEXT_PROCESSORS += (
     'django.contrib.auth.context_processors.auth',
     "django.core.context_processors.request",
     "django.core.context_processors.static",
