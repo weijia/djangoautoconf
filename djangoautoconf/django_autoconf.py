@@ -26,6 +26,7 @@ class LocalKeyFolderNotExist(Exception):
 
 class DjangoAutoConf(object):
     def __init__(self, default_settings_import_str=None):
+        self.base_extra_setting_list = ["extra_settings.settings"]
         self.default_settings_import_str = default_settings_import_str
         self.root_dir = None
         # Default keys is located at ../keys relative to universal_settings module?
@@ -42,6 +43,12 @@ class DjangoAutoConf(object):
         self.local_app_setting_folder = None
         self.external_settings_root_folder_name = "others"
         self.external_settings_folder_name = "external_settings"
+
+    def set_base_extra_settings_list(self, base_extra_settings):
+        self.base_extra_setting_list = base_extra_settings
+
+    def set_external_app_folder_name(self, external_app_folder_name):
+        self.external_app_folder_name = external_app_folder_name
 
     def set_default_settings(self, default_settings_import_str):
         self.default_settings_import_str = default_settings_import_str
@@ -74,7 +81,7 @@ class DjangoAutoConf(object):
                 yield filename.replace(".py", "")
 
     def add_extra_settings_from_folder(self, local_setting_dir=None):
-        extra_setting_list = ["extra_settings.settings"]
+        extra_setting_list = self.base_extra_setting_list
         if local_setting_dir is None:
             local_setting_dir = self.local_app_setting_folder
         for module_name in self.enum_modules(local_setting_dir):
@@ -211,6 +218,7 @@ class DjangoAutoConf(object):
 
     def get_existing_secret_key(self, secret_key_folder):
         # from local_keys.secret_key import SECRET_KEY
+        print "importing key from %s.%s.secret_key" % (self.local_folder_name, self.local_key_folder_name)
         m = importlib.import_module("%s.%s.secret_key" % (self.local_folder_name, self.local_key_folder_name))
         logging.info("load existing secret key OK")
         return m.SECRET_KEY
