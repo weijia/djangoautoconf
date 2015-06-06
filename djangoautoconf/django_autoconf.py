@@ -244,7 +244,7 @@ class DjangoAutoConf(object):
 
     def get_existing_secret_key(self, secret_key_folder):
         # from local_keys.secret_key import SECRET_KEY
-        print "importing key from %s.%s.secret_key" % (self.local_folder_name, self.local_key_folder_name)
+        log.debug("importing key from %s.%s.secret_key" % (self.local_folder_name, self.local_key_folder_name))
         m = importlib.import_module("%s.%s.secret_key" % (self.local_folder_name, self.local_key_folder_name))
         logging.info("load existing secret key OK")
         return m.SECRET_KEY
