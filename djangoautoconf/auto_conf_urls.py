@@ -87,8 +87,9 @@ def include_urls():
 def add_app_urls_no_exception(app):
     try:
         if not ("." in app):
-            importlib.import_module("%s.urls" % app)
-            add_url_pattern("^%s/" % app, include('%s.urls' % app))
+            app_module = importlib.import_module("%s.urls" % app)
+            if hasattr(app_module, "urlpatterns"):
+                add_url_pattern("^%s/" % app, include('%s.urls' % app))
     except ImportError:
         print "%s does not have urls config (%s.urls does not exists)." % (app, app)
     except Exception, e:

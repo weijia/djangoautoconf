@@ -15,7 +15,7 @@ def inject_attributes(target_class, src_module, exclude=[]):
             continue
         value = getattr(src_module, attr)
         setattr(target_instance.__class__, attr, value)
-        #print "setting attr:", attr, value
+        # print "setting attr:", attr, value
 
 
 def dump_attrs(obj_instance):
@@ -27,19 +27,19 @@ def dump_attrs(obj_instance):
 
 def get_class(django_cb_class_full_name):
     settings_module = importlib.import_module(get_module_name_from_str(django_cb_class_full_name))
-    #print settings_module
-    #print getattr(settings_module, get_class_name_from_str(settings_class_str))
+    # print settings_module
+    # print getattr(settings_module, get_class_name_from_str(settings_class_str))
     return getattr(settings_module, get_class_name_from_str(django_cb_class_full_name))().__class__
-    #return getattr(settings_module, get_settings_class_name()).__class__
+    # return getattr(settings_module, get_settings_class_name()).__class__
 
 
 def get_module_name_from_str(importing_class_name):
-    #print importing_class_name.rsplit('.', 1)[0]
+    # print importing_class_name.rsplit('.', 1)[0]
     return importing_class_name.rsplit('.', 1)[0]
 
 
 def get_class_name_from_str(importing_class_name):
-    #print importing_class_name.rsplit('.', 1)[1]
+    # print importing_class_name.rsplit('.', 1)[1]
     return importing_class_name.rsplit('.', 1)[1]
 
 
