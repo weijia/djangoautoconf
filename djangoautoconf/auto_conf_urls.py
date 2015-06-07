@@ -90,7 +90,7 @@ def add_app_urls_no_exception(app):
             importlib.import_module("%s.urls" % app)
             add_url_pattern("^%s/" % app, include('%s.urls' % app))
     except ImportError:
-        print "%s does not have urls config (%s.urls does not exists)." % (app, app)
+        print "Import %s.urls failed (maybe %s.urls does not exists)." % (app, app)
     except Exception, e:
         import traceback
         traceback.print_exc()
