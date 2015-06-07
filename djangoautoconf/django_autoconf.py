@@ -10,7 +10,7 @@ import re
 
 import base_settings
 from auto_conf_utils import dump_attrs, is_at_least_one_sub_filesystem_item_exists, enum_folders
-from libtool import include
+from libtool import include, include_all_direct_subfolders
 from libtool.folder_tool import ensure_dir
 from django_setting_manager import DjangoSettingManager
 
@@ -42,9 +42,15 @@ class DjangoAutoConf(DjangoSettingManager):
         self.installed_app_list = None
         self.external_app_repositories = None
 
+    def get_full_path(self, relative_path):
+        return os.path.join(self.root_dir, relative_path)
+
     def set_external_app_repositories(self, external_app_repositories):
         self.external_app_repositories = external_app_repositories
         self.add_extra_setting_relative_folder_for_repo(external_app_repositories)
+        full_path_of_repo_root = self.get_full_path(external_app_repositories)
+        for folder in enum_folders(full_path_of_repo_root):
+            include_all_direct_subfolders(os.path.join(full_path_of_repo_root, folder))
 
     def set_external_app_folder_name(self, external_app_folder_name):
         self.external_app_folder_name = external_app_folder_name
