@@ -20,8 +20,8 @@ AUTHENTICATION_BACKENDS = (
     'social.backends.google.GoogleOAuth',
     'social.backends.twitter.TwitterOAuth',
     'social.backends.yahoo.YahooOpenId',
-    'social.backends.weibo.WeiboOAuth2',
-    'social.backends.qq.QQOauth2',
+    #'social.backends.weibo.WeiboOAuth2',
+    #'social.backends.qq.QQOauth2',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
@@ -29,8 +29,8 @@ AUTHENTICATION_BACKENDS = (
 AUTH_PROFILE_MODULE = 'webmanager.MyProfile'
 
 USERENA_SIGNIN_REDIRECT_URL = '/accounts/%(username)s/'
-#LOGIN_URL = '/userena/signin/'
-#LOGOUT_URL = '/userena/signout/'
+LOGIN_URL = '/accounts/signin/'
+LOGOUT_URL = '/accounts/signout/'
 
 #EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
@@ -40,7 +40,7 @@ USERENA_SIGNIN_AFTER_SIGNUP = True
 ANONYMOUS_USER_ID = -1
 
 
-TEMPLATE_CONTEXT_PROCESSORS = (
+TEMPLATE_CONTEXT_PROCESSORS += (
     'social.apps.django_app.context_processors.backends',
     'social.apps.django_app.context_processors.login_redirect',
     "django.contrib.auth.context_processors.auth",

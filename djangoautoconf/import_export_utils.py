@@ -1,6 +1,4 @@
 from import_export.admin import ImportExportMixin
-
-__author__ = 'q19420'
 from import_export import resources
 
 
