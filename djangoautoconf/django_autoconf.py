@@ -28,22 +28,23 @@ class LocalKeyFolderNotExist(Exception):
 class DjangoAutoConf(DjangoSettingManager):
     def __init__(self, default_settings_import_str=None):
         super(DjangoAutoConf, self).__init__(default_settings_import_str)
-        self.root_dir = None
         # Default keys is located at ../keys relative to universal_settings module?
+        self.extra_settings_in_base_package_folder = "others/extra_settings"
         self.key_dir = None
         self.local_key_folder = None
         self.extra_setting_module_full_names = []
         self.project_path = None
         self.local_key_folder_name = "local_keys"
+        self.server_base_package_folder = "server_base_packages"
         self.local_folder_name = "local"
         self.local_key_folder_relative_to_root = os.path.join(self.local_folder_name, self.local_key_folder_name)
         self.external_apps_folder = None
-        self.local_app_setting_folder = None
         self.installed_app_list = None
         self.external_app_repositories = None
 
     def set_external_app_repositories(self, external_app_repositories):
         self.external_app_repositories = external_app_repositories
+        self.add_extra_setting_relative_folder_for_repo(external_app_repositories)
 
     def set_external_app_folder_name(self, external_app_folder_name):
         self.external_app_folder_name = external_app_folder_name
@@ -66,18 +67,12 @@ class DjangoAutoConf(DjangoSettingManager):
 
     def configure(self, features=[]):
         self.check_params()
-
         # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangoautoconf.base_settings")
         os.environ["DJANGO_SETTINGS_MODULE"] = "djangoautoconf.base_settings"
 
-        ordered_import_list = self.get_setting_module_list(features)
-
-        for one_setting in ordered_import_list:
-            self.import_based_on_base_settings(one_setting)
-
+        self.load_all_extra_settings(features)
         self.add_secret_key()
         self.update_installed_apps_etc()
-
         dump_attrs(base_settings)
 
     def check_params(self):
