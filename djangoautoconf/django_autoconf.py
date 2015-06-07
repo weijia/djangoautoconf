@@ -9,10 +9,10 @@ from django.utils.crypto import get_random_string
 import re
 
 import base_settings
-from auto_conf_utils import dump_attrs, is_at_least_one_sub_filesystem_item_exists
+from auto_conf_utils import dump_attrs, is_at_least_one_sub_filesystem_item_exists, enum_folders
 from libtool import include
 from libtool.folder_tool import ensure_dir
-
+from django_setting_manager import DjangoSettingManager
 
 log = logging.getLogger(__name__)
 
@@ -25,33 +25,25 @@ class LocalKeyFolderNotExist(Exception):
     pass
 
 
-class DjangoAutoConf(object):
+class DjangoAutoConf(DjangoSettingManager):
     def __init__(self, default_settings_import_str=None):
-        self.base_extra_setting_list = ["extra_settings.settings"]
-        self.default_settings_import_str = default_settings_import_str
+        super(DjangoAutoConf, self).__init__(default_settings_import_str)
         self.root_dir = None
         # Default keys is located at ../keys relative to universal_settings module?
         self.key_dir = None
         self.local_key_folder = None
-        self.extra_settings = []
+        self.extra_setting_module_full_names = []
         self.project_path = None
-        self.external_app_folder_name = "external_apps"
         self.local_key_folder_name = "local_keys"
         self.local_folder_name = "local"
         self.local_key_folder_relative_to_root = os.path.join(self.local_folder_name, self.local_key_folder_name)
-        self.local_settings_relative_folder = "local/local_settings"
         self.external_apps_folder = None
         self.local_app_setting_folder = None
-        self.external_settings_root_folder_name = "others"
-        self.external_settings_folder_name = "external_settings"
         self.installed_app_list = None
         self.external_app_repositories = None
 
     def set_external_app_repositories(self, external_app_repositories):
         self.external_app_repositories = external_app_repositories
-
-    def set_base_extra_settings_list(self, base_extra_settings):
-        self.base_extra_setting_list = base_extra_settings
 
     def set_external_app_folder_name(self, external_app_folder_name):
         self.external_app_folder_name = external_app_folder_name
@@ -71,47 +63,6 @@ class DjangoAutoConf(object):
 
     def set_local_key_folder(self, local_key_folder):
         self.local_key_folder = local_key_folder
-        
-    def get_folder_for_settings_in_external_apps_folder(self):
-        external_settings_root_folder = os.path.join(self.get_external_apps_folder(),
-            self.external_settings_root_folder_name)
-        folder_for_external_apps_settings = os.path.join(external_settings_root_folder,
-                                                         self.external_settings_folder_name)
-        return folder_for_external_apps_settings
-        
-    @staticmethod
-    def enum_modules(folder):
-        for filename in os.listdir(folder):
-            is_py = re.search('\.py$', filename)
-            if is_py and (filename != "__init__.py"):
-                yield filename.replace(".py", "")
-
-    def add_extra_settings_from_folder(self, local_setting_dir=None):
-        extra_setting_list = self.base_extra_setting_list
-        if local_setting_dir is None:
-            local_setting_dir = self.local_app_setting_folder
-        for module_name in self.enum_modules(local_setting_dir):
-            extra_setting_list.append("local.local_settings.%s" % module_name)
-        
-        # Add external settings in external apps folder
-        settings_folder_in_external_apps_folder = self.get_folder_for_settings_in_external_apps_folder()
-        if os.path.exists(settings_folder_in_external_apps_folder):
-            for module_name in self.enum_modules(settings_folder_in_external_apps_folder):
-                extra_setting_list.append("%s.%s" % (self.external_settings_folder_name, module_name))
-        self.add_extra_settings(extra_setting_list)
-
-    def add_extra_settings(self, extra_setting_list):
-        self.extra_settings.extend(extra_setting_list)
-
-    def get_setting_module_list(self, features):
-        ordered_import_list = [self.default_settings_import_str,
-                               "djangoautoconf.sqlite_database"
-                               # "djangoautoconf.mysql_database"
-        ]
-        ordered_import_list.extend(self.extra_settings)
-        for feature in features:
-            self.ordered_import_list.append("djangoautoconf.features." + feature)
-        return ordered_import_list
 
     def configure(self, features=[]):
         self.check_params()
@@ -161,22 +112,17 @@ class DjangoAutoConf(object):
             self.external_apps_folder = os.path.join(self.get_project_path(), self.external_app_folder_name)
         return self.external_apps_folder
 
-    @staticmethod
-    def enum_folders(parent_folder):
-        for folder in os.listdir(parent_folder):
-            yield os.path.join(parent_folder, folder)
-
     def get_external_apps_repositories(self):
         if self.external_app_repositories is None:
             return [self.get_external_apps_folder(),]
         else:
-            return self.enum_folders(self.external_app_repositories)
+            return enum_folders(self.external_app_repositories)
 
     def install_auto_detected_apps(self):
         self.installed_app_list = list(getattr(base_settings, "INSTALLED_APPS"))
 
         for repo in self.get_external_apps_repositories():
-            for apps_root_folder in self.enum_folders(repo):
+            for apps_root_folder in enum_folders(repo):
                 self.scan_apps_in_sub_folders(apps_root_folder)
 
         setattr(base_settings, "INSTALLED_APPS", tuple(self.installed_app_list))
@@ -200,47 +146,6 @@ class DjangoAutoConf(object):
             self.get_project_path(), self.local_folder_name))
         setattr(base_settings, "STATIC_ROOT", os.path.abspath(os.path.join(self.get_project_path(), 'static')))
         self.install_auto_detected_apps()
-
-    # noinspection PyMethodMayBeStatic
-    def get_settings(self):
-        return base_settings
-
-    def import_based_on_base_settings(self, module_import_path):
-        # ######
-        # Inject attributes to builtin and import all other modules
-        # Ref: http://stackoverflow.com/questions/11813287/insert-variable-into-global-namespace-from-within-a-function
-        self.init_builtin()
-        self.inject_attr()
-        try:
-            new_base_settings = importlib.import_module(module_import_path)
-        except:
-            print "Import module error:", module_import_path
-            raise
-        self.remove_attr()
-        update_base_settings(new_base_settings)
-
-    def inject_attr(self):
-        self.builtin["PROJECT_ROOT"] = self.root_dir
-        for attr in dir(base_settings):
-            if attr != attr.upper():
-                continue
-            value = getattr(base_settings, attr)
-            if hasattr(self.builtin, attr):
-                raise "Attribute already exists"
-            self.builtin[attr] = value
-
-    def remove_attr(self):
-        for attr in dir(base_settings):
-            if attr != attr.upper():
-                continue
-            value = getattr(base_settings, attr)
-            del self.builtin[attr]
-
-    def init_builtin(self):
-        try:
-            self.__dict__['builtin'] = sys.modules['__builtin__'].__dict__
-        except KeyError:
-            self.__dict__['builtin'] = sys.modules['builtins'].__dict__
 
     def get_existing_secret_key(self, secret_key_folder):
         # from local_keys.secret_key import SECRET_KEY
@@ -277,9 +182,3 @@ class DjangoAutoConf(object):
             return 'd&amp;x%x+^l@qfxm^2o9x)6ct5*cftlcu8xps9b7l3c$ul*n&amp;%p-k'
 
 
-def update_base_settings(new_base_settings):
-    for attr in dir(new_base_settings):
-        if attr != attr.upper():
-            continue
-        value = getattr(new_base_settings, attr)
-        setattr(base_settings, attr, value)
