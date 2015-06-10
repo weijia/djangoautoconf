@@ -125,7 +125,7 @@ def autodiscover():
     not present. This forces an import on them to register any urls jobs they
     may want.
     """
-    #Include default urls first so the root url patterns will not take over the default urls.
+    # Include default urls first so the root url patterns will not take over the default urls.
     include_default_urls()
     include_urls()
 
