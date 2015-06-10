@@ -1,7 +1,6 @@
 import copy
 import inspect
 from django.db.models import DateTimeField
-from djangoautoconf.import_export_utils import get_import_export_resource
 
 
 __author__ = 'q19420'
@@ -32,6 +31,12 @@ class AdminRegister(object):
         self.base_model_admin = ModelAdmin
         self.admin_class_attributes = {}
         #self.is_import_export_supported = False
+        self.admin_site_list = [admin.site, ]
+        try:
+            from normal_admin.admin import user_admin_site
+            self.admin_site_list.append(user_admin_site)
+        except ImportError:
+            pass
 
     def get_admin_class(self, class_instance):
         if self.admin_list is None:
@@ -41,6 +46,7 @@ class AdminRegister(object):
         #print admin_list
         try:
             if "import_export" in settings.INSTALLED_APPS:
+                from djangoautoconf.import_export_utils import get_import_export_resource
                 from import_export.admin import ImportExportActionModelAdmin
                 self.base_model_admin = ImportExportActionModelAdmin
                 resource_class = get_import_export_resource(class_inst)
@@ -57,6 +63,10 @@ class AdminRegister(object):
         admin_class = type(class_inst.__name__ + "Admin", tuple(copied_admin_list), self.admin_class_attributes)
         return admin_class
 
+    def register_admin_without_duplicated_register(self, class_inst, admin_class):
+        for admin_site in self.admin_site_list:
+            register_admin_without_duplicated_register(class_inst, admin_class, admin_site)
+
     def register(self, class_inst, list_display=None, search_fields=None):
         self.admin_class_attributes = {}
         if not (list_display is None):
@@ -64,7 +74,7 @@ class AdminRegister(object):
         if not (search_fields is None):
             self.admin_class_attributes["search_fields"] = search_fields
         admin_class = self.get_valid_admin_class_with_list(class_inst)
-        register_admin_without_duplicated_register(class_inst, admin_class)
+        self.register_admin_without_duplicated_register(class_inst, admin_class)
 
     def register_all_with_additional_attributes(self, class_inst, admin_class_attributes={}):
         attr_list = self.get_class_attributes(class_inst)
@@ -72,7 +82,7 @@ class AdminRegister(object):
         self.admin_class_attributes.update({"list_display": attr_list})
         self.admin_class_attributes.update({"search_fields": attr_list})
         admin_class = self.get_valid_admin_class_with_list(class_inst)
-        register_admin_without_duplicated_register(class_inst, admin_class)
+        self.register_admin_without_duplicated_register(class_inst, admin_class)
 
     # noinspection PyMethodMayBeStatic
     def get_class_attributes(self, class_inst):
@@ -92,7 +102,7 @@ class AdminRegister(object):
             self.admin_class_attributes["list_display"].append(field.name)
             self.admin_class_attributes["search_fields"].append(field.name)
         admin_class = self.get_valid_admin_class_with_list(class_inst)
-        register_admin_without_duplicated_register(class_inst, admin_class)
+        self.register_admin_without_duplicated_register(class_inst, admin_class)
 
     # noinspection PyMethodMayBeStatic
     def class_enumerator(self, module_instance, exclude_name_list):
