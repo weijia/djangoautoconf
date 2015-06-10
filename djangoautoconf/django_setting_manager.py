@@ -31,14 +31,8 @@ class DjangoSettingManager(object):
         self.external_app_folder_name = "external_apps"
         self.local_app_setting_folder = None
 
-    # def set_base_extra_settings_list(self, base_extra_settings):
-    #     self.base_extra_setting_list = base_extra_settings
-
     def add_extra_setting_full_path_folder(self, extra_setting_folder):
         self.extra_setting_folders.append(extra_setting_folder)
-
-    # def get_extra_settings(self):
-    #     pass
 
     # noinspection PyMethodMayBeStatic
     def get_settings(self):
@@ -109,27 +103,6 @@ class DjangoSettingManager(object):
         except KeyError:
             self.__dict__['builtin'] = sys.modules['builtins'].__dict__
 
-    # def get_folder_for_settings_in_external_apps_folder(self):
-    #     external_settings_root_folder = os.path.join(self.get_external_apps_folder(),
-    #         self.external_settings_root_folder_name)
-    #     folder_for_external_apps_settings = os.path.join(external_settings_root_folder,
-    #                                                      self.external_settings_folder_name)
-    #     return folder_for_external_apps_settings
-
-    # def add_extra_settings_from_folder(self, local_setting_dir=None):
-    #     extra_setting_list = self.base_extra_setting_list
-    #     if local_setting_dir is None:
-    #         local_setting_dir = self.local_app_setting_folder
-    #     for module_name in enum_modules(local_setting_dir):
-    #         extra_setting_list.append("local.local_settings.%s" % module_name)
-    #
-    #     # Add external settings in external apps folder
-    #     settings_folder_in_external_apps_folder = self.get_folder_for_settings_in_external_apps_folder()
-    #     if os.path.exists(settings_folder_in_external_apps_folder):
-    #         for module_name in self.enum_modules(settings_folder_in_external_apps_folder):
-    #             extra_setting_list.append("%s.%s" % (self.external_settings_folder_name, module_name))
-    #     self.__add_extra_settings(extra_setting_list)
-
     def get_feature_setting_module_list(self, features):
         ordered_import_list = [self.default_settings_import_str,
                                "djangoautoconf.sqlite_database"
@@ -141,3 +114,11 @@ class DjangoSettingManager(object):
         ordered_import_list.append("server_base_packages.others.extra_settings.settings")
 
         return ordered_import_list
+
+    @staticmethod
+    def remove_empty_list():
+        for attr in dir(base_settings):
+            value = getattr(base_settings, attr)
+            if (type(value) is list) and len(value)==0:
+                delattr(base_settings, attr)
+
