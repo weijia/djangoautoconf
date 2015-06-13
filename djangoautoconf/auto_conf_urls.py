@@ -91,7 +91,7 @@ def add_app_urls_no_exception(app):
             if hasattr(app_module, "urlpatterns"):
                 add_url_pattern("^%s/" % app, include('%s.urls' % app))
     except ImportError:
-        print "%s does not have urls config (%s.urls does not exists)." % (app, app)
+        print "Import %s.urls failed (maybe %s.urls does not exists)." % (app, app)
     except Exception, e:
         import traceback
         traceback.print_exc()
@@ -126,7 +126,7 @@ def autodiscover():
     not present. This forces an import on them to register any urls jobs they
     may want.
     """
-    #Include default urls first so the root url patterns will not take over the default urls.
+    # Include default urls first so the root url patterns will not take over the default urls.
     include_default_urls()
     include_urls()
 

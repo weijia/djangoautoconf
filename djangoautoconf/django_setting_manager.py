@@ -50,7 +50,8 @@ class DjangoSettingManager(object):
         for app_folder in enum_folders(repo_root):
             app_full_path = os.path.join(repo_root, app_folder)
             repo_extra_setting_folder = os.path.join(app_full_path, self.other_external_setting_folder)
-            self.add_extra_setting_full_path_folder(repo_extra_setting_folder)
+            if os.path.exists(repo_extra_setting_folder):
+                self.add_extra_setting_full_path_folder(repo_extra_setting_folder)
 
     def __load_extra_settings_in_folders(self):
         # Add local/local_settings/ folder
