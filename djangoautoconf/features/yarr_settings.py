@@ -41,7 +41,7 @@ SOCIAL_AUTH_NONCE_SERVER_URL_LENGTH = 200
 SOCIAL_AUTH_ASSOCIATION_SERVER_URL_LENGTH = 135
 SOCIAL_AUTH_ASSOCIATION_HANDLE_LENGTH = 125
 
-EMAIL_BACKEND = 'backends.mail_backend.EmailBackend'
+# EMAIL_BACKEND = 'backends.mail_backend.EmailBackend'
 
 ACTIVATION_EMAIL_TEMPLATE = 'registration/activation_email.html'
 
