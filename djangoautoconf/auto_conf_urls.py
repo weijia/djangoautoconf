@@ -6,6 +6,13 @@ from djangoautoconf import DjangoAutoConf
 from djangoautoconf.auto_conf_utils import get_module_path, is_at_least_one_sub_filesystem_item_exists
 from libtool.short_decorator.ignore_exception import ignore_exc_with_result
 
+
+try:
+    import simplemenu
+    from simplemenu.models import MenuItem
+except:
+    pass
+
 __author__ = 'weijia'
 from django.conf.urls import include, url
 from django.utils.importlib import import_module
@@ -46,6 +53,10 @@ def add_url_pattern(default_url_root_path, urls_module):
 
 def add_to_root_url_pattern(url_pattern_list):
     (get_custom_root_url_pattern_container()).append_list_to_head(url_pattern_list)
+    # for item in url_pattern_list:
+    #     simplemenu.register(
+    #         item._regex,
+    #     )
 
 
 def add_default_root_url(default_url_root_path):
@@ -90,6 +101,11 @@ def add_app_urls_no_exception(app):
             app_module = importlib.import_module("%s.urls" % app)
             if hasattr(app_module, "urlpatterns"):
                 add_url_pattern("^%s/" % app, include('%s.urls' % app))
+                try:
+                    MenuItem.objects.get_or_create(name=app, urlstr="/%s/" % app)
+                except Exception, e:
+                    import traceback
+                    pass
     except ImportError:
         print "Import %s.urls failed (maybe %s.urls does not exists)." % (app, app)
     except Exception, e:

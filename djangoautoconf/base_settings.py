@@ -2,4 +2,5 @@
 #Default database name, can be override in extra_settings.settings
 MYSQL_DATABASE_NAME="test"
 
-AUTHENTICATION_BACKENDS = ()
+
+AUTHENTICATION_BACKENDS = []
