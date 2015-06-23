@@ -79,7 +79,7 @@ class DjangoAutoConf(DjangoSettingManager):
         self.load_all_extra_settings(features)
         self.add_secret_key()
         self.update_installed_apps_etc()
-
+        self.remove_empty_list()
         dump_attrs(base_settings)
 
     def check_params(self):

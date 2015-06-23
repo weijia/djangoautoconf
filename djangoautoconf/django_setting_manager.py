@@ -108,7 +108,7 @@ class DjangoSettingManager(object):
         ordered_import_list = [self.default_settings_import_str,
                                "djangoautoconf.sqlite_database"
                                # "djangoautoconf.mysql_database"
-        ]
+                               ]
         for feature in features:
             ordered_import_list.append("djangoautoconf.features." + feature)
 
@@ -120,6 +120,5 @@ class DjangoSettingManager(object):
     def remove_empty_list():
         for attr in dir(base_settings):
             value = getattr(base_settings, attr)
-            if (type(value) is list) and len(value)==0:
+            if (type(value) is list) and len(value) == 0:
                 delattr(base_settings, attr)
-
