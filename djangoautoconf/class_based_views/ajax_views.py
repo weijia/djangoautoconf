@@ -38,22 +38,28 @@ class AjaxableResponseMixin(object):
 
 class AjaxableViewMixin(object):
     is_ajax_view = False
-    action = "form"
+    ajax_form_id = "ajaxFormId"
+    ajax_base_template = "ajax_base.html"
 
     def get_template_names(self):
-        if True:  # self.is_ajax_view:
-            return ['modelview/object_%s.html' % self.action, ]
-            # else:
-            #     return ['modelview/object_%s.html' % self.action,]
+        return [self.ajax_base_template]
 
     def render_to_response(self, context, **response_kwargs):
         """
         Returns a response with a template rendered with the given context.
         """
-        context["base_template"] = ""
+        context["ajax_form_id"] = self.ajax_form_id
+        # context["base_template"] = "towel_bootstrap/modal.html"
         return self.response_class(
             request=self.request,
             template=self.get_template_names(),
             context=context,
             **response_kwargs
         )
+
+
+class TowelTemplateMixin(object):
+    towel_form_template = "modelview/object_form.html"
+
+    def get_template_names(self):
+        return [self.towel_form_template]
