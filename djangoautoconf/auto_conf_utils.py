@@ -66,6 +66,7 @@ def get_module_path(mod):
 
 
 def enum_folders(parent_folder):
+    logging.debug("Listing folder: "+parent_folder)
     for folder in os.listdir(parent_folder):
         yield os.path.join(parent_folder, folder)
 

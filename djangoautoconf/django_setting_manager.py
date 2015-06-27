@@ -3,6 +3,7 @@ import sys
 from djangoautoconf.auto_conf_utils import enum_modules, enum_folders
 from libtool import include
 from libtool.basic_lib_tool import remove_folder_in_sys_path
+import logging
 
 __author__ = 'weijia'
 import os
@@ -15,6 +16,7 @@ def update_base_settings(new_base_settings):
             continue
         value = getattr(new_base_settings, attr)
         setattr(base_settings, attr, value)
+    logging.debug(base_settings.INSTALLED_APPS)
 
 
 class DjangoSettingManager(object):
@@ -48,9 +50,11 @@ class DjangoSettingManager(object):
 
         repo_root = os.path.join(self.root_dir, repo_folder)
         for app_folder in enum_folders(repo_root):
-            app_full_path = os.path.join(repo_root, app_folder)
+            logging.debug("---------------------------------------------processing: " + app_folder)
+            app_full_path = app_folder  # os.path.join(repo_root, app_folder)
             repo_extra_setting_folder = os.path.join(app_full_path, self.other_external_setting_folder)
             if os.path.exists(repo_extra_setting_folder):
+                logging.debug("Added: " + repo_extra_setting_folder)
                 self.add_extra_setting_full_path_folder(repo_extra_setting_folder)
 
     def __load_extra_settings_in_folders(self):
@@ -59,6 +63,7 @@ class DjangoSettingManager(object):
         for folder in self.extra_setting_folders:
             include(folder)
             for module_name in enum_modules(folder):
+                logging.debug("---------------------------------------Processing: " + module_name)
                 self.__import_based_on_base_settings(module_name)
             remove_folder_in_sys_path(folder)
 
