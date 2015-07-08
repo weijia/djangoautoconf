@@ -100,13 +100,14 @@ class AdminRegister(object):
     def register_with_all_in_list_display(self, class_inst):
         self.admin_class_attributes["list_display"] = []
         self.admin_class_attributes["search_fields"] = []
-        for field in class_inst.__dict__['_meta'].fields:
-            if type(field) == DateTimeField:
-                continue
-            self.admin_class_attributes["list_display"].append(field.name)
-            self.admin_class_attributes["search_fields"].append(field.name)
-        admin_class = self.get_valid_admin_class_with_list(class_inst)
-        self.register_admin_without_duplicated_register(class_inst, admin_class)
+        if '_meta' in class_inst.__dict__:
+            for field in class_inst.__dict__['_meta'].fields:
+                if type(field) == DateTimeField:
+                    continue
+                self.admin_class_attributes["list_display"].append(field.name)
+                self.admin_class_attributes["search_fields"].append(field.name)
+            admin_class = self.get_valid_admin_class_with_list(class_inst)
+            self.register_admin_without_duplicated_register(class_inst, admin_class)
 
     # noinspection PyMethodMayBeStatic
     def class_enumerator(self, module_instance, exclude_name_list):

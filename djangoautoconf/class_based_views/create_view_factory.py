@@ -46,5 +46,6 @@ def create_ajaxable_view_from_model(model_class, operation="Create", ajax_mixin=
                                  "model": model_class,
                                  "template_name": "form_view_base_template.html",
                                  "submit_button_text": operation,
+                                 "success_url": "../"
                              })
     return create_view_class
