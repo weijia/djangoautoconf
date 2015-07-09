@@ -50,11 +50,9 @@ class DjangoAutoConf(DjangoSettingManager):
         self.add_extra_setting_relative_folder_for_repo(external_app_repositories)
         logging.debug("Added: "+external_app_repositories)
         full_path_of_repo_root = self.get_full_path(external_app_repositories)
-        for folder in enum_folders(full_path_of_repo_root):
-            logging.debug("Scanning: "+folder)
-            scanning_folder_full_path = os.path.join(full_path_of_repo_root, folder)
-            if os.path.isdir(scanning_folder_full_path):
-                include_all_direct_subfolders(scanning_folder_full_path)
+        for folder_full_path in enum_folders(full_path_of_repo_root):
+            logging.debug("Scanning: "+folder_full_path)
+            include_all_direct_subfolders(folder_full_path)
 
     def set_external_app_folder_name(self, external_app_folder_name):
         self.external_app_folder_name = external_app_folder_name
