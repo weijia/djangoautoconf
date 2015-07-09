@@ -8,10 +8,6 @@ from django.conf import settings
 from django.contrib.admin import ModelAdmin
 from django.contrib import admin
 
-if "guardian" in settings.INSTALLED_APPS:
-    g_is_guardian_included = True
-    from guardian.admin import GuardedModelAdmin
-
 
 def register_admin_without_duplicated_register(class_inst, admin_class, admin_site=admin.site):
     try:
@@ -55,6 +51,14 @@ class AdminRegister(object):
                 })
         except ImportError:
             pass
+        if "guardian" in settings.INSTALLED_APPS:
+            # g_is_guardian_included = True
+            try:
+                from guardian.admin import GuardedModelAdmin
+                self.base_model_admin = GuardedModelAdmin
+            except ImportError:
+                pass
+
         copied_admin_list = copy.copy(self.parent_admin_list)
         copied_admin_list.append(self.base_model_admin)
         #self.include_additional_admin_mixins(class_inst, copied_admin_list)
