@@ -2,6 +2,7 @@ import importlib
 import inspect
 import os
 import sys
+import traceback
 from djangoautoconf import DjangoAutoConf
 from djangoautoconf.auto_conf_utils import get_module_path, is_at_least_one_sub_filesystem_item_exists
 from libtool.short_decorator.ignore_exception import ignore_exc_with_result
@@ -33,7 +34,7 @@ class EasyList(object):
 
 def get_custom_root_url_pattern_container():
     from django.conf import settings
-    from django.utils.importlib import import_module
+    # from django.utils.importlib import import_module
 
     root_url = import_module(settings.ROOT_URLCONF)
     root_url_pattern_list = root_url.default_app_url_patterns
@@ -67,32 +68,39 @@ def add_default_root_url(default_url_root_path):
 
 def include_urls():
     from django.conf import settings
-    from django.utils.importlib import import_module
+    # from django.utils.importlib import import_module
 
-    for app in settings.INSTALLED_APPS:
+    for app in enum_app_names():
         mod = import_module(app)
+        # Attempt to import the app's admin module.
+        if is_at_least_one_sub_filesystem_item_exists(get_module_path(mod), ["urls.py", "default_settings.py"]):
+            add_app_urls_no_exception(app)
         # Attempt to import the app's urls module.
         try:
             urls_module = '%s.urls' % app
             import_module(urls_module)
         except ImportError, e:
             if str(e) != 'No module named urls':
-                import traceback
+                # import traceback
                 traceback.print_exc()
 
-    sys.path.append(settings.DJANGO_AUTO_CONF_LOCAL_DIR)
-    all_local_url_patterns = []
     local_urls_full_path = os.path.join(settings.DJANGO_AUTO_CONF_LOCAL_DIR, "local_urls")
     if os.path.exists(local_urls_full_path) and os.path.isdir(local_urls_full_path):
-        for url_module_name in DjangoAutoConf.enum_modules(local_urls_full_path):
-            # m = __import__("local_urls.%s" % url_module_name)
-            m = importlib.import_module("local_urls.%s" % url_module_name)
-            # m = importlib.import_module("%s.%s" % (module_path, self.module_of_attribute))
-            urlpatterns = getattr(m, "urlpatterns")
-            for p in urlpatterns:
-                all_local_url_patterns.append(p)
-    sys.path.remove(settings.DJANGO_AUTO_CONF_LOCAL_DIR)
+        add_urlpatterns_in_file(local_urls_full_path)
+
+
+def add_urlpatterns_in_file(local_urls_full_path):
+    sys.path.append(local_urls_full_path)
+    all_local_url_patterns = []
+    for url_module_name in DjangoAutoConf.enum_modules(local_urls_full_path):
+        # m = __import__("local_urls.%s" % url_module_name)
+        m = importlib.import_module("%s" % url_module_name)
+        # m = importlib.import_module("%s.%s" % (module_path, self.module_of_attribute))
+        urlpatterns = getattr(m, "urlpatterns")
+        for p in urlpatterns:
+            all_local_url_patterns.append(p)
     add_to_root_url_pattern(all_local_url_patterns)
+    sys.path.remove(local_urls_full_path)
 
 
 def add_app_urls_no_exception(app):
@@ -104,25 +112,17 @@ def add_app_urls_no_exception(app):
                 try:
                     MenuItem.objects.get_or_create(name=app, urlstr="/%s/" % app)
                 except Exception, e:
-                    import traceback
+                    # import traceback
                     pass
     except ImportError:
         print "Import %s.urls failed (maybe %s.urls does not exists)." % (app, app)
     except Exception, e:
-        import traceback
+        # import traceback
         traceback.print_exc()
         pass
 
 
-def include_default_urls():
-    for app in enum_apps():
-        mod = import_module(app)
-        # Attempt to import the app's admin module.
-        if is_at_least_one_sub_filesystem_item_exists(get_module_path(mod), ["urls.py", "default_settings.py"]):
-            add_app_urls_no_exception(app)
-
-
-def enum_apps():
+def enum_app_names():
     from django.conf import settings
     for app in settings.INSTALLED_APPS:
         yield app
@@ -143,7 +143,7 @@ def autodiscover():
     may want.
     """
     # Include default urls first so the root url patterns will not take over the default urls.
-    include_default_urls()
+    # include_default_urls()
     include_urls()
 
 

@@ -30,7 +30,7 @@ class AjaxableFormContextUpdateMixin(object):
         return context
 
 
-def create_ajaxable_view_from_model_inherit_parent_class(model_class, parent_class_tuple, operation="Create"):
+def create_ajaxable_view_from_model_inherit_parent_class(model_class, parent_class_list, operation="Create"):
     """
     :param model_class: the django model class
     :param operation: "Create" or "Update"
@@ -40,10 +40,10 @@ def create_ajaxable_view_from_model_inherit_parent_class(model_class, parent_cla
     generic_module = importlib.import_module("django.views.generic")
     view_class_name = "%sView" % operation
     view_class = getattr(generic_module, view_class_name)
-    #parent_class_tuple = (ajax_mixin, AjaxableFormContextUpdateMixin, view_class)
-    parent_class_tuple.append(view_class)
+    # parent_class_tuple = (ajax_mixin, AjaxableFormContextUpdateMixin, view_class)
+    parent_class_list.append(view_class)
     create_view_class = type("%s%s%s" % (model_class.__name__, operation, "View"),
-                             parent_class_tuple, {
+                             tuple(parent_class_list), {
                                  # "Meta": type("Meta", (), {"model": self.model_class, "fields": []}),
                                  "model": model_class,
                                  "template_name": "form_view_base_template.html",
@@ -71,4 +71,4 @@ def create_ajaxable_view_from_model(model_class, operation="Create", ajax_mixin=
     #                              "submit_button_text": operation,
     #                          })
     # return create_view_class
-    create_ajaxable_view_from_model_inherit_parent_class(model_class, (ajax_mixin, AjaxableFormContextUpdateMixin))
+    return create_ajaxable_view_from_model_inherit_parent_class(model_class, [ajax_mixin, AjaxableFormContextUpdateMixin])
