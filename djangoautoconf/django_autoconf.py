@@ -41,18 +41,23 @@ class DjangoAutoConf(DjangoSettingManager):
         self.external_apps_folder = None
         self.installed_app_list = None
         self.external_app_repositories = None
+        self.external_app_repositories_full_path = None
 
     def get_full_path(self, relative_path):
         return os.path.join(self.root_dir, relative_path)
 
     def set_external_app_repositories(self, external_app_repositories):
+        if os.path.isabs(external_app_repositories):
+            self.external_app_repositories_full_path = external_app_repositories
+        else:
+            self.external_app_repositories_full_path = os.path.join(self.root_dir, external_app_repositories)
         self.external_app_repositories = external_app_repositories
         self.add_extra_setting_relative_folder_for_repo(external_app_repositories)
-        logging.debug("Added: "+external_app_repositories)
+        logging.debug("Added: " + external_app_repositories)
         full_path_of_repo_root = self.get_full_path(external_app_repositories)
         for folder_full_path in enum_folders(full_path_of_repo_root):
             if os.path.isdir(folder_full_path):
-                logging.debug("Scanning: "+folder_full_path)
+                logging.debug("Scanning: " + folder_full_path)
                 include_all_direct_subfolders(folder_full_path)
 
     def set_external_app_folder_name(self, external_app_folder_name):
@@ -111,17 +116,17 @@ class DjangoAutoConf(DjangoSettingManager):
     def is_valid_app_module(self, app_module_folder_full_path):
         signature_filename_list = ["default_settings.py", "default_urls.py", "urls.py"]
         return is_at_least_one_sub_filesystem_item_exists(app_module_folder_full_path, signature_filename_list)
-    
+
     def get_external_apps_folder(self):
         if self.external_apps_folder is None:
             self.external_apps_folder = os.path.join(self.get_project_path(), self.external_app_folder_name)
         return self.external_apps_folder
 
     def get_external_apps_repositories(self):
-        if self.external_app_repositories is None:
-            return [self.get_external_apps_folder(),]
+        if self.external_app_repositories_full_path is None:
+            return [self.get_external_apps_folder(), ]
         else:
-            return enum_folders(self.external_app_repositories)
+            return enum_folders(self.external_app_repositories_full_path)
 
     def install_auto_detected_apps(self):
         self.installed_app_list = list(getattr(base_settings, "INSTALLED_APPS"))
@@ -185,5 +190,3 @@ class DjangoAutoConf(DjangoSettingManager):
             # In case the above not work, use the following.
             # Make this unique, and don't share it with anybody.
             return 'd&amp;x%x+^l@qfxm^2o9x)6ct5*cftlcu8xps9b7l3c$ul*n&amp;%p-k'
-
-
