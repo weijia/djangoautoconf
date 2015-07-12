@@ -10,7 +10,7 @@ from libtool.short_decorator.ignore_exception import ignore_exc_with_result
 
 try:
     import simplemenu
-    from simplemenu.models import MenuItem
+    from simplemenu.models import MenuItem, Menu
 except:
     pass
 
@@ -109,9 +109,10 @@ def add_app_urls_no_exception(app):
             app_module = importlib.import_module("%s.urls" % app)
             if hasattr(app_module, "urlpatterns"):
                 add_url_pattern("^%s/" % app, include('%s.urls' % app))
-                try:
-                    MenuItem.objects.get_or_create(name=app, urlstr="/%s/" % app)
-                except Exception, e:
+                if True: #try:
+                    menu, is_created = Menu.objects.get_or_create(name=app)
+                    MenuItem.objects.get_or_create(name=app, menu=menu, urlstr="/%s/" % app)
+                else: #except Exception, e:
                     # import traceback
                     pass
     except ImportError:
