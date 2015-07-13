@@ -101,11 +101,11 @@ class AdminRegister(object):
         self.admin_class_attributes["search_fields"] = []
         if '_meta' in class_inst.__dict__:
             for field in class_inst.__dict__['_meta'].fields:
+                self.admin_class_attributes["list_display"].append(field.name)
                 if type(field) == DateTimeField:
                     continue
                 if type(field) == ForeignKey:
                     continue
-                self.admin_class_attributes["list_display"].append(field.name)
                 self.admin_class_attributes["search_fields"].append(field.name)
             admin_class = self.get_valid_admin_class_with_list(class_inst)
             self.register_admin_without_duplicated_register(class_inst, admin_class)
