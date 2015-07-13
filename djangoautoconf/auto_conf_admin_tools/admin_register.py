@@ -1,7 +1,6 @@
 import copy
 import inspect
-from django.db.models import DateTimeField
-
+from django.db.models import DateTimeField, ForeignKey
 
 __author__ = 'q19420'
 from django.conf import settings
@@ -103,6 +102,8 @@ class AdminRegister(object):
         if '_meta' in class_inst.__dict__:
             for field in class_inst.__dict__['_meta'].fields:
                 if type(field) == DateTimeField:
+                    continue
+                if type(field) == ForeignKey:
                     continue
                 self.admin_class_attributes["list_display"].append(field.name)
                 self.admin_class_attributes["search_fields"].append(field.name)
