@@ -1,7 +1,9 @@
 import copy
-import inspect
-from django.db.models import DateTimeField
-
+from django.db import models
+from djangoautoconf.auto_conf_admin_tools.additional_attr import AdditionalAdminAttr
+from djangoautoconf.auto_conf_admin_tools.foreign_key_auto_complete import ForeignKeyAutoCompleteFeature
+from djangoautoconf.auto_conf_admin_tools.list_and_search import ListAndSearch
+from libtool.inspect_utils import class_enumerator
 
 __author__ = 'q19420'
 from django.conf import settings
@@ -11,7 +13,7 @@ from django.contrib import admin
 
 def register_admin_without_duplicated_register(class_inst, admin_class, admin_site=admin.site):
     try:
-        if (not (class_inst in admin_site._registry)) and (not class_inst._meta.abstract):
+        if is_need_register(admin_site, class_inst):
             admin_site.register(class_inst, admin_class)
     except Exception, e:
         if True:  # not (' is already registered' in e.message):
@@ -20,13 +22,35 @@ def register_admin_without_duplicated_register(class_inst, admin_class, admin_si
             traceback.print_exc()
 
 
+def is_inherit_from_model(class_inst):
+    if models.Model in class_inst.__bases__:
+        return True
+    for parent_class in class_inst.__bases__:
+        if parent_class is object:
+            continue
+        return is_inherit_from_model(parent_class)
+    return False
+
+
+def is_need_register(admin_site, class_inst):
+    # if not is_inherit_from_model(class_inst):
+    #     return False
+    is_already_registered = class_inst in admin_site._registry
+    is_can_register = True
+    if hasattr(class_inst, "_meta"):
+        if hasattr(class_inst._meta, "abstract"):
+            is_can_register = not class_inst._meta.abstract
+    return (not is_already_registered) and is_can_register
+
+
 class AdminRegister(object):
-    def __init__(self, parent_admin_list=[]):
+    def __init__(self, parent_admin_list=[], admin_feature_list=[]):
         super(AdminRegister, self).__init__()
+        self.admin_features = []
         self.parent_admin_list = parent_admin_list
         self.base_model_admin = ModelAdmin
         self.admin_class_attributes = {}
-        #self.is_import_export_supported = False
+        # self.is_import_export_supported = False
         self.admin_site_list = [admin.site, ]
         try:
             from normal_admin.admin import user_admin_site
@@ -34,12 +58,8 @@ class AdminRegister(object):
         except ImportError:
             pass
 
-    def get_admin_class(self, class_instance):
-        if self.admin_list is None:
-            pass
-
     def get_valid_admin_class_with_list(self, class_inst):
-        #print admin_list
+        # print admin_list
         try:
             if "import_export" in settings.INSTALLED_APPS:
                 from djangoautoconf.import_export_utils import get_import_export_resource
@@ -61,9 +81,13 @@ class AdminRegister(object):
 
         copied_admin_list = copy.copy(self.parent_admin_list)
         copied_admin_list.append(self.base_model_admin)
-        #self.include_additional_admin_mixins(class_inst, copied_admin_list)
-        #print ModelAdmin
-        #print final_parents
+        for feature in self.admin_features:
+            feature.process_parent_class_list(copied_admin_list, class_inst)
+            feature.process_admin_class_attr(self.admin_class_attributes, class_inst)
+
+        # print ModelAdmin
+        # print final_parents
+
         admin_class = type(class_inst.__name__ + "Admin", tuple(copied_admin_list), self.admin_class_attributes)
         return admin_class
 
@@ -71,66 +95,39 @@ class AdminRegister(object):
         for admin_site in self.admin_site_list:
             register_admin_without_duplicated_register(class_inst, admin_class, admin_site)
 
-    def register(self, class_inst, list_display=None, search_fields=None):
-        self.admin_class_attributes = {}
-        if not (list_display is None):
-            self.admin_class_attributes["list_display"] = list_display
-        if not (search_fields is None):
-            self.admin_class_attributes["search_fields"] = search_fields
+    def register(self, class_inst, list_display=[], search_fields=[]):
+        list_search_feature = ListAndSearch()
+        list_search_feature.set_list_and_search(list_display, search_fields)
+        self.admin_features.append(list_search_feature)
+
         admin_class = self.get_valid_admin_class_with_list(class_inst)
         self.register_admin_without_duplicated_register(class_inst, admin_class)
 
     def register_all_with_additional_attributes(self, class_inst, admin_class_attributes={}):
-        attr_list = self.get_class_attributes(class_inst)
-        self.admin_class_attributes = copy.copy(admin_class_attributes)
-        self.admin_class_attributes.update({"list_display": attr_list})
-        self.admin_class_attributes.update({"search_fields": attr_list})
-        admin_class = self.get_valid_admin_class_with_list(class_inst)
-        self.register_admin_without_duplicated_register(class_inst, admin_class)
-
-    # noinspection PyMethodMayBeStatic
-    def get_class_attributes(self, class_inst):
-        res = []
-        for field in class_inst.__dict__['_meta'].fields:
-            if type(field) == DateTimeField:
-                continue
-            res.append(field.name)
-        return res
+        additional_attr_feature = AdditionalAdminAttr()
+        additional_attr_feature.set_additional_attr(admin_class_attributes)
+        self.admin_features.append(additional_attr_feature)
+        self.register(class_inst)
 
     def register_with_all_in_list_display(self, class_inst):
-        self.admin_class_attributes["list_display"] = []
-        self.admin_class_attributes["search_fields"] = []
-        if '_meta' in class_inst.__dict__:
-            for field in class_inst.__dict__['_meta'].fields:
-                if type(field) == DateTimeField:
-                    continue
-                self.admin_class_attributes["list_display"].append(field.name)
-                self.admin_class_attributes["search_fields"].append(field.name)
-            admin_class = self.get_valid_admin_class_with_list(class_inst)
-            self.register_admin_without_duplicated_register(class_inst, admin_class)
-
-    # noinspection PyMethodMayBeStatic
-    def class_enumerator(self, module_instance, exclude_name_list):
-        for name, obj in inspect.getmembers(module_instance):
-            if inspect.isclass(obj):
-                if name in exclude_name_list:
-                    continue
-                yield obj
+        self.register(class_inst)
 
     def register_all_model(self, module_instance, exclude_name_list=[]):
+        self.register_all_models(module_instance, exclude_name_list)
+
+    def register_all_models(self, module_instance, exclude_name_list=[]):
         """
         :param module_instance: mostly the models module
         :param exclude_name_list: class does not need to register or is already registered
         :param admin_class_list:
         :return: N/A
         """
-        for class_instance in self.class_enumerator(module_instance, exclude_name_list):
-            self.register_with_all_in_list_display(class_instance)
+        for class_instance in class_enumerator(module_instance, exclude_name_list):
+            if is_inherit_from_model(class_instance):
+                self.register_with_all_in_list_display(class_instance)
 
-    def add_list_filter(self, filter_field):
-        if not ("list_filter" in self.admin_class_attributes):
-            self.admin_class_attributes["list_display"] = []
-        self.admin_class_attributes["list_display"].append(filter_field)
+    def add_feature(self, feature):
+        self.admin_features.append(feature)
 
     # def include_additional_admin_mixins(self, class_instance, existing_list):
     #     try:
