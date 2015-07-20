@@ -4,8 +4,6 @@ from djangoautoconf.auto_conf_admin_tools.additional_attr import AdditionalAdmin
 from djangoautoconf.auto_conf_admin_tools.foreign_key_auto_complete import ForeignKeyAutoCompleteFeature
 from djangoautoconf.auto_conf_admin_tools.list_and_search import ListAndSearch
 from libtool.inspect_utils import class_enumerator
-
-__author__ = 'q19420'
 from django.conf import settings
 from django.contrib.admin import ModelAdmin
 from django.contrib import admin

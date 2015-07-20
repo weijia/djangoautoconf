@@ -1,4 +1,4 @@
-from django.db.models import DateTimeField
+from django.db.models import DateTimeField, ForeignKey
 from djangoautoconf.auto_conf_admin_tools.admin_feature_base import AdminFeatureBase
 
 __author__ = 'weijia'
@@ -18,7 +18,8 @@ class ListAndSearch(AdminFeatureBase):
         if len(self.list_fields) == 0:
             admin_attr.update({"list_display": self.get_class_attributes(class_inst)})
         if len(self.search_fields) == 0:
-            admin_attr.update({"search_fields": self.get_class_attributes(class_inst, [DateTimeField])})
+            admin_attr.update({"search_fields": self.get_class_attributes(
+                class_inst, [DateTimeField, ForeignKey])})
 
     # noinspection PyMethodMayBeStatic
     def get_class_attributes(self, class_inst, exclude_field_types=[]):
