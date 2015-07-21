@@ -2,6 +2,7 @@ import copy
 from django.db import models
 from djangoautoconf.auto_conf_admin_tools.additional_attr import AdditionalAdminAttr
 from djangoautoconf.auto_conf_admin_tools.foreign_key_auto_complete import ForeignKeyAutoCompleteFeature
+from djangoautoconf.auto_conf_admin_tools.import_export_feature import ImportExportFeature
 from djangoautoconf.auto_conf_admin_tools.list_and_search import ListAndSearch
 from libtool.inspect_utils import class_enumerator
 from django.conf import settings
@@ -56,19 +57,14 @@ class AdminRegister(object):
         except ImportError:
             pass
 
+        self.list_search_feature = ListAndSearch()
+        self.admin_features.append(self.list_search_feature)
+        self.import_export_feature = ImportExportFeature()
+        self.add_feature(self.import_export_feature)
+
     def get_valid_admin_class_with_list(self, class_inst):
         # print admin_list
-        try:
-            if "import_export" in settings.INSTALLED_APPS:
-                from djangoautoconf.import_export_utils import get_import_export_resource
-                from import_export.admin import ImportExportActionModelAdmin
-                self.base_model_admin = ImportExportActionModelAdmin
-                resource_class = get_import_export_resource(class_inst)
-                self.admin_class_attributes.update({
-                    "resource_class": resource_class
-                })
-        except ImportError:
-            pass
+
         if "guardian" in settings.INSTALLED_APPS:
             # g_is_guardian_included = True
             try:
@@ -93,22 +89,18 @@ class AdminRegister(object):
         for admin_site in self.admin_site_list:
             register_admin_without_duplicated_register(class_inst, admin_class, admin_site)
 
-    def register(self, class_inst, list_display=[], search_fields=[]):
-        list_search_feature = ListAndSearch()
-        list_search_feature.set_list_and_search(list_display, search_fields)
-        self.admin_features.append(list_search_feature)
-
+    def register(self, class_inst):
         admin_class = self.get_valid_admin_class_with_list(class_inst)
         self.register_admin_without_duplicated_register(class_inst, admin_class)
 
-    def register_all_with_additional_attributes(self, class_inst, admin_class_attributes={}):
-        additional_attr_feature = AdditionalAdminAttr()
-        additional_attr_feature.set_additional_attr(admin_class_attributes)
-        self.admin_features.append(additional_attr_feature)
-        self.register(class_inst)
-
-    def register_with_all_in_list_display(self, class_inst):
-        self.register(class_inst)
+    # def register_all_with_additional_attributes(self, class_inst, admin_class_attributes={}):
+    #     additional_attr_feature = AdditionalAdminAttr()
+    #     additional_attr_feature.set_additional_attr(admin_class_attributes)
+    #     self.admin_features.append(additional_attr_feature)
+    #     self.register(class_inst)
+    #
+    # def register_with_all_in_list_display(self, class_inst):
+    #     self.register(class_inst)
 
     def register_all_model(self, module_instance, exclude_name_list=[]):
         self.register_all_models(module_instance, exclude_name_list)
@@ -122,7 +114,7 @@ class AdminRegister(object):
         """
         for class_instance in class_enumerator(module_instance, exclude_name_list):
             if is_inherit_from_model(class_instance):
-                self.register_with_all_in_list_display(class_instance)
+                self.register(class_instance)
 
     def add_feature(self, feature):
         self.admin_features.append(feature)
