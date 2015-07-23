@@ -96,15 +96,6 @@ class AdminRegister(object):
         self.register(class_inst)
         self.instant_admin_attr = {}
 
-    # def register_all_with_additional_attributes(self, class_inst, admin_class_attributes={}):
-    #     additional_attr_feature = AdditionalAdminAttr()
-    #     additional_attr_feature.set_additional_attr(admin_class_attributes)
-    #     self.admin_features.append(additional_attr_feature)
-    #     self.register(class_inst)
-    #
-    # def register_with_all_in_list_display(self, class_inst):
-    #     self.register(class_inst)
-
     def register_all_model(self, module_instance, exclude_name_list=[]):
         self.register_all_models(module_instance, exclude_name_list)
 
@@ -121,14 +112,5 @@ class AdminRegister(object):
 
     def add_feature(self, feature):
         self.admin_features.append(feature)
-
-    # def include_additional_admin_mixins(self, class_instance, existing_list):
-    #     try:
-    #         from djangoautoconf.import_export_utils import get_import_export_admin_mixin
-    #         existing_list.append(get_import_export_admin_mixin(class_instance))
-    #         #from import_export.admin import ImportExportActionModelAdmin
-    #         #existing_list.append(ImportExportActionModelAdmin)
-    #     except ImportError:
-    #         pass
 
 
