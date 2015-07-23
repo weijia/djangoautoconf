@@ -2,11 +2,11 @@ import copy
 from django.db import models
 from djangoautoconf.auto_conf_admin_tools.additional_attr import AdditionalAdminAttr
 from djangoautoconf.auto_conf_admin_tools.foreign_key_auto_complete import ForeignKeyAutoCompleteFeature
+from djangoautoconf.auto_conf_admin_tools.guardian_feature import GuardianFeature
 from djangoautoconf.auto_conf_admin_tools.import_export_feature import ImportExportFeature
 from djangoautoconf.auto_conf_admin_tools.list_and_search import ListAndSearch
 from libtool.inspect_utils import class_enumerator
 from django.conf import settings
-from django.contrib.admin import ModelAdmin
 from django.contrib import admin
 
 
@@ -42,45 +42,43 @@ def is_need_register(admin_site, class_inst):
     return (not is_already_registered) and is_can_register
 
 
+default_admin_site_list = [admin.site]
+
+try:
+    from normal_admin.admin import user_admin_site
+    default_admin_site_list.append(user_admin_site)
+except ImportError:
+    pass
+
+
 class AdminRegister(object):
-    def __init__(self, parent_admin_list=[], admin_feature_list=[]):
+    def __init__(self, admin_site_list=default_admin_site_list, parent_admin_list=[]):
         super(AdminRegister, self).__init__()
         self.admin_features = []
         self.parent_admin_list = parent_admin_list
-        self.base_model_admin = ModelAdmin
+        # self.base_model_admin = ModelAdmin
         self.admin_class_attributes = {}
         # self.is_import_export_supported = False
-        self.admin_site_list = [admin.site, ]
-        try:
-            from normal_admin.admin import user_admin_site
-            self.admin_site_list.append(user_admin_site)
-        except ImportError:
-            pass
-
+        self.admin_site_list = admin_site_list
         self.list_search_feature = ListAndSearch()
         self.admin_features.append(self.list_search_feature)
         self.import_export_feature = ImportExportFeature()
         self.add_feature(self.import_export_feature)
+        self.guardian_feature = GuardianFeature()
+        self.add_feature(self.guardian_feature)
+        self.instant_admin_attr = {}
 
     def get_valid_admin_class_with_list(self, class_inst):
-        # print admin_list
-
-        if "guardian" in settings.INSTALLED_APPS:
-            # g_is_guardian_included = True
-            try:
-                from guardian.admin import GuardedModelAdmin
-                self.base_model_admin = GuardedModelAdmin
-            except ImportError:
-                pass
 
         copied_admin_list = copy.copy(self.parent_admin_list)
-        copied_admin_list.append(self.base_model_admin)
+        # copied_admin_list.append(self.base_model_admin)
         for feature in self.admin_features:
             feature.process_parent_class_list(copied_admin_list, class_inst)
             feature.process_admin_class_attr(self.admin_class_attributes, class_inst)
 
         # print ModelAdmin
         # print final_parents
+        self.admin_class_attributes.update(self.instant_admin_attr)
 
         admin_class = type(class_inst.__name__ + "Admin", tuple(copied_admin_list), self.admin_class_attributes)
         return admin_class
@@ -92,6 +90,11 @@ class AdminRegister(object):
     def register(self, class_inst):
         admin_class = self.get_valid_admin_class_with_list(class_inst)
         self.register_admin_without_duplicated_register(class_inst, admin_class)
+
+    def register_with_instant_fields(self, class_inst, instant_admin_attr):
+        self.instant_admin_attr = instant_admin_attr
+        self.register(class_inst)
+        self.instant_admin_attr = {}
 
     # def register_all_with_additional_attributes(self, class_inst, admin_class_attributes={}):
     #     additional_attr_feature = AdditionalAdminAttr()

@@ -3,6 +3,7 @@ from djangoautoconf.import_export_utils import get_import_export_resource
 __author__ = 'weijia'
 from django.conf import settings
 
+
 class ImportExportFeature(object):
 
     def __init__(self):
