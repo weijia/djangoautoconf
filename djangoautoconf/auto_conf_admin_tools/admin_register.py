@@ -5,6 +5,7 @@ from djangoautoconf.auto_conf_admin_tools.foreign_key_auto_complete import Forei
 from djangoautoconf.auto_conf_admin_tools.guardian_feature import GuardianFeature
 from djangoautoconf.auto_conf_admin_tools.import_export_feature import ImportExportFeature
 from djangoautoconf.auto_conf_admin_tools.list_and_search import ListAndSearch
+from djangoautoconf.auto_conf_admin_tools.reversion_feature import ReversionFeature
 from libtool.inspect_utils import class_enumerator
 from django.conf import settings
 from django.contrib import admin
@@ -52,21 +53,20 @@ except ImportError:
 
 
 class AdminRegister(object):
+    default_feature_list = [ListAndSearch, ImportExportFeature, GuardianFeature  #, ReversionFeature
+                            ]
+
     def __init__(self, admin_site_list=default_admin_site_list, parent_admin_list=[]):
         super(AdminRegister, self).__init__()
         self.admin_features = []
         self.parent_admin_list = parent_admin_list
         # self.base_model_admin = ModelAdmin
         self.admin_class_attributes = {}
-        # self.is_import_export_supported = False
-        self.admin_site_list = admin_site_list
-        self.list_search_feature = ListAndSearch()
-        self.admin_features.append(self.list_search_feature)
-        self.import_export_feature = ImportExportFeature()
-        self.add_feature(self.import_export_feature)
-        self.guardian_feature = GuardianFeature()
-        self.add_feature(self.guardian_feature)
+
+        for feature in self.default_feature_list:
+            self.add_feature(feature())
         self.instant_admin_attr = {}
+        self.admin_site_list = admin_site_list
 
     def get_valid_admin_class_with_list(self, class_inst):
 

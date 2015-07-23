@@ -6,7 +6,7 @@ __author__ = 'weijia'
 
 class ForeignKeyAutoCompleteFeature(AdminFeatureBase):
     def __init__(self):
-        super(AdminFeatureBase, self).__init__()
+        super(ForeignKeyAutoCompleteFeature, self).__init__()
         self.related_search_fields = {}
 
     def process_parent_class_list(self, parent_list, class_inst):
