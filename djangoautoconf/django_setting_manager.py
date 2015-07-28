@@ -4,6 +4,7 @@ from djangoautoconf.auto_conf_utils import enum_modules, enum_folders
 from libtool import include
 from libtool.basic_lib_tool import remove_folder_in_sys_path
 import logging
+from sys import modules as sys_modules
 
 __author__ = 'weijia'
 import os
@@ -85,6 +86,7 @@ class DjangoSettingManager(object):
             raise
         self.__remove_attr()
         update_base_settings(new_base_settings)
+        del sys_modules[module_import_path]
 
     def __inject_attr(self):
         self.builtin["PROJECT_ROOT"] = self.root_dir
@@ -127,3 +129,34 @@ class DjangoSettingManager(object):
             value = getattr(base_settings, attr)
             if (type(value) is list) and len(value) == 0:
                 delattr(base_settings, attr)
+
+
+# Ref: http://stackoverflow.com/questions/1668223/how-to-de-import-a-python-module
+def delete_module(modname, paranoid=None):
+    from sys import modules
+    try:
+        thismod = modules[modname]
+    except KeyError:
+        raise ValueError(modname)
+    these_symbols = dir(thismod)
+    if paranoid:
+        try:
+            paranoid[:]  # sequence support
+        except:
+            raise ValueError('must supply a finite list for paranoid')
+        else:
+            these_symbols = paranoid[:]
+    del modules[modname]
+    for mod in modules.values():
+        try:
+            delattr(mod, modname)
+        except AttributeError:
+            pass
+        if paranoid:
+            for symbol in these_symbols:
+                if symbol[:2] == '__':  # ignore special symbols
+                    continue
+                try:
+                    delattr(mod, symbol)
+                except AttributeError:
+                    pass
