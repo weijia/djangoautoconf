@@ -1,4 +1,6 @@
 import copy
+import types
+# from django.contrib.admin import ModelAdmin
 from django.db import models
 from djangoautoconf.auto_conf_admin_tools.additional_attr import AdditionalAdminAttr
 from djangoautoconf.auto_conf_admin_tools.foreign_key_auto_complete import ForeignKeyAutoCompleteFeature
@@ -80,7 +82,13 @@ class AdminRegister(object):
         # print final_parents
         self.admin_class_attributes.update(self.instant_admin_attr)
 
+        for attr in self.admin_class_attributes:
+            new_method = self.admin_class_attributes[attr]
+            if isinstance(new_method, types.FunctionType):
+                self.admin_class_attributes[attr] = new_method
+
         admin_class = type(class_inst.__name__ + "Admin", tuple(copied_admin_list), self.admin_class_attributes)
+
         return admin_class
 
     def register_admin_without_duplicated_register(self, class_inst, admin_class):

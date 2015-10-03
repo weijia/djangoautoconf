@@ -69,6 +69,8 @@ def include_urls():
     from django.conf import settings
     # from django.utils.importlib import import_module
 
+    create_simple_menu("admin")
+
     for app in enum_app_names():
         mod = import_module(app)
         # Attempt to import the app's admin module.
@@ -111,17 +113,21 @@ def add_app_urls_no_exception(app):
             app_module = importlib.import_module("%s.urls" % app)
             if hasattr(app_module, "urlpatterns"):
                 add_url_pattern("^%s/" % app, include('%s.urls' % app))
-                if True: #try:
-                    menu, is_created = Menu.objects.get_or_create(name=app)
-                    MenuItem.objects.get_or_create(name=app, menu=menu, urlstr="/%s/" % app)
-                else: #except Exception, e:
-                    # import traceback
-                    pass
+                create_simple_menu(app)
     except ImportError:
         print "Import %s.urls failed (maybe %s.urls does not exists)." % (app, app)
     except Exception, e:
         # import traceback
         traceback.print_exc()
+        pass
+
+
+def create_simple_menu(app):
+    if True:  # try:
+        menu, is_created = Menu.objects.get_or_create(name=app)
+        MenuItem.objects.get_or_create(name=app, menu=menu, urlstr="/%s/" % app)
+    else:  # except Exception, e:
+        # import traceback
         pass
 
 
