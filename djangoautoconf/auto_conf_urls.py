@@ -3,10 +3,9 @@ import inspect
 import os
 import sys
 import traceback
-from djangoautoconf import DjangoAutoConf
 from djangoautoconf.auto_conf_utils import get_module_path, is_at_least_one_sub_filesystem_item_exists
 from libtool.short_decorator.ignore_exception import ignore_exc_with_result
-
+from djangoautoconf.auto_conf_utils import enum_modules
 
 try:
     import simplemenu
@@ -92,14 +91,17 @@ def include_urls():
 def add_urlpatterns_in_file(local_urls_full_path):
     sys.path.append(local_urls_full_path)
     all_local_url_patterns = []
-    for url_module_name in DjangoAutoConf.enum_modules(local_urls_full_path):
+    for url_module_name in enum_modules(local_urls_full_path):
         # m = __import__("local_urls.%s" % url_module_name)
         m = importlib.import_module("%s" % url_module_name)
         # m = importlib.import_module("%s.%s" % (module_path, self.module_of_attribute))
-        urlpatterns = getattr(m, "urlpatterns")
-        for p in urlpatterns:
-            all_local_url_patterns.append(p)
-    add_to_root_url_pattern(all_local_url_patterns)
+        try:
+            urlpatterns = getattr(m, "urlpatterns")
+            for p in urlpatterns:
+                all_local_url_patterns.append(p)
+            add_to_root_url_pattern(all_local_url_patterns)
+        except AttributeError:
+            pass
     sys.path.remove(local_urls_full_path)
 
 
