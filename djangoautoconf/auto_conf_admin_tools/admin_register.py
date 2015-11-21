@@ -1,15 +1,15 @@
 import copy
 import types
-# from django.contrib.admin import ModelAdmin
+from django.contrib.admin import ModelAdmin
 from django.db import models
-from djangoautoconf.auto_conf_admin_tools.additional_attr import AdditionalAdminAttr
-from djangoautoconf.auto_conf_admin_tools.foreign_key_auto_complete import ForeignKeyAutoCompleteFeature
+# from djangoautoconf.auto_conf_admin_tools.additional_attr import AdditionalAdminAttr
+# from djangoautoconf.auto_conf_admin_tools.foreign_key_auto_complete import ForeignKeyAutoCompleteFeature
 from djangoautoconf.auto_conf_admin_tools.guardian_feature import GuardianFeature
 from djangoautoconf.auto_conf_admin_tools.import_export_feature import ImportExportFeature
 from djangoautoconf.auto_conf_admin_tools.list_and_search import ListAndSearch
-from djangoautoconf.auto_conf_admin_tools.reversion_feature import ReversionFeature
+# from djangoautoconf.auto_conf_admin_tools.reversion_feature import ReversionFeature
 from libtool.inspect_utils import class_enumerator
-from django.conf import settings
+# from django.conf import settings
 from django.contrib import admin
 
 
@@ -87,6 +87,8 @@ class AdminRegister(object):
             if isinstance(new_method, types.FunctionType):
                 self.admin_class_attributes[attr] = new_method
 
+        if len(copied_admin_list) == 0:
+            copied_admin_list = [ModelAdmin,]
         admin_class = type(class_inst.__name__ + "Admin", tuple(copied_admin_list), self.admin_class_attributes)
 
         return admin_class
