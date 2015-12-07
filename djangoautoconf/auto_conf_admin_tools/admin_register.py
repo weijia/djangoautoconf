@@ -14,6 +14,7 @@ from django.contrib import admin
 
 
 def register_admin_without_duplicated_register(class_inst, admin_class, admin_site=admin.site):
+    # noinspection PyBroadException
     try:
         if is_need_register(admin_site, class_inst):
             admin_site.register(class_inst, admin_class)
@@ -21,6 +22,7 @@ def register_admin_without_duplicated_register(class_inst, admin_class, admin_si
         if True:  # not (' is already registered' in e.message):
             print class_inst, admin_class
             import traceback
+
             traceback.print_exc()
 
 
@@ -34,6 +36,7 @@ def is_inherit_from_model(class_inst):
     return False
 
 
+# noinspection PyProtectedMember
 def is_need_register(admin_site, class_inst):
     # if not is_inherit_from_model(class_inst):
     #     return False
@@ -48,6 +51,7 @@ def is_need_register(admin_site, class_inst):
 default_admin_site_list = [admin.site]
 
 try:
+    # noinspection PyUnresolvedReferences
     from normal_admin.admin import user_admin_site
     default_admin_site_list.append(user_admin_site)
 except ImportError:
@@ -55,7 +59,7 @@ except ImportError:
 
 
 class AdminRegister(object):
-    default_feature_list = [ListAndSearch, ImportExportFeature, GuardianFeature  #, ReversionFeature
+    default_feature_list = [ListAndSearch, ImportExportFeature, GuardianFeature  # , ReversionFeature
                             ]
 
     def __init__(self, admin_site_list=default_admin_site_list, parent_admin_list=[]):
@@ -88,7 +92,7 @@ class AdminRegister(object):
                 self.admin_class_attributes[attr] = new_method
 
         if len(copied_admin_list) == 0:
-            copied_admin_list = [ModelAdmin,]
+            copied_admin_list = [ModelAdmin, ]
         admin_class = type(class_inst.__name__ + "Admin", tuple(copied_admin_list), self.admin_class_attributes)
 
         return admin_class
@@ -111,9 +115,9 @@ class AdminRegister(object):
 
     def register_all_models(self, module_instance, exclude_name_list=[]):
         """
-        :param module_instance: mostly the models module
+        :param module_instance: the module instance that containing models.Model inherited classes,
+                mostly the models module
         :param exclude_name_list: class does not need to register or is already registered
-        :param admin_class_list:
         :return: N/A
         """
         for class_instance in class_enumerator(module_instance, exclude_name_list):
@@ -122,5 +126,3 @@ class AdminRegister(object):
 
     def add_feature(self, feature):
         self.admin_features.append(feature)
-
-
