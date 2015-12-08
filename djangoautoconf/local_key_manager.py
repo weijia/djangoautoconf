@@ -1,3 +1,4 @@
+import sys
 from django.utils import importlib
 
 
@@ -20,9 +21,9 @@ class ConfigurableAttributeGetter(object):
     def get_attr(self, attr_name):
         try:
             m = self.get_module_of_local_keys()
-            #return getattr(m, attr_name)
+            # return getattr(m, attr_name)
         except ImportError:
-            #from management.commands.keys_default.admin_pass import default_admin_password, default_admin_user
+            # from management.commands.keys_default.admin_pass import default_admin_password, default_admin_user
             if self.default_module is None:
                 m = importlib.import_module("%s_template" % self.module_of_attribute)
             else:
@@ -38,7 +39,7 @@ def get_local_key(key_name, default_module=None):
     :return: value for the key
     """
     key_name_module_path = key_name.split(".")
-    module_name = key_name_module_path[0]
-    attr_name = key_name_module_path[1]
+    module_name = ".".join(key_name_module_path[0:-1])
+    attr_name = key_name_module_path[-1]
     c = ConfigurableAttributeGetter(module_name, default_module)
     return c.get_attr(attr_name)
