@@ -28,7 +28,11 @@ class ListAndSearch(AdminFeatureBase):
             for field in class_inst.__dict__['_meta'].fields:
                 if type(field) in exclude_field_types:
                     continue
-                res.append(field.name)
+                try:
+                    field.get_prep_lookup("icontains", "test")
+                    res.append(field.name)
+                except TypeError:
+                    pass
         except Exception, e:
             pass
         return res
