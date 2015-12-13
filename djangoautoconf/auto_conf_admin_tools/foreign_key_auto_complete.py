@@ -1,7 +1,9 @@
 import copy
 
-from django.db.models import ForeignKey
+from django.db.models import ForeignKey, ManyToManyField
 from django_extensions.admin import ForeignKeyAutocompleteAdmin
+from mptt.fields import TreeForeignKey
+
 from djangoautoconf.auto_conf_admin_tools.admin_feature_base import AdminFeatureBase
 
 __author__ = 'weijia'
@@ -20,7 +22,7 @@ class ForeignKeyAutoCompleteFeature(AdminFeatureBase):
         admin_attr["related_search_fields"] = copy.copy(self.related_search_fields)
         if not (self.search_field_by_model is None):
             for field in class_inst.__dict__['_meta'].fields:
-                if type(field) is ForeignKey:
+                if (type(field) is ForeignKey) or (type(field) is TreeForeignKey):
                     if field.rel.to in self.search_field_by_model.keys():
                         admin_attr["related_search_fields"][field.name] = self.search_field_by_model[field.rel.to]
 
