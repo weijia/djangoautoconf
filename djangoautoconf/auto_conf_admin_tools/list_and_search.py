@@ -41,8 +41,8 @@ class ListAndSearch(AdminFeatureBase):
         res = []
         try:
             for field in self.enum_model_fields(class_inst):
-                self.is_contain_searchable(field)
-                res.append(field.name)
+                if self.is_contain_searchable(field):
+                    res.append(field.name)
         except Exception, e:
             pass
         return res
@@ -51,8 +51,9 @@ class ListAndSearch(AdminFeatureBase):
     def is_contain_searchable(self, field):
         try:
             field.get_prep_lookup("icontains", "test")
+            return True
         except TypeError:
-            pass
+            return False
 
     # noinspection PyMethodMayBeStatic
     def enum_model_fields(self, class_inst):
