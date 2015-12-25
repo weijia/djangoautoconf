@@ -41,7 +41,7 @@ class ListAndSearch(AdminFeatureBase):
         res = []
         try:
             for field in self.enum_model_fields(class_inst):
-                if self.is_contain_searchable(field):
+                if self.is_contain_searchable(field) and (type(field) in [DateTimeField]):
                     res.append(field.name)
         except Exception, e:
             pass
