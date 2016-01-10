@@ -5,6 +5,13 @@ __author__ = 'weijia'
 
 
 def get_duplicated_model(class_inst, new_class_name):
+    """
+    Duplicate the model fields from class_inst to new_class_name, example:
+    NewClass = get_duplicated_model(OldClass, "NewClass")
+    :param class_inst:
+    :param new_class_name:
+    :return:
+    """
     # Ref: http://www.cnblogs.com/Jerryshome/archive/2012/12/21/2827492.html
     # get caller stack frame
     # caller_frame = inspect.currentframe()

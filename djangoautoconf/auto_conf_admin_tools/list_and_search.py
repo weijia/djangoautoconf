@@ -18,21 +18,43 @@ class ListAndSearch(AdminFeatureBase):
         if len(self.list_fields) == 0:
             admin_attr.update({"list_display": self.get_class_attributes(class_inst)})
         if len(self.search_fields) == 0:
-            admin_attr.update({"search_fields": self.get_class_attributes(
-                class_inst, [DateTimeField, ForeignKey])})
+            admin_attr.update({"search_fields": self.get_contain_searchable_attr(
+                class_inst)})
 
     # noinspection PyMethodMayBeStatic
     def get_class_attributes(self, class_inst, exclude_field_types=[]):
         res = []
         try:
-            for field in class_inst.__dict__['_meta'].fields:
+            for field in self.enum_model_fields(class_inst):
                 if type(field) in exclude_field_types:
                     continue
                 try:
-                    field.get_prep_lookup("icontains", "test")
+                    self.is_contain_searchable(field)
                     res.append(field.name)
                 except TypeError:
                     pass
         except Exception, e:
             pass
         return res
+
+    def get_contain_searchable_attr(self, class_inst):
+        res = []
+        try:
+            for field in self.enum_model_fields(class_inst):
+                if self.is_contain_searchable(field) and not (type(field) in [DateTimeField]):
+                    res.append(field.name)
+        except Exception, e:
+            pass
+        return res
+
+    # noinspection PyMethodMayBeStatic
+    def is_contain_searchable(self, field):
+        try:
+            field.get_prep_lookup("icontains", "test")
+            return True
+        except TypeError:
+            return False
+
+    # noinspection PyMethodMayBeStatic
+    def enum_model_fields(self, class_inst):
+        return class_inst.__dict__['_meta'].fields
