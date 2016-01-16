@@ -88,7 +88,7 @@ class DjangoAutoConf(DjangoSettingManager):
         self.add_secret_key()
         self.update_installed_apps_etc()
         self.remove_empty_list()
-        self.refine_attrs(base_settings)
+        self.refine_attributes(base_settings)
         dump_attrs(base_settings)
 
     def remove_duplicated(self, value_in_tuple):
