@@ -17,7 +17,7 @@ AUTHENTICATION_BACKENDS += (
     'guardian.backends.ObjectPermissionBackend',
 )
 
-getter = ConfigurableAttributeGetter("github_api_keys", "webmanager")
+getter = ConfigurableAttributeGetter("github_api_keys", "djangoautoconf.settings_templates")
 
 github_api_key = getter.get_attr("github_api_key")
 github_api_secret = getter.get_attr("github_api_secret")
