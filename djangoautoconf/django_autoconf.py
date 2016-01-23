@@ -91,7 +91,8 @@ class DjangoAutoConf(DjangoSettingManager):
         self.refine_attributes(base_settings)
         dump_attrs(base_settings)
 
-    def remove_duplicated(self, value_in_tuple):
+    @staticmethod
+    def remove_duplicated(value_in_tuple):
         new_tuple = []
         for i in value_in_tuple:
             if not (i in new_tuple):
@@ -103,7 +104,7 @@ class DjangoAutoConf(DjangoSettingManager):
             if attr != attr.upper():
                 continue
             value = getattr(s, attr)
-            if (type(value) is tuple):
+            if type(value) is tuple:
                 setattr(s, attr, self.remove_duplicated(value))
 
     def check_params(self):
