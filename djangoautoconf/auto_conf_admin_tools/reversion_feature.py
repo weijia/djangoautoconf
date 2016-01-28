@@ -11,5 +11,8 @@ class ReversionFeature(AdminFeatureBase):
 
     def process_parent_class_list(self, parent_list, class_inst):
         if "reversion" in settings.INSTALLED_APPS:
-            from reversion import VersionAdmin
+            try:
+                from reversion import VersionAdmin  # for Django 1.5
+            except:
+                from reversion.admin import VersionAdmin  # for Django 1.8
             parent_list.append(VersionAdmin)
