@@ -1,18 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import importlib
 import logging
 import os
-import sys
-
-from django.utils.crypto import get_random_string
-import re
 
 import base_settings
 from auto_conf_utils import dump_attrs, is_at_least_one_sub_filesystem_item_exists, enum_folders
-from libtool import include, include_all_direct_subfolders
-from libtool.folder_tool import ensure_dir
 from django_setting_manager import DjangoSettingManager
+from libtool import include, include_all_direct_subfolders
+from libtool.basic_lib_tool import remove_folder_in_sys_path
 
 log = logging.getLogger(__name__)
 
@@ -26,6 +21,13 @@ class LocalKeyFolderNotExist(Exception):
 
 
 class DjangoAutoConf(DjangoSettingManager):
+    """
+    external_app_repos
+        repo folder
+            server app folders/modules may be imported
+    """
+    AUTO_DETECT_CONFIG_FILENAME = "default_settings.py"
+
     def __init__(self, default_settings_import_str=None):
         super(DjangoAutoConf, self).__init__(default_settings_import_str)
         # Default keys is located at ../keys relative to universal_settings module?
@@ -34,9 +36,7 @@ class DjangoAutoConf(DjangoSettingManager):
         self.local_key_folder = None
         self.extra_setting_module_full_names = []
         self.project_path = None
-        self.local_key_folder_name = "local_keys"
         self.server_base_package_folder = "server_base_packages"
-        self.local_folder_name = "local"
         self.local_key_folder_relative_to_root = os.path.join(self.local_folder_name, self.local_key_folder_name)
         self.external_apps_folder = None
         self.installed_app_list = None
@@ -80,7 +80,7 @@ class DjangoAutoConf(DjangoSettingManager):
         self.local_key_folder = local_key_folder
 
     def configure(self, features=[]):
-        self.check_params()
+        self.__check_params()
         # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangoautoconf.base_settings")
         os.environ["DJANGO_SETTINGS_MODULE"] = "djangoautoconf.base_settings"
 
@@ -91,23 +91,7 @@ class DjangoAutoConf(DjangoSettingManager):
         self.refine_attributes(base_settings)
         dump_attrs(base_settings)
 
-    @staticmethod
-    def remove_duplicated(value_in_tuple):
-        new_tuple = []
-        for i in value_in_tuple:
-            if not (i in new_tuple):
-                new_tuple.append(i)
-        return new_tuple
-
-    def refine_attributes(self, s):
-        for attr in dir(s):
-            if attr != attr.upper():
-                continue
-            value = getattr(s, attr)
-            if type(value) is tuple:
-                setattr(s, attr, self.remove_duplicated(value))
-
-    def check_params(self):
+    def __check_params(self):
         if not os.path.exists(self.root_dir):
             raise RootDirNotExist
         if not os.path.exists(self.local_key_folder):
@@ -131,8 +115,9 @@ class DjangoAutoConf(DjangoSettingManager):
 
     # noinspection PyMethodMayBeStatic
     def is_valid_app_module(self, app_module_folder_full_path):
-        signature_filename_list = ["default_settings.py", "default_urls.py", "urls.py"]
-        return is_at_least_one_sub_filesystem_item_exists(app_module_folder_full_path, signature_filename_list)
+        signature_filename_list = [self.AUTO_DETECT_CONFIG_FILENAME, "default_urls.py", "urls.py"]
+        return os.path.isdir(app_module_folder_full_path) and is_at_least_one_sub_filesystem_item_exists(
+            app_module_folder_full_path, signature_filename_list)
 
     def get_external_apps_folder(self):
         if self.external_apps_folder is None:
@@ -145,26 +130,25 @@ class DjangoAutoConf(DjangoSettingManager):
         else:
             return enum_folders(self.external_app_repositories_full_path)
 
-    def install_auto_detected_apps(self):
-        self.installed_app_list = list(getattr(base_settings, "INSTALLED_APPS"))
-
+    def enum_app_root_folders_in_repo(self):
         for repo in self.get_external_apps_repositories():
             for apps_root_folder in enum_folders(repo):
-                self.scan_apps_in_sub_folders(apps_root_folder)
+                yield apps_root_folder
 
+    def enum_app_module_folders(self):
+        for app_root_folder in self.enum_app_root_folders_in_repo():
+            for app_module_folder in enum_folders(app_root_folder):
+                yield app_module_folder
+
+    def install_auto_detected_apps(self):
+        self.installed_app_list = list(getattr(base_settings, "INSTALLED_APPS"))
+        for app_module_folder in self.enum_app_module_folders():
+            if self.is_valid_app_module(app_module_folder):
+                app_module_folder_name = os.path.basename(app_module_folder)
+                app_root_folder = os.path.dirname(app_module_folder)
+                include(app_root_folder)
+                self.installed_app_list.append(app_module_folder_name)
         setattr(base_settings, "INSTALLED_APPS", tuple(self.installed_app_list))
-
-    def scan_apps_in_sub_folders(self, apps_root_folder):
-        add_apps_root_folder_to_sys_path = False
-        if os.path.isdir(apps_root_folder):
-            for app_module_folder_name in os.listdir(apps_root_folder):
-                app_module_folder_full_path = os.path.join(apps_root_folder, app_module_folder_name)
-                if os.path.isdir(app_module_folder_full_path) and \
-                        self.is_valid_app_module(app_module_folder_full_path):
-                    add_apps_root_folder_to_sys_path = True
-                    self.installed_app_list.append(app_module_folder_name)
-        if add_apps_root_folder_to_sys_path:
-            include(apps_root_folder)
 
     def update_installed_apps_etc(self):
         setattr(base_settings, "PROJECT_PATH", self.get_project_path())
@@ -174,36 +158,18 @@ class DjangoAutoConf(DjangoSettingManager):
         setattr(base_settings, "STATIC_ROOT", os.path.abspath(os.path.join(self.get_project_path(), 'static')))
         self.install_auto_detected_apps()
 
-    def get_existing_secret_key(self, secret_key_folder):
-        # from local_keys.secret_key import SECRET_KEY
-        log.debug("importing key from %s.%s.secret_key" % (self.local_folder_name, self.local_key_folder_name))
-        m = importlib.import_module("%s.%s.secret_key" % (self.local_folder_name, self.local_key_folder_name))
-        logging.info("load existing secret key OK")
-        return m.SECRET_KEY
+    def load_all_extra_settings(self, features):
+        self.update_base_settings_with_features(features)
+        self.__load_default_setting_from_apps()
+        self.load_extra_settings_in_folders()
 
-    def create_secret_file_and_get_it(self, local_key_folder):
-        chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
-        ensure_dir(local_key_folder)
-        secret_key = get_random_string(50, chars)
-        secret_file = open(os.path.join(local_key_folder, 'secret_key.py'), 'w')
-        secret_file.write("SECRET_KEY='%s'" % secret_key)
-        secret_file.close()
-        return self.get_existing_secret_key(local_key_folder)
-
-    def get_or_create_secret_key(self, local_key_folder):
-        try:
-            return self.get_existing_secret_key(local_key_folder)
-        except ImportError:
-            print "No existing secret key"
-            pass
-
-        try:
-            return self.create_secret_file_and_get_it(local_key_folder)
-        except Exception:
-            print "Try to create secret key failed"
-            import traceback
-
-            traceback.print_exc()
-            # In case the above not work, use the following.
-            # Make this unique, and don't share it with anybody.
-            return 'd&amp;x%x+^l@qfxm^2o9x)6ct5*cftlcu8xps9b7l3c$ul*n&amp;%p-k'
+    def __load_default_setting_from_apps(self):
+        for app_module_folder in self.enum_app_module_folders():
+            default_settings_full_path = os.path.join(app_module_folder, self.AUTO_DETECT_CONFIG_FILENAME)
+            if os.path.exists(default_settings_full_path) and not os.path.isdir(default_settings_full_path):
+                app_module_folder_name = os.path.basename(app_module_folder)
+                app_root_folder = os.path.dirname(app_module_folder)
+                include(app_root_folder)
+                self.import_based_on_base_settings("%s.%s" % (app_module_folder_name,
+                                                              self.AUTO_DETECT_CONFIG_FILENAME.split(".")[0]))
+                remove_folder_in_sys_path(app_root_folder)
