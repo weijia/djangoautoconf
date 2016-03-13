@@ -1,6 +1,8 @@
 from django_auth_ldap.config import LDAPSearch
 import ldap
 
+from djangoautoconf.local_key_manager import ConfigurableAttributeGetter
+
 AUTHENTICATION_BACKENDS = (
     'all_login.ldap_backend_wrapper.LDAPBackendWrapper',
     #'django_auth_ldap.backend.LDAPBackend',
@@ -10,9 +12,12 @@ AUTHENTICATION_BACKENDS = (
 # the following line will cause django mis configure and it will not start.
 # from django_auth_ldap.backend import LDAPBackend
 
-AUTH_LDAP_SERVER_URI = "ldap://ed-p-gl.emea.nsn-net.net:389/"
+getter = ConfigurableAttributeGetter("ldap_settings", "webmanager")
+AUTH_LDAP_SERVER_URI = getter.get_attr("auth_ldap_server_uri")
 # ldap.set_option(ldap.OPT_DEBUG_LEVEL, 4095)
+
 
 AUTH_LDAP_BIND_PASSWORD = ""
 
-AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=Internal,ou=People,o=nsn", ldap.SCOPE_SUBTREE, "uid=%(user)s")
+search_str = getter.get_attr("search_str")
+AUTH_LDAP_USER_SEARCH = LDAPSearch(search_str, ldap.SCOPE_SUBTREE, "uid=%(user)s")
