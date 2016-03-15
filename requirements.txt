@@ -2,3 +2,4 @@
 django-extensions
 # optional
 django-tastypie=0.12.2
+djangorestframework
