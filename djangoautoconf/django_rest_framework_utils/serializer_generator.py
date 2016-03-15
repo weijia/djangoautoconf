@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework import generics
+from rest_framework import permissions
 
 
 def get_serializer(class_inst):
@@ -15,6 +16,7 @@ def get_api_class(class_inst, suffix="List", parent=[generics.ListCreateAPIView]
                 {
                     "queryset": class_inst.objects.all(),
                     "serializer_class": serializer,
+                    'permission_classes': (permissions.IsAuthenticatedOrReadOnly,)
                 }
                 )
 
