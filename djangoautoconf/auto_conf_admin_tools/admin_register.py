@@ -74,9 +74,10 @@ class AdminRegister(object):
         self.instant_admin_attr = {}
         self.admin_site_list = admin_site_list
 
-    def get_valid_admin_class_with_list(self, class_inst):
+    def get_valid_admin_class_with_list(self, class_inst, parent_admin=[]):
 
         copied_admin_list = copy.copy(self.parent_admin_list)
+        copied_admin_list.extend(parent_admin)
         # copied_admin_list.append(self.base_model_admin)
         for feature in self.admin_features:
             feature.process_parent_class_list(copied_admin_list, class_inst)
@@ -101,8 +102,8 @@ class AdminRegister(object):
         for admin_site in self.admin_site_list:
             register_admin_without_duplicated_register(class_inst, admin_class, admin_site)
 
-    def register(self, class_inst):
-        admin_class = self.get_valid_admin_class_with_list(class_inst)
+    def register(self, class_inst, parent_admin=[]):
+        admin_class = self.get_valid_admin_class_with_list(class_inst, parent_admin=[])
         self.register_admin_without_duplicated_register(class_inst, admin_class)
 
     def register_with_instant_fields(self, class_inst, instant_admin_attr):

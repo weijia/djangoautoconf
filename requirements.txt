@@ -1,5 +1,9 @@
 #libtool
 django-extensions
 # optional
-django-tastypie=0.12.2
-djangorestframework
+django-tastypie
+django-jquery-ui
+django-bootstrap-form
+django-tables2
+django-tables2-reports
+django-import-export

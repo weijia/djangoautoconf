@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from rest_framework import generics
-from rest_framework import permissions
 
 
 def get_serializer(class_inst):
@@ -16,7 +15,6 @@ def get_api_class(class_inst, suffix="List", parent=[generics.ListCreateAPIView]
                 {
                     "queryset": class_inst.objects.all(),
                     "serializer_class": serializer,
-                    'permission_classes': (permissions.IsAuthenticatedOrReadOnly,)
                 }
                 )
 
@@ -26,4 +24,9 @@ def get_create_api_class(class_inst):
 
 
 def get_detail_api_class(class_inst):
+    """
+    Example: url(r'^checklist_list/(?P<pk>[0-9]+)/$', get_detail_api_class(ChecklistTreeItem).as_view()),
+    :param class_inst:
+    :return:
+    """
     return get_api_class(class_inst, "Detail", [generics.RetrieveUpdateDestroyAPIView])
