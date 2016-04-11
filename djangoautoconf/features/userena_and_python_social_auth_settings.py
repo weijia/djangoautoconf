@@ -22,6 +22,7 @@ AUTHENTICATION_BACKENDS = (
     'social.backends.yahoo.YahooOpenId',
     #'social.backends.weibo.WeiboOAuth2',
     #'social.backends.qq.QQOauth2',
+    'social.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
@@ -52,6 +53,13 @@ weibo_api_key = getter.get_attr("weibo_api_key")
 weibo_api_secret = getter.get_attr("weibo_api_secret")
 SOCIAL_AUTH_WEIBO_KEY = weibo_api_key
 SOCIAL_AUTH_WEIBO_SECRET = weibo_api_secret
+
+getter = ConfigurableAttributeGetter("github_api_key", "webmanager")
+github_api_key = getter.get_attr("github_api_key")
+github_api_secret = getter.get_attr("github_api_secret")
+SOCIAL_AUTH_GITHUB_KEY = github_api_key
+SOCIAL_AUTH_GITHUB_SECRET = github_api_secret
+
 
 SOCIAL_AUTH_WEIBO_DOMAIN_AS_USERNAME = True
 
