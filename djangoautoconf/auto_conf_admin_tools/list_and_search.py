@@ -1,5 +1,7 @@
 from django.db.models import DateTimeField, ForeignKey
 from djangoautoconf.auto_conf_admin_tools.admin_feature_base import AdminFeatureBase
+from django.db.models.fields.related import RelatedField
+
 
 __author__ = 'weijia'
 
@@ -51,6 +53,8 @@ class ListAndSearch(AdminFeatureBase):
     def is_contain_searchable(self, field):
         try:
             field.get_prep_lookup("icontains", "test")
+            if isinstance(field, RelatedField):
+                return False
             return True
         except TypeError:
             return False
