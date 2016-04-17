@@ -1,13 +1,8 @@
 from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL
 from tastypie.resources import ModelResource
-from req_with_auth import DjangoUserAuthentication
-import re
-
-
-def class_name_to_low_case(class_name):
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', class_name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+from djangoautoconf.req_with_auth import DjangoUserAuthentication
+from libtool.string_tools import class_name_to_low_case
 
 
 def create_tastypie_resource_class(class_inst, resource_name=None):
@@ -25,4 +20,10 @@ def create_tastypie_resource_class(class_inst, resource_name=None):
 
 
 def create_tastypie_resource(class_inst):
+    """
+    Usage: url(r'^api/', include(create_tastypie_resource(UfsObjFileMapping).urls)),
+    Access url: api/ufs_obj_file_mapping/?format=json
+    :param class_inst:
+    :return:
+    """
     return create_tastypie_resource_class(class_inst)()

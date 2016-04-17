@@ -5,7 +5,7 @@ from ajax_select import urls as ajax_select_urls
 from django.db.models import Q
 
 from djangoautoconf.auto_conf_urls import add_to_root_url_pattern
-from libtool.string_tools import convert
+from libtool.string_tools import class_name_to_low_case
 
 add_to_root_url_pattern(
     (url(r'^ajax_select/', include(ajax_select_urls)),)
@@ -30,5 +30,5 @@ def register_channel(model_inst, search_fields):
                          {"model": model_inst,
                           "dynamical_search_fields": search_fields,
                           })
-    channel_name = convert(model_inst.__name__)
+    channel_name = class_name_to_low_case(model_inst.__name__)
     registry.register({channel_name: channel_class})
