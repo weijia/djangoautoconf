@@ -13,6 +13,7 @@ class ModelWithFullPermissionFeature(object):
     def process_parent_class_list(self, parent_list, class_inst):
         pass
 
+    # noinspection PyMethodMayBeStatic
     def process_admin_class_attr(self, admin_attr, class_inst):
         admin_attr["get_model_perms"] = get_model_perms
         admin_attr["has_change_permission"] = has_change_permission

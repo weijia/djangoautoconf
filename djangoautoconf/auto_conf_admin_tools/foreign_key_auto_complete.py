@@ -10,6 +10,9 @@ __author__ = 'weijia'
 
 
 class ForeignKeyAutoCompleteFeature(AdminFeatureBase):
+    """
+    !!!This field is not compatible to django-ajax-selects!!!
+    """
     def __init__(self):
         super(ForeignKeyAutoCompleteFeature, self).__init__()
         self.related_search_fields = {}

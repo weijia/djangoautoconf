@@ -6,8 +6,12 @@ __author__ = 'weijia'
 class FilterHorizontalFeature(AdminFeatureBase):
 
     def __init__(self, fields):
+        """
+        Init the feature
+        :param fields: field set, for example: (username,)
+        """
         super(FilterHorizontalFeature, self).__init__()
-        self.set_filter_horizontal_fields(fields)
+        self.filter_horizontal_fields = fields
 
     def set_filter_horizontal_fields(self, fields):
         self.filter_horizontal_fields = fields
