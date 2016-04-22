@@ -92,11 +92,22 @@ class AdminRegister(object):
             if isinstance(new_method, types.FunctionType):
                 self.admin_class_attributes[attr] = new_method
 
-        if len(copied_admin_list) == 0:
+        if self.is_model_admin_needed(copied_admin_list):
             copied_admin_list = [ModelAdmin, ]
         admin_class = type(class_inst.__name__ + "Admin", tuple(copied_admin_list), self.admin_class_attributes)
 
         return admin_class
+
+    # noinspection PyMethodMayBeStatic
+    def is_model_admin_needed(self, copied_admin_list):
+        if len(copied_admin_list) == 0:
+            return True
+        for admin_class in copied_admin_list:
+            if "Mixin" in admin_class.__name__:
+                continue
+            else:
+                return False
+        return True
 
     def register_admin_without_duplicated_register(self, class_inst, admin_class):
         for admin_site in self.admin_site_list:
