@@ -38,7 +38,7 @@ class DjangoSettingManager(object):
         self.external_settings_folder_name = "external_settings"
         self.local_settings_relative_folder = "local/local_settings"
         self.external_app_folder_name = "external_apps"
-        self.local_app_setting_folder = None
+        self.local_app_setting_folders = []
 
     def add_extra_setting_full_path_folder(self, extra_setting_folder):
         self.extra_setting_folders.append(extra_setting_folder)
@@ -62,7 +62,7 @@ class DjangoSettingManager(object):
 
     def load_extra_settings_in_folders(self):
         # Add local/local_settings/ folder
-        self.extra_setting_folders.insert(0, self.local_app_setting_folder)
+        self.extra_setting_folders.extend(self.local_app_setting_folders)
         for folder in self.extra_setting_folders:
             include(folder)
             for module_name in enum_modules(folder):

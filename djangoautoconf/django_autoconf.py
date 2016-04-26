@@ -70,7 +70,7 @@ class DjangoAutoConf(DjangoSettingManager):
         self.root_dir = os.path.abspath(root_dir)
         self.project_path = os.path.abspath(os.path.abspath(self.root_dir))
         self.local_key_folder = os.path.join(self.root_dir, self.local_key_folder_relative_to_root)
-        self.local_app_setting_folder = os.path.join(self.root_dir, self.local_settings_relative_folder)
+        self.local_app_setting_folders = [os.path.join(self.root_dir, self.local_settings_relative_folder)]
 
     def set_key_dir(self, key_dir):
         self.key_dir = key_dir
