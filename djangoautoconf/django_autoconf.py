@@ -3,11 +3,12 @@
 import logging
 import os
 
+from ufs_tools.libtool import include_all_direct_subfolders
+
 import base_settings
 from auto_conf_utils import dump_attrs, is_at_least_one_sub_filesystem_item_exists, enum_folders
 from django_setting_manager import DjangoSettingManager
-from libtool import include, include_all_direct_subfolders
-from libtool.basic_lib_tool import remove_folder_in_sys_path
+from ufs_tools.basic_lib_tool import remove_folder_in_sys_path, include
 
 log = logging.getLogger(__name__)
 
