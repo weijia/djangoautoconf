@@ -1,14 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import importlib
 import logging
 import os
 
-from ufs_tools.libtool import include_all_direct_subfolders
+import django
+from ufs_tools import get_folder
+from ufs_tools.libtool import include_all_direct_subfolders, exclude
 
-import base_settings
 from auto_conf_utils import dump_attrs, is_at_least_one_sub_filesystem_item_exists, enum_folders
 from django_setting_manager import DjangoSettingManager
 from ufs_tools.basic_lib_tool import remove_folder_in_sys_path, include
+
+from djangoautoconf.base_setting_storage import ObjectSettingStorage
 
 log = logging.getLogger(__name__)
 
@@ -32,7 +36,7 @@ class DjangoAutoConf(DjangoSettingManager):
     def __init__(self, default_settings_import_str=None):
         super(DjangoAutoConf, self).__init__(default_settings_import_str)
         # Default keys is located at ../keys relative to universal_settings module?
-        self.extra_settings_in_base_package_folder = "others/extra_settings"
+        # self.extra_settings_in_base_package_folder = "others/extra_settings"  # base extra setting
         self.key_dir = None
         self.local_key_folder = None
         self.extra_setting_module_full_names = []
@@ -71,7 +75,8 @@ class DjangoAutoConf(DjangoSettingManager):
         self.root_dir = os.path.abspath(root_dir)
         self.project_path = os.path.abspath(os.path.abspath(self.root_dir))
         self.local_key_folder = os.path.join(self.root_dir, self.local_key_folder_relative_to_root)
-        self.local_app_setting_folders = [os.path.join(self.root_dir, self.local_settings_relative_folder)]
+        self.local_app_setting_folders.append(os.path.join(self.root_dir, self.local_settings_relative_folder))
+        self.setting_storage = ObjectSettingStorage(self.root_dir)
 
     def set_key_dir(self, key_dir):
         self.key_dir = key_dir
@@ -82,15 +87,18 @@ class DjangoAutoConf(DjangoSettingManager):
 
     def configure(self, features=[]):
         self.__check_params()
-        # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangoautoconf.base_settings")
-        os.environ["DJANGO_SETTINGS_MODULE"] = "djangoautoconf.base_settings"
-
+        self.set_settings_env()
+        self.load_settings_in_project_template()
         self.load_all_extra_settings(features)
-        self.add_secret_key()
+        self.setting_storage.add_secret_key(self.get_or_create_secret_key(self.get_local_key_folder()))
         self.update_installed_apps_etc()
-        self.remove_empty_list()
-        self.refine_attributes(base_settings)
-        dump_attrs(base_settings)
+        # self.setting_storage.remove_empty_list()
+        self.setting_storage.refine_attributes()
+        dump_attrs(self.setting_storage.get_settings())
+
+    @staticmethod
+    def set_settings_env():
+        os.environ["DJANGO_SETTINGS_MODULE"] = "djangoautoconf.base_settings"
 
     def __check_params(self):
         if not os.path.exists(self.root_dir):
@@ -104,10 +112,6 @@ class DjangoAutoConf(DjangoSettingManager):
         if self.local_key_folder is None:
             return os.path.join(self.key_dir, "local_keys")
         return self.local_key_folder
-
-    def add_secret_key(self):
-        secret_key = self.get_or_create_secret_key(self.get_local_key_folder())
-        setattr(base_settings, "SECRET_KEY", secret_key)
 
     def get_project_path(self):
         if self.project_path is None:
@@ -142,27 +146,27 @@ class DjangoAutoConf(DjangoSettingManager):
                 yield app_module_folder
 
     def install_auto_detected_apps(self):
-        self.installed_app_list = list(getattr(base_settings, "INSTALLED_APPS"))
+        self.installed_app_list = self.setting_storage.get_installed_apps()
         for app_module_folder in self.enum_app_module_folders():
             if self.is_valid_app_module(app_module_folder):
                 app_module_folder_name = os.path.basename(app_module_folder)
                 app_root_folder = os.path.dirname(app_module_folder)
                 include(app_root_folder)
                 self.installed_app_list.append(app_module_folder_name)
-        setattr(base_settings, "INSTALLED_APPS", tuple(self.installed_app_list))
+        self.setting_storage.set_attr("INSTALLED_APPS", tuple(self.installed_app_list))
 
     def update_installed_apps_etc(self):
-        setattr(base_settings, "PROJECT_PATH", self.get_project_path())
+        self.setting_storage.set_attr("PROJECT_PATH", self.get_project_path())
         # setattr(base_settings, "TEMPLATE_CONTEXT_PROCESSORS", tuple())
-        setattr(base_settings, "DJANGO_AUTO_CONF_LOCAL_DIR", os.path.join(
+        self.setting_storage.set_attr("DJANGO_AUTO_CONF_LOCAL_DIR", os.path.join(
             self.get_project_path(), self.local_folder_name))
-        setattr(base_settings, "STATIC_ROOT", os.path.abspath(os.path.join(self.get_project_path(), 'static')))
+        self.setting_storage.set_attr("STATIC_ROOT", os.path.abspath(os.path.join(self.get_project_path(), 'static')))
         self.install_auto_detected_apps()
 
     def load_all_extra_settings(self, features):
         self.update_base_settings_with_features(features)
-        self.__load_default_setting_from_apps()
         self.load_extra_settings_in_folders()
+        self.__load_default_setting_from_apps()
 
     def __load_default_setting_from_apps(self):
         for app_module_folder in self.enum_app_module_folders():
@@ -171,6 +175,18 @@ class DjangoAutoConf(DjangoSettingManager):
                 app_module_folder_name = os.path.basename(app_module_folder)
                 app_root_folder = os.path.dirname(app_module_folder)
                 include(app_root_folder)
-                self.import_based_on_base_settings("%s.%s" % (app_module_folder_name,
-                                                              self.AUTO_DETECT_CONFIG_FILENAME.split(".")[0]))
+                self.setting_storage.import_based_on_base_settings(
+                    "%s.%s" % (app_module_folder_name,
+                               self.AUTO_DETECT_CONFIG_FILENAME.split(
+                                   ".")[0]))
                 remove_folder_in_sys_path(app_root_folder)
+
+    def load_settings_in_project_template(self):
+        template_root = os.path.join(get_folder(django.__file__), "conf/project_template/")
+        include(template_root)
+        # full_path = os.path.join(get_folder(django.__file__), "conf/project_template/project_name/settings.py")
+        # f = open(full_path)
+        # module_content = f.read()
+        # self.setting_storage.eval_content(module_content)
+        self.setting_storage.import_based_on_base_settings("project_name.settings")
+        exclude(template_root)
