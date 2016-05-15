@@ -9,10 +9,7 @@ class DjangoDevServerAutoConf(object):
     def __init__(self):
         self.default_settings = "default_django_15_and_below.settings"
         self.external_app_repositories = "external_app_repos"
-        if os.environ["ROOT_DIR"]:
-            self.root_dir = os.environ["ROOT_DIR"]
-        else:
-            self.root_dir = get_folder(get_inspection_frame(2))
+        self.root_dir = os.environ.get("ROOT_DIR", get_folder(get_inspection_frame(2)))
         self.server_base_package_folder_name = "server_base_packages"
         self.django_auto_conf = DjangoAutoConf()
 
