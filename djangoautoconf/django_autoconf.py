@@ -6,6 +6,7 @@ import os
 
 import django
 from ufs_tools import get_folder
+from ufs_tools.inspect_utils import get_inspection_frame
 from ufs_tools.libtool import include_all_direct_subfolders, exclude
 
 from auto_conf_utils import dump_attrs, is_at_least_one_sub_filesystem_item_exists, enum_folders
@@ -98,6 +99,7 @@ class DjangoAutoConf(DjangoSettingManager):
 
     @staticmethod
     def set_settings_env():
+        os.environ.setdefault('ROOT_DIR', get_folder(get_inspection_frame(2)))
         os.environ["DJANGO_SETTINGS_MODULE"] = "djangoautoconf.base_settings"
 
     def __check_params(self):
