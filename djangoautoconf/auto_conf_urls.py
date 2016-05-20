@@ -4,18 +4,16 @@ import os
 import sys
 import traceback
 from djangoautoconf.auto_conf_utils import get_module_path, is_at_least_one_sub_filesystem_item_exists
-from libtool.short_decorator.ignore_exception import ignore_exc_with_result
+from ufs_tools.short_decorator.ignore_exception import ignore_exc_with_result
 from djangoautoconf.auto_conf_utils import enum_modules
+from django.conf.urls import include, url
+from importlib import import_module
 
 try:
     import simplemenu
     from simplemenu.models import MenuItem, Menu
 except:
     pass
-
-__author__ = 'weijia'
-from django.conf.urls import include, url
-from importlib import import_module
 
 
 class EasyList(object):

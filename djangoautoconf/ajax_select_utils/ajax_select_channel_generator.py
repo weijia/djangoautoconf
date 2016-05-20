@@ -5,7 +5,7 @@ from ajax_select import urls as ajax_select_urls
 from django.db.models import Q
 
 from djangoautoconf.auto_conf_urls import add_to_root_url_pattern
-from libtool.string_tools import class_name_to_low_case
+from ufs_tools.string_tools import class_name_to_low_case
 
 add_to_root_url_pattern(
     (url(r'^ajax_select/', include(ajax_select_urls)),)

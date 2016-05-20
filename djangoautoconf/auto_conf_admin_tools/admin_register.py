@@ -8,7 +8,7 @@ from djangoautoconf.auto_conf_admin_tools.guardian_feature import GuardianFeatur
 from djangoautoconf.auto_conf_admin_tools.import_export_feature import ImportExportFeature
 from djangoautoconf.auto_conf_admin_tools.list_and_search import ListAndSearch
 # from djangoautoconf.auto_conf_admin_tools.reversion_feature import ReversionFeature
-from libtool.inspect_utils import class_enumerator
+from ufs_tools.inspect_utils import class_enumerator
 # from django.conf import settings
 from django.contrib import admin
 

@@ -2,7 +2,7 @@ from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL
 from tastypie.resources import ModelResource
 from djangoautoconf.req_with_auth import DjangoUserAuthentication
-from libtool.string_tools import class_name_to_low_case
+from ufs_tools.string_tools import class_name_to_low_case
 
 
 def create_tastypie_resource_class(class_inst, resource_name=None):

@@ -6,9 +6,8 @@ from sys import modules as sys_modules
 from django.utils.crypto import get_random_string
 import base_settings
 from djangoautoconf.auto_conf_utils import enum_modules, enum_folders
-from libtool import include
-from libtool.basic_lib_tool import remove_folder_in_sys_path
-from libtool.folder_tool import ensure_dir
+from ufs_tools.basic_lib_tool import remove_folder_in_sys_path, include
+from ufs_tools.folder_tool import ensure_dir
 
 __author__ = 'weijia'
 
