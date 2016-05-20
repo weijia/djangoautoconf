@@ -6,7 +6,7 @@ MYSQL_DATABASE_NAME = "test"
 
 AUTHENTICATION_BACKENDS = []
 
-TEMPLATE_CONTEXT_PROCESSORS = []
+DATABASE_ROUTERS = []
 
 f = DjangoDevServerAutoConf()
 f.configure()
