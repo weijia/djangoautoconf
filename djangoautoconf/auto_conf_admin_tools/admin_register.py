@@ -59,7 +59,9 @@ except ImportError:
 
 
 class AdminRegister(object):
-    default_feature_list = [ListAndSearch, ImportExportFeature, GuardianFeature  # , ReversionFeature
+    default_feature_list = [ListAndSearch,
+                            ImportExportFeature,
+                            GuardianFeature  # , ReversionFeature
                             ]
 
     def __init__(self, admin_site_list=default_admin_site_list, parent_admin_list=[]):
