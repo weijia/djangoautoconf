@@ -40,7 +40,7 @@ class DjangoAutoConf(DjangoSettingManager):
         # self.extra_settings_in_base_package_folder = "others/extra_settings"  # base extra setting
         self.key_dir = None
         self.local_key_folder = None
-        self.extra_setting_module_full_names = []
+        self.extra_setting_module_full_names = ['djangoautoconf.djangoautoconf_settings']
         self.project_path = None
         self.server_base_package_folder = "server_base_packages"
         self.local_key_folder_relative_to_root = os.path.join(self.local_folder_name, self.local_key_folder_name)
@@ -58,16 +58,13 @@ class DjangoAutoConf(DjangoSettingManager):
         else:
             self.external_app_repositories_full_path = os.path.join(self.root_dir, external_app_repositories)
         self.external_app_repositories = external_app_repositories
-        self.add_extra_setting_relative_folder_for_repo(external_app_repositories)
+
         logging.debug("Added: " + external_app_repositories)
         full_path_of_repo_root = self.get_full_path(external_app_repositories)
         for folder_full_path in enum_folders(full_path_of_repo_root):
             if os.path.isdir(folder_full_path):
                 logging.debug("Scanning: " + folder_full_path)
                 include_all_direct_subfolders(folder_full_path)
-
-    def set_external_app_folder_name(self, external_app_folder_name):
-        self.external_app_folder_name = external_app_folder_name
 
     def set_default_settings(self, default_settings_import_str):
         self.default_settings_import_str = default_settings_import_str
@@ -86,7 +83,7 @@ class DjangoAutoConf(DjangoSettingManager):
     def set_local_key_folder(self, local_key_folder):
         self.local_key_folder = local_key_folder
 
-    def configure(self, features=[]):
+    def configure(self, features=["djangoautoconf_settings"]):
         self.__check_params()
         self.set_settings_env()
         self.load_settings_in_project_template()
