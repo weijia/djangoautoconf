@@ -31,23 +31,23 @@ Create Poject
 
 ::
 
-    django-admin createproject example
-    
-    Create extra_settings folder
-    
-    Create extra_settings/settings.py
-    
-    Remove lines in manage.py
+
+    Create "manage.py"
     Added the following:
     
-    from djangoautoconf import DjangoAutoConf
-    #Added keys folder to path so DjangoAutoConf can find keys in it
-    c = DjangoAutoConf()
-    c.set_default_settings("example.settings")
-    #Added root folder to path so DjangoAutoConf can find django root
-    c.set_root_dir(get_folder(__file__))
-    c.add_extra_settings(["extra_settings.settings"])
-    #c.configure(['mysql_database', ])
+    import logging
+    import sys
+
+    from ufs_tools.libtool import include_all
+
+    if __name__ == "__main__":
+        # logger.setLevel(logging.DEBUG)
+        include_all(__file__, "server_base_packages")
+        from djangoautoconf import DjangoAutoConf
+        DjangoAutoConf.set_settings_env()
+
+        from django.core.management import execute_from_command_line
+        execute_from_command_line(sys.argv)
 
 
 Features
