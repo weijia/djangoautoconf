@@ -1,5 +1,7 @@
 from django.contrib.admin import ModelAdmin
 
+from djangoautoconf.auto_conf_admin_tools.admin_feature_base import AdminFeatureBase
+
 __author__ = 'weijia'
 
 
@@ -11,7 +13,7 @@ def queryset(self, request):
     return qs.filter(user=request.user)
 
 
-class FilterItemFeature(object):
+class FilterItemFeature(AdminFeatureBase):
 
     def process_parent_class_list(self, parent_list, class_inst):
         pass

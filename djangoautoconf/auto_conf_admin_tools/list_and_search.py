@@ -17,11 +17,18 @@ class ListAndSearch(AdminFeatureBase):
         self.search_fields = search_fields
 
     def process_admin_class_attr(self, admin_attr, class_inst):
-        if len(self.list_fields) == 0:
-            admin_attr.update({"list_display": self.get_class_attributes(class_inst)})
+        # if len(self.list_fields) == 0:
+        #     admin_attr.update({"list_display": self.get_class_attributes(class_inst)})
         if len(self.search_fields) == 0:
             admin_attr.update({"search_fields": self.get_contain_searchable_attr(
                 class_inst)})
+
+    def process_admin_class(self, admin_class, class_inst):
+        if len(self.list_fields) == 0:
+            list_display = list(getattr(admin_class, "list_display", []))
+            field_list = self.get_class_attributes(class_inst)
+            field_list.extend(list_display)
+            setattr(admin_class, "list_display", tuple(field_list))
 
     # noinspection PyMethodMayBeStatic
     def get_class_attributes(self, class_inst, exclude_field_types=[]):

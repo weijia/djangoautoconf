@@ -1,10 +1,12 @@
 from django.contrib.admin import ModelAdmin
 
+from djangoautoconf.auto_conf_admin_tools.admin_feature_base import AdminFeatureBase
+
 __author__ = 'weijia'
 from django.conf import settings
 
 
-class GuardianFeature(object):
+class GuardianFeature(AdminFeatureBase):
 
     def __init__(self):
         super(GuardianFeature, self).__init__()

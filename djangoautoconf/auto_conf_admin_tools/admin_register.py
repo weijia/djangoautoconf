@@ -64,14 +64,20 @@ class AdminRegister(object):
                             GuardianFeature  # , ReversionFeature
                             ]
 
-    def __init__(self, admin_site_list=default_admin_site_list, parent_admin_list=[]):
+    def __init__(self,
+                 admin_site_list=default_admin_site_list,
+                 parent_admin_list=[],
+                 feature_list=None):
         super(AdminRegister, self).__init__()
         self.admin_features = []
         self.parent_admin_list = parent_admin_list
         # self.base_model_admin = ModelAdmin
         self.admin_class_attributes = {}
 
-        for feature in self.default_feature_list:
+        if feature_list is None:
+            feature_list = self.default_feature_list
+
+        for feature in feature_list:
             self.add_feature(feature())
         self.instant_admin_attr = {}
         self.admin_site_list = admin_site_list
@@ -97,6 +103,10 @@ class AdminRegister(object):
         if self.is_model_admin_needed(copied_admin_list):
             copied_admin_list = [ModelAdmin, ]
         admin_class = type(class_inst.__name__ + "Admin", tuple(copied_admin_list), self.admin_class_attributes)
+
+        for feature in self.admin_features:
+            if hasattr(feature, "process_admin_class"):
+                feature.process_admin_class(admin_class, class_inst)
 
         return admin_class
 
