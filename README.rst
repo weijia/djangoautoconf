@@ -45,7 +45,7 @@ Create Poject
     from ufs_tools.libtool import include_all_direct_sub_folders_in_sibling
 
 
-    include_all_direct_sub_folders_in_sibling(__file__, "server_base_packages")
+    # include_all_direct_sub_folders_in_sibling(__file__, "server_base_packages")
 
 
     if __name__ == "__main__":

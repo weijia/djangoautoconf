@@ -123,7 +123,10 @@ def add_app_urls_no_exception(app):
 def create_simple_menu(app):
     try:
         menu, is_created = Menu.objects.get_or_create(name=app)
-        MenuItem.objects.get_or_create(name=app, menu=menu, urlstr="/%s/" % app)
+        item, is_created = MenuItem.objects.get_or_create(name=app, menu=menu, urlstr="/%s/" % app)
+        if app == "admin":
+            item.is_valid = True
+            item.save()
     except Exception, e:
         # import traceback
         pass
