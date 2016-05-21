@@ -31,23 +31,35 @@ Create Poject
 
 ::
 
-    django-admin createproject example
-    
-    Create extra_settings folder
-    
-    Create extra_settings/settings.py
-    
-    Remove lines in manage.py
+
+    Create manage.py
     Added the following:
     
-    from djangoautoconf import DjangoAutoConf
-    #Added keys folder to path so DjangoAutoConf can find keys in it
-    c = DjangoAutoConf()
-    c.set_default_settings("example.settings")
-    #Added root folder to path so DjangoAutoConf can find django root
-    c.set_root_dir(get_folder(__file__))
-    c.add_extra_settings(["extra_settings.settings"])
-    #c.configure(['mysql_database', ])
+    #!/usr/bin/env python
+    import logging
+    import os
+    import sys
+
+    from ufs_tools import get_sibling_folder
+    from ufs_tools.folder_tool import get_file_folder
+    from ufs_tools.libtool import include_all_direct_sub_folders_in_sibling
+
+
+    include_all_direct_sub_folders_in_sibling(__file__, "server_base_packages")
+
+
+    if __name__ == "__main__":
+        # logging.basicConfig(level=logging.DEBUG)
+        logging.getLogger('chronograph.models').setLevel(level=logging.DEBUG)
+        from djangoautoconf import DjangoAutoConf
+
+        # Additional settings can be made
+        # os.environ["EXTRA_SETTING_FOLDER"] = get_sibling_folder(__file__, "local/local_postgresql_settings")
+        # os.environ["MANAGE_PY"] = "manage_with.py"
+        DjangoAutoConf.set_settings_env()
+
+        from django.core.management import execute_from_command_line
+        execute_from_command_line(sys.argv)
 
 
 Features

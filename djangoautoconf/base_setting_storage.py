@@ -15,6 +15,7 @@ class BaseSettingsHolder(object):
     # MYSQL_DATABASE_NAME = "test"
     AUTHENTICATION_BACKENDS = []
     # WSGI_APPLICATION = 'default_django_15_and_below.wsgi.application'
+    TEMPLATE_CONTEXT_PROCESSORS = []
 
 
 class ObjectSettingStorage(object):
