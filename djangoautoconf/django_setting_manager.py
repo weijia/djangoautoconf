@@ -21,8 +21,8 @@ class DjangoSettingManager(object):
     external_app_folder_name = "external_apps"
     local_folder_name = "local"
     local_key_folder_name = "local_keys"
-    other_external_setting_folder = "others/external_settings"
-    base_extra_setting_list = ["extra_settings.settings"]
+    # other_external_setting_folder = "others/external_settings"
+    # base_extra_setting_list = ["extra_settings.settings"]
 
     def __init__(self, default_settings_import_str=None):
         super(DjangoSettingManager, self).__init__()
@@ -37,18 +37,18 @@ class DjangoSettingManager(object):
     def add_extra_setting_full_path_folder(self, extra_setting_folder):
         self.extra_setting_folders.append(extra_setting_folder)
 
-    def add_extra_setting_relative_folder_for_repo(self, repo_folder):
-        if self.root_dir is None:
-            raise "Please set root first"
-
-        repo_root = os.path.join(self.root_dir, repo_folder)
-        for app_folder in enum_folders(repo_root):
-            logging.debug("Processing: " + app_folder)
-            app_full_path = app_folder  # os.path.join(repo_root, app_folder)
-            repo_extra_setting_folder = os.path.join(app_full_path, self.other_external_setting_folder)
-            if os.path.exists(repo_extra_setting_folder):
-                logging.debug("Added: " + repo_extra_setting_folder)
-                self.add_extra_setting_full_path_folder(repo_extra_setting_folder)
+    # def add_extra_setting_relative_folder_for_repo(self, repo_folder):
+    #     if self.root_dir is None:
+    #         raise "Please set root first"
+    #
+    #     repo_root = os.path.join(self.root_dir, repo_folder)
+    #     for app_folder in enum_folders(repo_root):
+    #         logging.debug("Processing: " + app_folder)
+    #         app_full_path = app_folder  # os.path.join(repo_root, app_folder)
+    #         repo_extra_setting_folder = os.path.join(app_full_path, self.other_external_setting_folder)
+    #         if os.path.exists(repo_extra_setting_folder):
+    #             logging.debug("Added: " + repo_extra_setting_folder)
+    #             self.add_extra_setting_full_path_folder(repo_extra_setting_folder)
 
     def load_extra_settings_in_folders(self):
         # Add local/local_settings/ folder
@@ -74,7 +74,7 @@ class DjangoSettingManager(object):
         for feature in features:
             ordered_import_list.append("djangoautoconf.features." + feature)
 
-        ordered_import_list.append("server_base_packages.others.extra_settings.settings")
+        # ordered_import_list.append("server_base_packages.others.extra_settings.settings")
 
         return ordered_import_list
 
