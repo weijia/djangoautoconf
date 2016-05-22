@@ -7,7 +7,10 @@ __author__ = 'weijia'
 def gen_tags(self, obj):
     # on_click = "window.location='%d/run/?inline=1';" % obj.id
     # return '<input type="button" onclick="%s" value="Run" />' % on_click
-    return '<ul class="tagged-item" %s>%s</ul>' % (generate_html_attributes(obj), get_tag_str(obj))
+    tag_str = get_tag_str(obj)
+    if tag_str == "":
+        tag_str = "no tag"
+    return '<ul class="tagged-item" %s>%s</ul>' % (generate_html_attributes(obj), tag_str)
 
 
 gen_tags.allow_tags = True
@@ -56,8 +59,8 @@ class AdminTaggingFeature(AdminFeatureBase):
                 # 'obj_sys/js/jQuery-Tags-Input/src/jquery.tagsinput.js',
             ))
             css = getattr(media_attr, "css", {})
-            css.update({"all": 'jquery.qtip.min.css'})
-            setattr(media_attr, css)
+            css.update({"all": ('jquery.qtip.min.css',)})
+            setattr(media_attr, "css", css)
 
     # noinspection PyMethodMayBeStatic
     def append_to_attr_tuple(self, obj_instance, attribute_name, additional_value_list):
