@@ -124,7 +124,7 @@ def create_simple_menu(app):
     try:
         menu, is_created = Menu.objects.get_or_create(name=app)
         item, is_created = MenuItem.objects.get_or_create(name=app, menu=menu, urlstr="/%s/" % app)
-        if app == "admin":
+        if app == "admin" and not item.is_valid:
             item.is_valid = True
             item.save()
     except Exception, e:
