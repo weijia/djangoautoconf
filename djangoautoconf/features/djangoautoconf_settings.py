@@ -15,8 +15,6 @@ INSTALLED_APPS = (
     'jquery_ui',
     # 'provider',
     # 'provider.oauth2',
-    'simplemenu',
-    'webmanager',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -42,3 +40,5 @@ DATABASES = {
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
+
+DATABASE_ROUTERS = []
