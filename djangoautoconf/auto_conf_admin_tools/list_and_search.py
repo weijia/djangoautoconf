@@ -26,9 +26,15 @@ class ListAndSearch(AdminFeatureBase):
     def process_admin_class(self, admin_class, class_inst):
         if len(self.list_fields) == 0:
             list_display = list(getattr(admin_class, "list_display", []))
+            if self.is_default_list_display(list_display):
+                list_display = []
             field_list = self.get_class_attributes(class_inst)
             field_list.extend(list_display)
             setattr(admin_class, "list_display", tuple(field_list))
+
+    # noinspection PyMethodMayBeStatic
+    def is_default_list_display(self, list_display):
+        return len(list_display) == 1 and list_display[0] == '__str__'
 
     # noinspection PyMethodMayBeStatic
     def get_class_attributes(self, class_inst, exclude_field_types=[]):
