@@ -12,7 +12,7 @@ AUTHENTICATION_BACKENDS = (
 # the following line will cause django mis configure and it will not start.
 # from django_auth_ldap.backend import LDAPBackend
 
-getter = ConfigurableAttributeGetter("ldap_settings", "webmanager")
+getter = ConfigurableAttributeGetter("ldap_settings", "webmanager.keys_defaults")
 AUTH_LDAP_SERVER_URI = getter.get_attr("auth_ldap_server_uri")
 # ldap.set_option(ldap.OPT_DEBUG_LEVEL, 4095)
 
