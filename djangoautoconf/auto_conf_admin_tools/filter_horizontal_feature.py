@@ -4,7 +4,9 @@ __author__ = 'weijia'
 
 
 class FilterHorizontalFeature(AdminFeatureBase):
-
+    """
+    Use horizontal filter for foreign key attributes instead of multiple select box
+    """
     def __init__(self, fields):
         """
         Init the feature

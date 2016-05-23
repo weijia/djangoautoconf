@@ -18,6 +18,10 @@ gen_tags.short_description = 'Tags'
 
 
 class AdminTaggingFeature(AdminFeatureBase):
+    def __init__(self):
+        self.insert_position = 1
+        self.insert_field = "list_display"
+
     def process_parent_class_list(self, parent_list, class_inst):
         """
         Used to add parent admin class to the list, all class in the list will be the admin class's parent
@@ -38,10 +42,9 @@ class AdminTaggingFeature(AdminFeatureBase):
 
     # noinspection PyMethodMayBeStatic
     def process_admin_class(self, admin_class, class_inst):
-        attr = "list_display"
         gen_tags_list_name = "gen_tags"
-        if hasattr(admin_class, attr) and hasattr(class_inst, "tags"):
-            self.append_to_attr_tuple(admin_class, attr, [gen_tags_list_name])
+        if hasattr(admin_class, self.insert_field) and hasattr(class_inst, "tags"):
+            self.insert_tag_field(admin_class)
 
             setattr(admin_class, gen_tags_list_name, gen_tags)
 
@@ -67,3 +70,9 @@ class AdminTaggingFeature(AdminFeatureBase):
         tuple_attribute = list(getattr(obj_instance, attribute_name, []))
         tuple_attribute.extend(additional_value_list)
         setattr(obj_instance, attribute_name, tuple(tuple_attribute))
+
+    # noinspection PyMethodMayBeStatic
+    def insert_tag_field(self, obj_instance):
+        list_display = list(getattr(obj_instance, self.insert_field, []))
+        list_display.insert(self.insert_position, "gen_tags")
+        setattr(obj_instance, self.insert_field, tuple(list_display))
