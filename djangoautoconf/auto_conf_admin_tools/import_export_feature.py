@@ -1,10 +1,11 @@
+from djangoautoconf.auto_conf_admin_tools.admin_feature_base import AdminFeatureBase
 from djangoautoconf.import_export_utils import get_import_export_resource
 from django.conf import settings
 
 __author__ = 'weijia'
 
 
-class ImportExportFeature(object):
+class ImportExportFeature(AdminFeatureBase):
 
     def __init__(self):
         super(ImportExportFeature, self).__init__()

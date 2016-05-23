@@ -1,3 +1,5 @@
+from djangoautoconf.auto_conf_admin_tools.admin_feature_base import AdminFeatureBase
+
 __author__ = 'weijia'
 
 
@@ -9,7 +11,7 @@ def has_change_permission(self, request, obj=None):
     return True
 
 
-class ModelWithFullPermissionFeature(object):
+class ModelWithFullPermissionFeature(AdminFeatureBase):
     def process_parent_class_list(self, parent_list, class_inst):
         pass
 

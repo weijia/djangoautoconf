@@ -50,7 +50,7 @@ class DjangoSettingManager(object):
     def get_feature_setting_module_list(self, features):
         ordered_import_list = [
                                 # self.default_settings_import_str,
-                               "djangoautoconf.sqlite_database"
+                                "djangoautoconf.features.djangoautoconf_settings",
                                # "djangoautoconf.mysql_database"
                                ]
         for feature in features:
