@@ -15,6 +15,7 @@ INSTALLED_APPS = (
     'jquery_ui',
     # 'provider',
     # 'provider.oauth2',
+    'guardian',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
