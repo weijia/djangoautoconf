@@ -1,5 +1,5 @@
-#libtool
 django-extensions
+ufs-tools
 # optional
 django-tastypie
 django-jquery-ui
