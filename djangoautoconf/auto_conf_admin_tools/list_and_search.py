@@ -2,6 +2,7 @@ from django.db.models import DateTimeField, ForeignKey
 from djangoautoconf.auto_conf_admin_tools.admin_feature_base import AdminFeatureBase
 from django.db.models.fields.related import RelatedField
 
+from djangoautoconf.model_utils.model_attr_utils import enum_model_fields
 
 __author__ = 'weijia'
 
@@ -40,7 +41,7 @@ class ListAndSearch(AdminFeatureBase):
     def get_class_attributes(self, class_inst, exclude_field_types=[]):
         res = []
         try:
-            for field in self.enum_model_fields(class_inst):
+            for field in enum_model_fields(class_inst):
                 if type(field) in exclude_field_types:
                     continue
                 try:
@@ -55,7 +56,7 @@ class ListAndSearch(AdminFeatureBase):
     def get_contain_searchable_attr(self, class_inst):
         res = []
         try:
-            for field in self.enum_model_fields(class_inst):
+            for field in enum_model_fields(class_inst):
                 if self.is_contain_searchable(field) and not (type(field) in [DateTimeField]):
                     res.append(field.name)
         except Exception, e:
@@ -71,7 +72,3 @@ class ListAndSearch(AdminFeatureBase):
             return True
         except TypeError:
             return False
-
-    # noinspection PyMethodMayBeStatic
-    def enum_model_fields(self, class_inst):
-        return class_inst.__dict__['_meta'].fields
