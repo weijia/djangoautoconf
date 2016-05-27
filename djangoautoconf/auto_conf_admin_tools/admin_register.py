@@ -60,7 +60,7 @@ except ImportError:
 
 class AdminRegister(object):
     default_feature_list = [ListAndSearch,
-                            # ImportExportFeature,
+                            ImportExportFeature,
                             GuardianFeature  # , ReversionFeature
                             ]
 
