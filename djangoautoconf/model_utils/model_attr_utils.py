@@ -2,6 +2,11 @@ from django.db import models
 
 
 def enum_model_fields(class_inst):
+    """
+    ManyToManyField is not returned. If needed, use enum_model_fields_with_many_to_many instead
+    :param class_inst:
+    :return:
+    """
     return class_inst.__dict__['_meta'].fields
 
 
