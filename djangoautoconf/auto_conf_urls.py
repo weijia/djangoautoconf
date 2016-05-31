@@ -23,10 +23,12 @@ class EasyList(object):
 
     def append_list_to_head(self, list_to_head):
         for item in list_to_head:
-            self.list.insert(0, item)
+            if item not in self.list:
+                self.list.insert(0, item)
 
-    def append(self, item):
-        self.list.insert(0, item)
+    def insert_to_head(self, item):
+        if item not in self.list:
+            self.list.insert(0, item)
 
 
 def get_custom_root_url_pattern_container():
@@ -46,7 +48,7 @@ def add_url_pattern(default_url_root_path, urls_module):
                 include(admin.site.urls) or
                 RedirectView.as_view(url='/resource_bookmarks') etc.
     """
-    (get_custom_root_url_pattern_container()).append(url(default_url_root_path, urls_module))
+    (get_custom_root_url_pattern_container()).insert_to_head(url(default_url_root_path, urls_module))
 
 
 def add_to_root_url_pattern(url_pattern_list):
