@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='djangoautoconf',
-    version='0.6.7',
+    version='0.6.8',
     description='Create a package for ease setting django project settings.',
     long_description=readme + '\n\n' + history,
     author='Richard Wang',
@@ -30,6 +30,7 @@ setup(
         'djangoautoconf.features',
         'djangoautoconf.ajax_select_utils',
         'djangoautoconf.class_based_views',
+        'djangoautoconf.model_utils',
         'djangoautoconf.auto_conf_admin_tools',
         'djangoautoconf.auto_conf_admin_tools.admin_features',
         'djangoautoconf.django_rest_framework_utils',
@@ -48,7 +49,7 @@ setup(
         'django-tables2-reports',
         'django-import-export',
         'djangorestframework',
-        'django-ajax-select',
+        'django-ajax-selects',
     ],
     license="BSD",
     zip_safe=False,
