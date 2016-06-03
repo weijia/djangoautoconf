@@ -1,6 +1,9 @@
+from django.conf.urls import patterns, url, include
 from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL
 from tastypie.resources import ModelResource
+
+from djangoautoconf.model_utils.model_attr_utils import model_enumerator
 from djangoautoconf.req_with_auth import DjangoUserAuthentication
 from ufs_tools.string_tools import class_name_to_low_case
 
@@ -27,3 +30,9 @@ def create_tastypie_resource(class_inst):
     :return:
     """
     return create_tastypie_resource_class(class_inst)()
+
+
+def add_tastypie_for(urlpatterns, models, excluded_model_name=('MPTTModel', )):
+    for model in model_enumerator(models, excluded_model_name):
+        urlpatterns += patterns('', url(r'^api/%s/' % class_name_to_low_case(model.__name__),
+                                        include(create_tastypie_resource(model).urls)))

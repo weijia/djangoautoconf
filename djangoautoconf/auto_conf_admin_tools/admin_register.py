@@ -12,6 +12,8 @@ from ufs_tools.inspect_utils import class_enumerator
 # from django.conf import settings
 from django.contrib import admin
 
+from djangoautoconf.model_utils.model_attr_utils import is_inherit_from_model
+
 
 def register_admin_without_duplicated_register(class_inst, admin_class, admin_site=admin.site):
     # noinspection PyBroadException
@@ -24,16 +26,6 @@ def register_admin_without_duplicated_register(class_inst, admin_class, admin_si
             import traceback
 
             traceback.print_exc()
-
-
-def is_inherit_from_model(class_inst):
-    if models.Model in class_inst.__bases__:
-        return True
-    for parent_class in class_inst.__bases__:
-        if parent_class is object:
-            continue
-        return is_inherit_from_model(parent_class)
-    return False
 
 
 # noinspection PyProtectedMember

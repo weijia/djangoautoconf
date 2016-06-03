@@ -1,4 +1,15 @@
 from django.db import models
+from ufs_tools.inspect_utils import class_enumerator
+
+
+def is_inherit_from_model(class_inst):
+    if models.Model in class_inst.__bases__:
+        return True
+    for parent_class in class_inst.__bases__:
+        if parent_class is object:
+            continue
+        return is_inherit_from_model(parent_class)
+    return False
 
 
 def enum_model_fields(class_inst):
@@ -29,3 +40,9 @@ def get_relation_field_types():
     except ImportError:
         pass
     return excluded_types
+
+
+def model_enumerator(module_instance, exclude_name_list=[]):
+    for class_instance in class_enumerator(module_instance, exclude_name_list):
+        if is_inherit_from_model(class_instance):
+            yield class_instance
