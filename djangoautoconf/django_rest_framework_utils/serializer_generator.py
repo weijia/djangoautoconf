@@ -1,5 +1,9 @@
+from django.conf.urls import url, patterns
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.serializers import ModelSerializer
+from ufs_tools.string_tools import class_name_to_low_case
+
+from djangoautoconf.model_utils.model_attr_utils import model_enumerator
 
 
 class ModelSerializerWithUser(ModelSerializer):
@@ -59,3 +63,30 @@ def get_detail_api_class(class_inst):
     :return:
     """
     return get_api_class(class_inst, "Detail", [RetrieveUpdateDestroyAPIView])
+
+
+class ModelProcessorBase(object):
+    excluded_model_names = ('MPTTModel',)
+
+    def __init__(self):
+        self.url_list = []
+
+    def get_patterns(self, models):
+        for model in model_enumerator(models, self.excluded_model_names):
+            self.append_urls(model)
+        p = patterns('', *self.url_list)
+        return p
+
+    def append_urls(self, model):
+        self.url_list.append(self.get_url(model))
+
+    def get_url(self, model):
+        pass
+
+
+class SerializerUrlGenerator(ModelProcessorBase):
+    def append_urls(self, model):
+        self.url_list.append(url(r'^rest_api/%s/$' % class_name_to_low_case(model.__name__),
+                                 get_create_api_class(model).as_view()))
+        self.url_list.append(url(r'^rest_api/%s/(?P<pk>[0-9]+)/$' % class_name_to_low_case(model.__name__),
+                                 get_detail_api_class(model).as_view()))
