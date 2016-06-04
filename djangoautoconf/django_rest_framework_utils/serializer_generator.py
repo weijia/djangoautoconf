@@ -1,4 +1,4 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url, patterns, include
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -98,6 +98,8 @@ class SerializerUrlGenerator(ModelProcessorBase):
         if self.url_patterns is None:
             raise
         self.url_patterns += self.get_patterns(models)
+        self.url_patterns += url(r'^api-auth/', include('rest_framework.urls',
+                                                        namespace='rest_framework')),
         return format_suffix_patterns(self.url_patterns)
 
 
