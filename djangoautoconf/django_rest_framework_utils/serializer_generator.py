@@ -5,6 +5,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from ufs_tools.string_tools import class_name_to_low_case
 
 from djangoautoconf.model_utils.model_attr_utils import model_enumerator
+from djangoautoconf.tastypie_utils import get_tastypie_urls
 
 
 class ModelSerializerWithUser(ModelSerializer):
@@ -98,3 +99,46 @@ class SerializerUrlGenerator(ModelProcessorBase):
             raise
         self.url_patterns += self.get_patterns(models)
         return format_suffix_patterns(self.url_patterns)
+
+
+# class FeatureApplier(object):
+#     default_feature_class_list = ()
+#
+#     def __init__(self, feature_class_list=None):
+#         super(FeatureApplier, self).__init__()
+#         self.features = []
+#
+#         if feature_class_list is None:
+#             feature_class_list = self.default_feature_class_list
+#
+#         for feature in feature_class_list:
+#             self.add_feature(feature())
+#
+#     def add_feature(self, feature):
+#         self.features.append(feature)
+#
+#
+# class UrlPatternGenerator(FeatureApplier):
+#     def __init__(self, url_patterns=None, feature_class_list=None):
+#         super(UrlPatternGenerator, self).__init__(feature_class_list)
+#         self.url_patterns = url_patterns
+#
+#     def add_urls_for(self, models):
+#         for feature in self.features:
+#             for model in model_enumerator(models, feature.excluded_model_names):
+#                 self.append_urls(model)
+#             p = patterns('', *self.url_list)
+#             return p
+#
+#         return self.url_patterns
+
+
+def add_all_urls(urlpatterns, models):
+    urlpatterns += get_tastypie_urls(models)
+    try:
+        from django_auto_filter.filter_for_models import get_filter_urls
+        urlpatterns += get_filter_urls(models)
+    except ImportError:
+        pass
+    urlpatterns = SerializerUrlGenerator(urlpatterns).add_rest_api_urls(models)
+    return urlpatterns
