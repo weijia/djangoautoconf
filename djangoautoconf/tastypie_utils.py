@@ -16,7 +16,7 @@ def create_tastypie_resource_class(class_inst, resource_name=None):
                   "filtering": {}, "always_return_data": True}
     for field in class_inst.__dict__['_meta'].fields:
         attributes["filtering"].update({field.name: ALL})
-    resource_class = type(class_inst.__name__ + "AutoResource", (ModelResource, ), {
+    resource_class = type(class_inst.__name__ + "AutoResource", (ModelResource,), {
         "Meta": type("Meta", (), attributes)
     })
     return resource_class
@@ -32,7 +32,16 @@ def create_tastypie_resource(class_inst):
     return create_tastypie_resource_class(class_inst)()
 
 
-def add_tastypie_for(urlpatterns, models, excluded_model_name=('MPTTModel', )):
+def add_tastypie_for(urlpatterns, models, excluded_model_name=('MPTTModel',)):
+    res_patterns = get_tastypie_urls(models, excluded_model_name)
+    urlpatterns += res_patterns
+
+
+def get_tastypie_urls(models, excluded_model_name=('MPTTModel',)):
+    url_list = []
     for model in model_enumerator(models, excluded_model_name):
-        urlpatterns += patterns('', url(r'^api/%s/' % class_name_to_low_case(model.__name__),
-                                        include(create_tastypie_resource(model).urls)))
+        url_list.append(url(r'^api/%s/' % class_name_to_low_case(model.__name__),
+                            include(create_tastypie_resource(model).urls)))
+
+    p = patterns('', *url_list)
+    return p
