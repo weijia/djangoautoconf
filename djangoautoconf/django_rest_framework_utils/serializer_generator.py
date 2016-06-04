@@ -1,6 +1,7 @@
 from django.conf.urls import url, patterns
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.serializers import ModelSerializer
+from rest_framework.urlpatterns import format_suffix_patterns
 from ufs_tools.string_tools import class_name_to_low_case
 
 from djangoautoconf.model_utils.model_attr_utils import model_enumerator
@@ -68,8 +69,9 @@ def get_detail_api_class(class_inst):
 class ModelProcessorBase(object):
     excluded_model_names = ('MPTTModel',)
 
-    def __init__(self):
+    def __init__(self, url_patterns=None):
         self.url_list = []
+        self.url_patterns = url_patterns
 
     def get_patterns(self, models):
         for model in model_enumerator(models, self.excluded_model_names):
@@ -90,3 +92,9 @@ class SerializerUrlGenerator(ModelProcessorBase):
                                  get_create_api_class(model).as_view()))
         self.url_list.append(url(r'^rest_api/%s/(?P<pk>[0-9]+)/$' % class_name_to_low_case(model.__name__),
                                  get_detail_api_class(model).as_view()))
+
+    def add_rest_api_urls(self, models):
+        if self.url_patterns is None:
+            raise
+        self.url_patterns += self.get_patterns(models)
+        return format_suffix_patterns(self.url_patterns)
