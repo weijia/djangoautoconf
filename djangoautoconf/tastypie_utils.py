@@ -40,7 +40,8 @@ def add_tastypie_for(urlpatterns, models, excluded_model_name=('MPTTModel',)):
 def get_tastypie_urls(models, excluded_model_name=('MPTTModel',)):
     url_list = []
     for model in model_enumerator(models, excluded_model_name):
-        url_list.append(url(r'^api/%s/' % class_name_to_low_case(model.__name__),
+        if hasattr(model, "objects"):
+            url_list.append(url(r'^api/%s/' % class_name_to_low_case(model.__name__),
                             include(create_tastypie_resource(model).urls)))
 
     p = patterns('', *url_list)
