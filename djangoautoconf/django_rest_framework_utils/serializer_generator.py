@@ -1,4 +1,5 @@
 from django.conf.urls import url, patterns, include
+from django.contrib.auth.decorators import login_required
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -91,9 +92,9 @@ class ModelProcessorBase(object):
 class SerializerUrlGenerator(ModelProcessorBase):
     def append_urls(self, model):
         self.url_list.append(url(r'^rest_api/%s/$' % class_name_to_low_case(model.__name__),
-                                 get_create_api_class(model).as_view()))
+                                 login_required(get_create_api_class(model).as_view())))
         self.url_list.append(url(r'^rest_api/%s/(?P<pk>[0-9]+)/$' % class_name_to_low_case(model.__name__),
-                                 get_detail_api_class(model).as_view()))
+                                 login_required(get_detail_api_class(model).as_view())))
 
     def add_rest_api_urls(self, models):
         if self.url_patterns is None:
