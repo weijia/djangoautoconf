@@ -1,7 +1,10 @@
 from django.conf.urls import url, patterns, include
+from rest_framework import serializers
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.urlpatterns import format_suffix_patterns
+
+from djangoautoconf.model_utils.model_reversion import add_reversion_before_save
 from ufs_tools.string_tools import class_name_to_low_case
 
 from djangoautoconf.model_utils.model_attr_utils import model_enumerator
@@ -18,8 +21,12 @@ class ModelSerializerWithUser(ModelSerializer):
 
 def get_serializer(class_inst, serializer_parent=[ModelSerializer]):
     meta_class = type("Meta", tuple(), {"model": class_inst})
+    serializer_attr_dict = {"Meta": meta_class}
+    if hasattr(class_inst, "last_modifier"):
+        serializer_attr_dict['last_modifier'] = serializers.PrimaryKeyRelatedField(
+            read_only=True, default=serializers.CurrentUserDefault())
     return type(class_inst.__name__ + "Serializer", tuple(serializer_parent),
-                {"Meta": meta_class}
+                serializer_attr_dict
                 )
 
 
@@ -76,6 +83,7 @@ class ModelProcessorBase(object):
 
     def get_patterns(self, models):
         for model in model_enumerator(models, self.excluded_model_names):
+            add_reversion_before_save(model)
             if hasattr(model, "objects"):
                 self.append_urls(model)
         p = patterns('', *self.url_list)
@@ -142,6 +150,7 @@ def add_all_urls(urlpatterns, models):
         from django_auto_filter.filter_for_models import get_filter_urls
         urlpatterns += get_filter_urls(models)
     except ImportError:
+        get_filter_urls = None
         pass
     urlpatterns = SerializerUrlGenerator(urlpatterns).add_rest_api_urls(models)
     return urlpatterns
