@@ -57,6 +57,7 @@ def get_api_class_from_serializer(class_inst, parent, serializer, api_class_name
         {
             "queryset": class_inst.objects.all(),
             "serializer_class": serializer,
+            # "permission_classes": (permissions.IsAuthenticatedOrReadOnly, ),
         }
     )
 
