@@ -76,7 +76,7 @@ class ModelProcessorBase(object):
 
     def get_patterns(self, models):
         for model in model_enumerator(models, self.excluded_model_names):
-            if hasattr(models, "objects"):
+            if hasattr(model, "objects"):
                 self.append_urls(model)
         p = patterns('', *self.url_list)
         return p
