@@ -7,5 +7,5 @@ django-bootstrap-form
 django-tables2
 django-tables2-reports
 django-import-export==0.4.3  # 0.4.4 is not compatible with django-admin-bootstrapped, because admin/actions.html is not compatible
-django-ajax-select
+django-ajax-selects
 reversion
