@@ -1,5 +1,6 @@
 from django.conf.urls import url, patterns, include
 from django.contrib.auth.decorators import login_required
+from rest_framework import permissions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.serializers import ModelSerializer
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -51,6 +52,7 @@ def get_api_class_from_serializer(class_inst, parent, serializer, api_class_name
         {
             "queryset": class_inst.objects.all(),
             "serializer_class": serializer,
+            "permission_classes": (permissions.IsAuthenticatedOrReadOnly, ),
         }
     )
 
