@@ -1,6 +1,6 @@
 from django.core.management import BaseCommand
 
-from dj_catalog.models import TestingCatalog, FormalCatalog
+# from dj_catalog.models import TestingCatalog, FormalCatalog
 
 
 def copy_object(src_model, target_model):
@@ -24,9 +24,9 @@ def enum_model_attr(src_model):
     return src_model.__dict__['_meta'].fields
 
 
-class ObjectCopier(BaseCommand):
-    def handle(self, *args, **options):
-        copy_object(TestingCatalog, FormalCatalog)
-
-
-Command = ObjectCopier
+# class ObjectCopier(BaseCommand):
+#     def handle(self, *args, **options):
+#         copy_object(TestingCatalog, FormalCatalog)
+#
+#
+# Command = ObjectCopier

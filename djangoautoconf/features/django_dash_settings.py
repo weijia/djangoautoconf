@@ -1,4 +1,5 @@
 INSTALLED_APPS += (
+    'easy_thumbnails',
     'dash',
     'dash.contrib.layouts.android',
     'dash.contrib.layouts.bootstrap2',
