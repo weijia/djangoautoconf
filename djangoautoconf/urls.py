@@ -30,8 +30,6 @@ urlpatterns = patterns('',
                        # url(r'^obj_sys/', include('obj_sys.urls')),
                        # url("^$", direct_to_template, {"template": "index.html"}, name="home"),
                        )
-urlpatterns = [
-    # ... the rest of your URLconf goes here ...
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += default_app_url_patterns
