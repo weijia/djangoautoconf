@@ -20,7 +20,7 @@ class AutoLookupChannelBase(LookupChannel):
         return u"<span class='tag'>%s</span>" % unicode(item)
 
     def get_query(self, q, request):
-        query = Q()
+        query = Q(pk__icontains=q)
         for field in self.dynamical_search_fields:
             param = {"%s__icontains" % field: q}
             query |= Q(**param)
