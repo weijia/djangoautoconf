@@ -58,9 +58,10 @@ class AdminRegister(object):
 
     def __init__(self,
                  admin_site_list=default_admin_site_list,
-                 parent_admin_list=[],
+                 parent_admin_list=None,
                  feature_list=None):
         super(AdminRegister, self).__init__()
+        parent_admin_list = parent_admin_list or []
         self.admin_features = []
         self.parent_admin_list = parent_admin_list
         # self.base_model_admin = ModelAdmin

@@ -18,6 +18,8 @@ class BaseSettingsHolder(object):
     TEMPLATE_CONTEXT_PROCESSORS = []
     ROOT_URLCONF = "djangoautoconf.urls"
     INSTALLED_APPS = ["django.contrib.sites"]
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = "/media/"
 
 
 class ObjectSettingStorage(object):

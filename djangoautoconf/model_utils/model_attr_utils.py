@@ -42,7 +42,8 @@ def get_relation_field_types():
     return excluded_types
 
 
-def model_enumerator(module_instance, exclude_name_list=[]):
+def model_enumerator(module_instance, exclude_name_list=None):
+    exclude_name_list = exclude_name_list or []
     for class_instance in class_enumerator(module_instance, exclude_name_list):
         if is_inherit_from_model(class_instance):
             yield class_instance

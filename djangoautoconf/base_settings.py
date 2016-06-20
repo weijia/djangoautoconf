@@ -8,6 +8,10 @@ AUTHENTICATION_BACKENDS = []
 
 DATABASE_ROUTERS = []
 
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = "/media/"
+
 f = DjangoDevServerAutoConf()
 f.configure()
 

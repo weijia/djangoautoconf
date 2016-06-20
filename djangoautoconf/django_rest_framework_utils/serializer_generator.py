@@ -4,6 +4,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.serializers import ModelSerializer
 from rest_framework.urlpatterns import format_suffix_patterns
 
+from djangoautoconf.ajax_select_utils.channel_creator_for_model import add_channel_for_models_in_module
 from djangoautoconf.model_utils.model_reversion import add_reversion_before_save
 from ufs_tools.string_tools import class_name_to_low_case
 
@@ -154,4 +155,5 @@ def add_all_urls(urlpatterns, models):
         get_filter_urls = None
         pass
     urlpatterns = SerializerUrlGenerator(urlpatterns).add_rest_api_urls(models)
+    add_channel_for_models_in_module(models)
     return urlpatterns

@@ -19,7 +19,10 @@ class PreSaveHandler(object):
             versioned_pk_queryset = Version.objects.filter(content_type=content_type).filter(object_id_int=instance.pk)
             if not versioned_pk_queryset.exists():
                 item = self.model_inst.objects.get(pk=instance.pk)
-                default_revision_manager.save_revision((item,))
+                try:
+                    default_revision_manager.save_revision((item,))
+                except:
+                    pass
 
 
 def add_reversion_before_save(model_inst):

@@ -7,7 +7,8 @@ import re
 log = logging.getLogger(__name__)
 
 
-def inject_attributes(target_class, src_module, exclude=[]):
+def inject_attributes(target_class, src_module, exclude=None):
+    exclude = exclude or []
     target_instance = target_class()
     for attr in dir(src_module):
         if attr != attr.upper():
