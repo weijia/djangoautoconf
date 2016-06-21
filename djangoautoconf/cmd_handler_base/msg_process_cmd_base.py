@@ -9,7 +9,7 @@ import traceback
 __author__ = 'weijia'
 
 
-class MsgProcessCommandBase(BaseCommand):
+class DjangoCmdBase(BaseCommand):
 
     LOG_LEVELS = ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG']
 
