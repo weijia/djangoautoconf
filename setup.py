@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='djangoautoconf',
-    version='0.6.11',
+    version='0.6.14',
     description='Create a package for ease setting django project settings.',
     long_description=readme + '\n\n' + history,
     author='Richard Wang',
@@ -35,6 +35,7 @@ setup(
         'djangoautoconf.auto_conf_admin_tools.admin_features',
         'djangoautoconf.django_rest_framework_utils',
         'djangoautoconf.settings_templates',
+        'djangoautoconf.cmd_handler_base',
     ],
     package_dir={'djangoautoconf': 'djangoautoconf'},
     include_package_data=True,
