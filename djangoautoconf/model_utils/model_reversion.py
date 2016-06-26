@@ -2,7 +2,15 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from reversion.models import Version
-from reversion.revisions import default_revision_manager
+
+
+def create_initial_version(obj):
+    try:
+        from reversion.revisions import default_revision_manager
+        default_revision_manager.save_revision((obj,))
+    except:
+        from reversion.revisions import add_to_revision
+        add_to_revision(obj)
 
 global_save_signal_receiver = []
 
@@ -20,7 +28,7 @@ class PreSaveHandler(object):
             if not versioned_pk_queryset.exists():
                 item = self.model_inst.objects.get(pk=instance.pk)
                 try:
-                    default_revision_manager.save_revision((item,))
+                    create_initial_version(item)
                 except:
                     pass
 
