@@ -27,17 +27,17 @@ class AutoLookupChannelBase(LookupChannel):
         return self.model.objects.filter(query)[:10]
 
 
-def get_text_model_fields(model_class):
+def get_fields_with_icontains_filter(model_class):
     text_fields = []
     for field in enum_model_fields(model_class):
-        if field in (models.TextField, models.CharField):
+        if type(field) in (models.TextField, models.CharField, models.IntegerField):
             text_fields.append(field.name)
     return text_fields
 
 
 def register_channel(model_class, search_fields=()):
     if len(search_fields) == 0:
-        search_fields = get_text_model_fields(model_class)
+        search_fields = get_fields_with_icontains_filter(model_class)
     channel_class = type(model_class.__name__ + "LookupChannel",
                          (AutoLookupChannelBase,),
                          {"model": model_class,
