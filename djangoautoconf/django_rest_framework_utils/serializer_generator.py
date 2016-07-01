@@ -4,12 +4,10 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.serializers import ModelSerializer
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from djangoautoconf.ajax_select_utils.channel_creator_for_model import add_channel_for_models_in_module
 from djangoautoconf.model_utils.model_reversion import add_reversion_before_save
 from ufs_tools.string_tools import class_name_to_low_case
 
 from djangoautoconf.model_utils.model_attr_utils import model_enumerator
-from djangoautoconf.tastypie_utils import get_tastypie_urls
 
 
 class ModelSerializerWithUser(ModelSerializer):
@@ -144,16 +142,3 @@ class SerializerUrlGenerator(ModelProcessorBase):
 #             return p
 #
 #         return self.url_patterns
-
-
-def add_all_urls(urlpatterns, models):
-    urlpatterns += get_tastypie_urls(models)
-    try:
-        from django_auto_filter.filter_for_models import get_filter_urls
-        urlpatterns += get_filter_urls(models)
-    except ImportError:
-        get_filter_urls = None
-        pass
-    urlpatterns = SerializerUrlGenerator(urlpatterns).add_rest_api_urls(models)
-    add_channel_for_models_in_module(models)
-    return urlpatterns
