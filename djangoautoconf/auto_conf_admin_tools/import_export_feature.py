@@ -1,6 +1,7 @@
 from djangoautoconf.auto_conf_admin_tools.admin_feature_base import AdminFeatureBase
-from djangoautoconf.import_export_utils import get_import_export_resource
 from django.conf import settings
+
+from djangoautoconf.model_utils.import_export_utils import get_import_export_admin_mixin
 
 __author__ = 'weijia'
 
@@ -17,13 +18,15 @@ class ImportExportFeature(AdminFeatureBase):
     def process_parent_class_list(self, parent_list, class_inst):
         if self.is_import_export_supported:
             try:
-                from import_export.admin import ImportExportActionModelAdmin
-                parent_list.append(ImportExportActionModelAdmin)
+                # from import_export.admin import ImportExportActionModelAdmin
+                parent_list.append(get_import_export_admin_mixin(class_inst))
             except ImportError:
                 pass
 
     def process_admin_class_attr(self, admin_attr, class_inst):
-        if self.is_import_export_supported:
-            admin_attr.update({
-                "resource_class": get_import_export_resource(class_inst)
-            })
+        # if self.is_import_export_supported:
+        #     admin_attr.update({
+        #         "resource_class": get_import_export_resource(class_inst)
+        #     })
+        pass
+

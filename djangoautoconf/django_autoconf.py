@@ -96,8 +96,11 @@ class DjangoAutoConf(DjangoSettingManager):
 
     @staticmethod
     def set_settings_env():
-        os.environ.setdefault('ROOT_DIR', get_folder(get_inspection_frame(2)))
-        os.environ["DJANGO_SETTINGS_MODULE"] = "djangoautoconf.base_settings"
+        if os.path.exists("local/total_settings.py"):
+            os.environ["DJANGO_SETTINGS_MODULE"] = "local.total_settings"
+        else:
+            os.environ.setdefault('ROOT_DIR', get_folder(get_inspection_frame(2)))
+            os.environ["DJANGO_SETTINGS_MODULE"] = "djangoautoconf.base_settings"
 
     def __check_params(self):
         if not os.path.exists(self.root_dir):
