@@ -6,6 +6,7 @@ import os
 
 import django
 from ufs_tools import get_folder
+from ufs_tools.app_framework import get_executable_folder
 from ufs_tools.inspect_utils import get_inspection_frame
 from ufs_tools.libtool import include_all_direct_subfolders, exclude
 
@@ -96,7 +97,9 @@ class DjangoAutoConf(DjangoSettingManager):
 
     @staticmethod
     def set_settings_env():
-        if os.path.exists("local/total_settings.py"):
+        executable_folder = get_executable_folder()
+        if os.path.exists(os.path.join(executable_folder, "local/total_settings.py")):
+            print "Using total settings"
             os.environ["DJANGO_SETTINGS_MODULE"] = "local.total_settings"
         else:
             os.environ.setdefault('ROOT_DIR', get_folder(get_inspection_frame(2)))

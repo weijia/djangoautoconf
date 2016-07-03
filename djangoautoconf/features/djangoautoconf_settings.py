@@ -17,6 +17,7 @@ INSTALLED_APPS = (
     # 'provider',
     # 'provider.oauth2',
     'guardian',
+    'djangoautoconf'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
