@@ -27,4 +27,4 @@ class Command(BaseCommand):
                 elif type(value) in (str, ):
                     print >>f, key, "=", '"'+str(value)+'"'
                 else:
-                    print >>f, key, "=", value
+                    print >>f, key, "=", str(value)

@@ -6,7 +6,7 @@ import os
 
 import django
 from ufs_tools import get_folder
-from ufs_tools.app_framework import get_executable_folder
+from ufs_tools.app_tools import get_executable_folder
 from ufs_tools.inspect_utils import get_inspection_frame
 from ufs_tools.libtool import include_all_direct_subfolders, exclude
 
