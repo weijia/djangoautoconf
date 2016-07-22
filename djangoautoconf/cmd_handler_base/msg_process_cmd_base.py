@@ -70,7 +70,7 @@ class DjangoCmdBase(BaseCommand):
             sys.stderr = StdErrWrapper()
 
     def handle(self, *args, **options):
-        logging.basicConfig(level=logging.DEBUG)
+        # logging.basicConfig(level=logging.DEBUG)
         log_level = options.pop('log_level', None)
         log_file = options.pop('log_file', None)
         log_std = options.pop('log_std', False)

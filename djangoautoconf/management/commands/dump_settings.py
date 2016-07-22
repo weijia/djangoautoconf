@@ -22,9 +22,11 @@ class Command(BaseCommand):
             pass
         with open("local/total_settings.py", "w") as f:
             for key, value in dump_attrs(settings):
+                if value is None:
+                    continue
                 if type(value) in (list, tuple, dict):
                     print >>f, key, "=", value
                 elif type(value) in (str, ):
-                    print >>f, key, "=", '"'+str(value)+'"'
+                    print >>f, key, "=", '"'+str(value).replace('\\', '\\\\')+'"'
                 else:
-                    print >>f, key, "=", '"'+str(value)+'"'
+                    print >>f, key, "=", '"'+str(value).replace('\\', '\\\\')+'"'
