@@ -24,7 +24,7 @@ class Command(BaseCommand):
             for key, value in dump_attrs(settings):
                 if value is None:
                     continue
-                if type(value) in (list, tuple, dict, bool):
+                if type(value) in (list, tuple, dict, bool, int, float):
                     print >>f, key, "=", value
                 elif type(value) in (str, ):
                     print >>f, key, "=", '"'+str(value).replace('\\', '\\\\')+'"'
