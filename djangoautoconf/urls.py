@@ -6,8 +6,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 
 # from mezzanine.core.views import direct_to_template
+from django.contrib.auth.decorators import login_required
 
 admin.autodiscover()
+
+admin.site.login = login_required(admin.site.login)
 
 # Must be defined before auto discover and urlpatterns var. So when there is root url
 # injection, we first insert root url to this, then the last line will insert it to real urlpatterns
