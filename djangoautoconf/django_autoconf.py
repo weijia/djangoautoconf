@@ -98,7 +98,7 @@ class DjangoAutoConf(DjangoSettingManager):
     @staticmethod
     def set_settings_env():
         executable_folder = get_executable_folder()
-        print "!!!!!!!!!!!!!! executable:", executable_folder
+        # print "!!!!!!!!!!!!!! executable:", executable_folder
         if os.path.exists(os.path.join(executable_folder, "local/total_settings.py")):
             print "Using total settings"
             os.chdir(executable_folder)
