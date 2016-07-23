@@ -20,6 +20,7 @@ class Command(BaseCommand):
             os.remove("local/total_settings.py")
         except:
             pass
+        print os.getcwd()
         with open("local/total_settings.py", "w") as f:
             for key, value in dump_attrs(settings):
                 if type(value) in (list, tuple, dict):
@@ -28,3 +29,5 @@ class Command(BaseCommand):
                     print >>f, key, "=", '"'+str(value)+'"'
                 else:
                     print >>f, key, "=", value
+        print "dump completed"
+

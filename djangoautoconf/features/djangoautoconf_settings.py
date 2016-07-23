@@ -17,7 +17,8 @@ INSTALLED_APPS = (
     # 'provider',
     # 'provider.oauth2',
     'guardian',
-    'djangoautoconf'
+    'djangoautoconf',
+    'webmanager',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
