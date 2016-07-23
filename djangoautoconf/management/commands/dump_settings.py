@@ -23,11 +23,12 @@ class Command(BaseCommand):
         print os.getcwd()
         with open("local/total_settings.py", "w") as f:
             for key, value in dump_attrs(settings):
-                if type(value) in (list, tuple, dict):
+                if value is None:
+                    continue
+                if type(value) in (list, tuple, dict, bool, int, float):
                     print >>f, key, "=", value
                 elif type(value) in (str, ):
-                    print >>f, key, "=", '"'+str(value)+'"'
+                    print >>f, key, "=", '"'+str(value).replace('\\', '\\\\')+'"'
                 else:
-                    print >>f, key, "=", value
+                    print >>f, key, "=", '"'+str(value).replace('\\', '\\\\')+'"'
         print "dump completed"
-

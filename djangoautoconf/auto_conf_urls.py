@@ -112,7 +112,7 @@ def add_app_urls_no_exception(app):
         if not ("." in app):
             app_module = importlib.import_module("%s.urls" % app)
             if hasattr(app_module, "urlpatterns"):
-                add_url_pattern("^%s/" % app, include('%s.urls' % app))
+                add_url_pattern("^%s/" % app, include('%s.urls' % app, namespace=app))
                 create_simple_menu(app)
     except ImportError:
         print "Import %s.urls failed (maybe %s.urls does not exists)." % (app, app)

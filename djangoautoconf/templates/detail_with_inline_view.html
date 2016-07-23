@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+{% load static %}
+{% load i18n %}
+{% load modelview_detail %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        var customAddText="{% trans 'add another' %}";
+        var customRemoveText="{% trans 'remove' %}";
+    </script>
+    <script src="{% static 'js/jquery.formset.js'%}"></script>
+
+    <script src="{% static 'csrf.js' %}"></script>
+<script>
+{% endblock %}
+
+{% block content %}
+<form action="" method="post" class="form-inline">
+    {% csrf_token %}
+    {{ form.media }}
+    <legend>{{title}}</legend>
+    {% block main_object %}
+        <table>
+        {% for title, value in object|model_details %}
+            <tr>
+                <th>{{ title }}</th>
+                <td>{{ value }}<td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% endblock %}
+
+    {% for formset in inlines %}
+        <fieldset>
+            <legend>{% trans formset.model.get_verbose_name %}</legend>
+            {{ formset.management_form }}
+            {{ formset.non_form_errors }}
+            <div id="{{ formset.prefix }}">
+            {% for subform in formset.forms %}
+                {{ subform.id }}
+                <div class="inline {{ formset.prefix }}">
+                    {{ subform|bootstrap }}
+                </div>
+            {% endfor %}
+            </div>
+        </fieldset>
+    {% endfor %}
+
+    <div class="form-group">
+        <!--<input type="submit" />-->
+        <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
+    </div>
+</form>
+{% endblock %}
