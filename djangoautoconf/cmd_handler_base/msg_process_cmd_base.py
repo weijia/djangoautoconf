@@ -6,7 +6,7 @@ from django.core.management import BaseCommand
 import sys
 import traceback
 
-from djangoautoconf.management.commands.create_default_super_user import get_default_admin_password
+from djangoautoconf.management.commands.create_default_super_user import get_default_admin_username
 
 __author__ = 'weijia'
 
@@ -94,8 +94,9 @@ class DjangoCmdBase(BaseCommand):
         except:
             traceback.print_exc()
 
+    # noinspection PyMethodMayBeStatic
     def get_username(self):
-        return get_default_admin_password()
+        return get_default_admin_username()
 
     def msg_loop(self):
         pass

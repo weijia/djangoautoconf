@@ -42,3 +42,12 @@ def get_local_key(key_name, default_module=None):
     attr_name = key_name_module_path[-1]
     c = ConfigurableAttributeGetter(module_name, default_module)
     return c.get_attr(attr_name)
+
+
+def get_default_admin_password():
+    return get_local_key("admin_account.admin_password", "djangoautoconf.keys_default")
+
+
+def get_default_admin_username():
+    return get_local_key("admin_account.admin_username", "djangoautoconf.keys_default")
+

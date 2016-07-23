@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
-from djangoautoconf.local_key_manager import get_local_key, ConfigurableAttributeGetter
+from djangoautoconf.local_key_manager import get_default_admin_username, \
+    get_default_admin_password
 
 from web_manage_tools.user_creator import create_admin
 
@@ -13,14 +14,6 @@ def create_default_admin():
         print "default admin created"
     else:
         print "default admin already created"
-
-
-def get_default_admin_password():
-    return get_local_key("admin_account.admin_password", "djangoautoconf.keys_default")
-
-
-def get_default_admin_username():
-    return get_local_key("admin_account.admin_username", "djangoautoconf.keys_default")
 
 
 class Command(BaseCommand):
