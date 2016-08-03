@@ -34,8 +34,8 @@ setup(
         'djangoautoconf.cmd_handler_base',
         'djangoautoconf.django_rest_framework_utils',
         'djangoautoconf.features',
-        'keys_default',
-        'management'
+        'djangoautoconf.keys_default',
+        'djangoautoconf.management'
         'djangoautoconf.model_utils',
         'djangoautoconf.setting_utils',
         'djangoautoconf.settings_templates',
