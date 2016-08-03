@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='djangoautoconf',
-    version='0.6.16',
+    version='0.6.17',
     description='Create a package for ease setting django project settings.',
     long_description=readme + '\n\n' + history,
     author='Richard Wang',
@@ -27,15 +27,18 @@ setup(
     url='https://github.com/weijia/djangoautoconf',
     packages=[
         'djangoautoconf',
-        'djangoautoconf.features',
         'djangoautoconf.ajax_select_utils',
-        'djangoautoconf.class_based_views',
-        'djangoautoconf.model_utils',
         'djangoautoconf.auto_conf_admin_tools',
         'djangoautoconf.auto_conf_admin_tools.admin_features',
-        'djangoautoconf.django_rest_framework_utils',
-        'djangoautoconf.settings_templates',
+        'djangoautoconf.class_based_views',
         'djangoautoconf.cmd_handler_base',
+        'djangoautoconf.django_rest_framework_utils',
+        'djangoautoconf.features',
+        'keys_default',
+        'management'
+        'djangoautoconf.model_utils',
+        'djangoautoconf.setting_utils',
+        'djangoautoconf.settings_templates',
     ],
     package_dir={'djangoautoconf': 'djangoautoconf'},
     include_package_data=True,
