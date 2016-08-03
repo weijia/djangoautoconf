@@ -35,7 +35,7 @@ setup(
         'djangoautoconf.django_rest_framework_utils',
         'djangoautoconf.features',
         'djangoautoconf.keys_default',
-        'djangoautoconf.management'
+        'djangoautoconf.management',
         'djangoautoconf.model_utils',
         'djangoautoconf.setting_utils',
         'djangoautoconf.settings_templates',
