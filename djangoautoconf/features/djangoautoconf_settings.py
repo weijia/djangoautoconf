@@ -1,3 +1,7 @@
+import os
+from ufs_tools.app_tools import get_executable_folder
+
+
 INSTALLED_APPS = (
     'bootstrap3',
     'django_admin_bootstrapped',
@@ -33,6 +37,8 @@ ANONYMOUS_USER_ID = -1
 SITE_ID = 1
 
 ROOT_URLCONF = "djangoautoconf.urls"
+
+MEDIA_ROOT=os.path.join(get_executable_folder(), "media")
 
 DATABASES = {
     'default': {
