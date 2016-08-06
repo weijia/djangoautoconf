@@ -23,6 +23,7 @@ INSTALLED_APPS = (
     'guardian',
     'djangoautoconf',
     'webmanager',
+    'compat',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
