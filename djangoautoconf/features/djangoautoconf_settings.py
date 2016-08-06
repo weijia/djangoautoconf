@@ -24,6 +24,7 @@ INSTALLED_APPS = (
     'djangoautoconf',
     'webmanager',
     'compat',
+    'import_export',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
