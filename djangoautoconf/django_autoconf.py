@@ -5,7 +5,7 @@ import logging
 import os
 
 import django
-from ufs_tools import get_folder
+from ufs_tools import get_folder, sys
 from ufs_tools.app_tools import get_executable_folder
 from ufs_tools.inspect_utils import get_inspection_frame
 from ufs_tools.libtool import include_all_direct_subfolders, exclude
@@ -94,6 +94,14 @@ class DjangoAutoConf(DjangoSettingManager):
         # self.setting_storage.remove_empty_list()
         self.setting_storage.refine_attributes()
         dump_attrs(self.setting_storage.get_settings())
+
+    @staticmethod
+    def exe():
+        from django.core.management import execute_from_command_line
+        argv = sys.argv
+        if argv[0] == "manage.exe":
+            argv = [""].extend(argv)
+        execute_from_command_line(argv)
 
     @staticmethod
     def set_settings_env():
