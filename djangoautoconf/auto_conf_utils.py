@@ -66,6 +66,25 @@ def get_module_path(mod):
     return os.path.dirname(mod.__file__)
 
 
+def get_source_filename(compiled_name):
+    return compiled_name.replace("pyc", "py")
+
+
+def get_module_file_path(mod):
+    return get_source_filename(mod.__file__)
+
+
+def get_module_filename(mod):
+    return get_source_filename(os.path.basename(mod.__file__))
+
+
+def get_module_include_files_config(mod, prefix=None):
+    if prefix is None:
+        return get_module_file_path(mod), get_module_filename(mod)
+    else:
+        return get_module_file_path(mod), os.path.join(prefix, get_module_filename(mod))
+
+
 def enum_folders(parent_folder):
     logging.debug("Listing folder: "+parent_folder)
     for folder in os.listdir(parent_folder):
