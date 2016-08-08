@@ -1,3 +1,5 @@
+from ufs_tools.app_tools import get_executable_folder
+
 from ufs_tools import get_folder, os
 from ufs_tools.inspect_utils import get_parent_frame_file, get_inspection_frame
 from ufs_tools.libtool import include_all_direct_subfolders
@@ -8,7 +10,7 @@ from djangoautoconf import DjangoAutoConf
 class DjangoDevServerAutoConf(object):
     def __init__(self):
         self.external_app_repositories = "external_app_repos"
-        self.root_dir = os.environ.get("ROOT_DIR", get_folder(get_inspection_frame(2)))
+        self.root_dir = get_executable_folder()
         self.server_base_package_folder_name = "server_base_packages"
         self.django_auto_conf = DjangoAutoConf()
 
