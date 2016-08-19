@@ -32,6 +32,7 @@ urlpatterns = patterns('',
                        # url(r'^', include('demo.urls')),
                        # url(r'^obj_sys/', include('obj_sys.urls')),
                        # url("^$", direct_to_template, {"template": "index.html"}, name="home"),
+                       url(r'^accounts/', include('userena.urls')),
                        )
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

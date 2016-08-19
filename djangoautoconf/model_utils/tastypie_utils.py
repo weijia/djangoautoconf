@@ -1,8 +1,13 @@
 from django.conf.urls import patterns, url, include
-from tastypie.api import Api, NamespacedApi
-from tastypie.authorization import DjangoAuthorization
+from tastypie.api import NamespacedApi
+
+try:
+    from pieguard.authorization import GuardianAuthorization as AuthorizationClass
+except ImportError:
+    from tastypie.authorization import DjangoAuthorization as AuthorizationClass
+
 from tastypie.constants import ALL
-from tastypie.resources import ModelResource, NamespacedModelResource
+from tastypie.resources import NamespacedModelResource
 
 from djangoautoconf.model_utils.model_attr_utils import model_enumerator
 from djangoautoconf.req_with_auth import DjangoUserAuthentication
@@ -10,10 +15,11 @@ from ufs_tools.string_tools import class_name_to_low_case
 
 
 def create_tastypie_resource_class(class_inst, resource_name=None):
+
     if resource_name is None:
         resource_name = class_name_to_low_case(class_inst.__name__)
     attributes = {"queryset": class_inst.objects.all(), "resource_name": resource_name,
-                  "authentication": DjangoUserAuthentication(), "authorization": DjangoAuthorization(),
+                  "authentication": DjangoUserAuthentication(), "authorization": AuthorizationClass(),
                   "filtering": {}, "always_return_data": True}
     for field in class_inst.__dict__['_meta'].fields:
         attributes["filtering"].update({field.name: ALL})
