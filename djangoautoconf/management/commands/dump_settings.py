@@ -22,7 +22,10 @@ class Command(BaseCommand):
             pass
         print os.getcwd()
         with open("local/total_settings.py", "w") as f:
+            print >>f, "import os"
             for key, value in dump_attrs(settings):
+                if key in ["STATIC_ROOT", "MEDIA_ROOT"]:
+                    print >>f, '%s=os.environ["%s"]' % (key, key)
                 if value is None:
                     continue
                 if type(value) in (list, tuple, dict, bool, int, float):

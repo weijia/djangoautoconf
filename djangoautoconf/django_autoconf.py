@@ -111,6 +111,8 @@ class DjangoAutoConf(DjangoSettingManager):
             print "Using total settings"
             os.chdir(executable_folder)
             os.environ["DJANGO_SETTINGS_MODULE"] = "local.total_settings"
+            os.environ["STATIC_ROOT"] = os.path.join(executable_folder, "static")
+            os.environ["MEDIA_ROOT"] = os.path.join(executable_folder, "media")
         else:
             os.environ.setdefault('ROOT_DIR', get_folder(get_inspection_frame(2)))
             os.environ["DJANGO_SETTINGS_MODULE"] = "djangoautoconf.base_settings"
