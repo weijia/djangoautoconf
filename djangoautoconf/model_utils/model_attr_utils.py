@@ -47,3 +47,6 @@ def model_enumerator(module_instance, exclude_name_list=None):
     for class_instance in class_enumerator(module_instance, exclude_name_list):
         if is_inherit_from_model(class_instance):
             yield class_instance
+
+
+enum_model = model_enumerator
