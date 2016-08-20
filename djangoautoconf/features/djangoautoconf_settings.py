@@ -25,6 +25,7 @@ INSTALLED_APPS = (
     'webmanager',
     'compat',
     'import_export',
+    'tastypie_swagger',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
