@@ -24,6 +24,9 @@ class Command(BaseCommand):
         with open("local/total_settings.py", "w") as f:
             print >>f, "import os"
             for key, value in dump_attrs(settings):
+                if key in ["AUTH_LDAP_USER_SEARCH"]:
+                    # Ignore object settings as it will not work if we dump it as string
+                    continue
                 if key in ["STATIC_ROOT", "MEDIA_ROOT"]:
                     print >>f, '%s=os.environ["%s"]' % (key, key)
                 if value is None:

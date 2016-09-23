@@ -42,6 +42,12 @@ def get_relation_field_types():
     return excluded_types
 
 
+def enum_relation_field(model_class):
+    for field in enum_model_fields(model_class):
+        if type(field) in get_relation_field_types():
+            yield field
+
+
 def model_enumerator(module_instance, exclude_name_list=None):
     exclude_name_list = exclude_name_list or []
     for class_instance in class_enumerator(module_instance, exclude_name_list):
