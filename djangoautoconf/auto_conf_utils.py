@@ -63,7 +63,7 @@ def is_at_least_one_sub_filesystem_item_exists(full_path, filename_list):
 
 
 def get_module_path(mod):
-    if os.path.basename(mod.__file__) != "__init__.pyc":
+    if os.path.basename(mod.__file__) != "__init__.pyc" and os.path.basename(mod.__file__) != "__init__.py":
         return get_source_filename(mod.__file__)
     return os.path.dirname(mod.__file__)
 
