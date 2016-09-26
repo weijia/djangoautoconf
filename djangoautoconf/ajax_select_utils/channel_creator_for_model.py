@@ -41,7 +41,7 @@ def get_ajax_config_for_relation_fields(model_class):
             else:
                 related_model = field.related_field.model
             field_names.append(field.name)
-            ajax_mapping[field.name] = class_name_to_low_case(related_model)
+            ajax_mapping[field.name] = class_name_to_low_case(related_model.__name__)
 
     for field in enum_model_many_to_many(model_class):
         if type(field) in get_relation_field_types():
