@@ -30,7 +30,7 @@ class InvalidEmailAddress(Exception):
     pass
 
 
-#Code from https://github.com/ianalexander/django-oauth2-tastypie
+# Code from https://github.com/ianalexander/django-oauth2-tastypie
 def verify_access_token(key):
     # Check if key is in AccessToken key
     try:
@@ -59,8 +59,9 @@ def get_username(data):
         return data["username"]
     raise NoLoginInfo
 
-    
-def verify_username_password(data):
+
+def verify_username_password(request):
+    data = retrieve_param(request)
     username = get_username(data)
 
     if not ('password' in data):
@@ -75,9 +76,9 @@ def verify_username_password(data):
             raise UserInactive
     else:
         raise InvalidLogin
-    return 
+    return
 
-    
+
 def complex_login(request):
     data = retrieve_param(request)
     if 'consumer_key' in data:
@@ -130,9 +131,11 @@ class RequestWithAuth(object):
     def get_error_dict(self):
         return self.error_dict
 
+
 try:
     # noinspection PyUnresolvedReferences
     from tastypie.authentication import Authentication
+
 
     class DjangoUserAuthentication(Authentication):
         def is_authenticated(self, request, **kwargs):
