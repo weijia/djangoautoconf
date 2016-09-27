@@ -59,7 +59,25 @@ def get_username(data):
         return data["username"]
     raise NoLoginInfo
 
+    
+def verify_username_password(data):
+    username = get_username(data)
 
+    if not ('password' in data):
+        raise NoLoginInfo
+
+    password = data['password']
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+        else:
+            raise UserInactive
+    else:
+        raise InvalidLogin
+    return 
+
+    
 def complex_login(request):
     data = retrieve_param(request)
     if 'consumer_key' in data:
@@ -68,20 +86,7 @@ def complex_login(request):
         request.user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, None)
     else:
-        username = get_username(data)
-
-        if not ('password' in data):
-            raise NoLoginInfo
-
-        password = data['password']
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-            else:
-                raise UserInactive
-        else:
-            raise InvalidLogin
+        verify_username_password(data)
 
 
 def authenticate_req_throw_exception(request):
