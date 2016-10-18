@@ -55,4 +55,10 @@ def model_enumerator(module_instance, exclude_name_list=None):
             yield class_instance
 
 
+def is_relation_field(field):
+    if type(field) in get_relation_field_types():
+        return True
+    return False
+
+
 enum_model = model_enumerator
