@@ -60,7 +60,7 @@ def get_username(data):
     raise NoLoginInfo
 
 
-def verify_username_password(request):
+def assert_username_password(request):
     data = retrieve_param(request)
     username = get_username(data)
 
@@ -87,7 +87,7 @@ def complex_login(request):
         request.user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, None)
     else:
-        verify_username_password(data)
+        assert_username_password(data)
 
 
 def authenticate_req_throw_exception(request):
