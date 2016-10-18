@@ -1,0 +1,54 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+{% load simplemenu_tags %}
+
+{% load admin_static bootstrapped_goodies_tags %}
+{% load url from future %}
+{% block extrahead %}
+	{% block css %}
+        <link rel='stylesheet' type='text/css' href="{% static 'css/jquery-ui/smoothness/jquery-ui.css' %}" />
+	{% endblock %}
+
+	{% block js %}
+        <script type='text/javascript' src="{% static 'js/jquery-ui.js' %}"></script>
+	{% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% block container %}
+    {% endblock %}
+	{% block main %}
+    {% endblock %}
+{% endblock %}
+
+
+<!-- Admin activities -->
+{% block logs %}
+{% endblock %}
+
+<!-- Admin docs -->
+{% block userlinks %}
+{% endblock %}
+
+{% block branding %}
+{% get_simplemenu as menu %}
+
+
+<!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+
+        <!--<li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>-->
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+              {% trans "Other apps" %}<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+              {% for item in menu %}
+					<li {% ifequal item.page.url request.path %}class="selected"{% endifequal %}>
+						<a href="{{ item.urlstr }}">{{ item.name }}</a></li>
+			  {% endfor %}
+          </ul>
+        </li>
+      </ul>
+	</div>
+{% endblock %}
