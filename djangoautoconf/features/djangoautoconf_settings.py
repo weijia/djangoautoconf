@@ -22,7 +22,7 @@ INSTALLED_APPS = (
     # 'provider.oauth2',
     'guardian',
     'djangoautoconf',
-    'webmanager',
+    # 'webmanager',
     'compat',
     'import_export',
     'tastypie_swagger',

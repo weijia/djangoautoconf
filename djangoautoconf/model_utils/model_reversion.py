@@ -6,11 +6,15 @@ from reversion.models import Version
 
 def create_initial_version(obj):
     try:
-        from reversion.revisions import default_revision_manager
+        from reversion import default_revision_manager
         default_revision_manager.save_revision((obj,))
     except:
-        from reversion.revisions import add_to_revision
-        add_to_revision(obj)
+        try:
+            from reversion.revisions import default_revision_manager
+            default_revision_manager.save_revision((obj,))
+        except:
+            from reversion.revisions import add_to_revision
+            add_to_revision(obj)
 
 
 def get_versioned_item(content_type, pk):
