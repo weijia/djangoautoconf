@@ -4,7 +4,7 @@ import ldap
 from djangoautoconf.local_key_manager import ConfigurableAttributeGetter
 
 AUTHENTICATION_BACKENDS = (
-    'all_login.ldap_backend_wrapper.LDAPBackendWrapper',
+    'djangoautoconf.auth.ldap_backend_wrapper.LDAPBackendWrapper',
     #'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
