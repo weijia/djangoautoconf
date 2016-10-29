@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='djangoautoconf',
-    version='0.6.22',
+    version='0.6.24',
     description='Create a package for ease setting django project settings.',
     long_description=readme + '\n\n' + history,
     author='Richard Wang',
