@@ -1,4 +1,6 @@
+import django_filters
 from django.conf.urls import url, patterns, include
+from geoposition.fields import GeopositionField
 from rest_framework import serializers
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.serializers import ModelSerializer
@@ -7,7 +9,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from djangoautoconf.model_utils.model_reversion import add_reversion_before_save
 from ufs_tools.string_tools import class_name_to_low_case
 
-from djangoautoconf.model_utils.model_attr_utils import model_enumerator
+from djangoautoconf.model_utils.model_attr_utils import model_enumerator, enum_model_fields
 
 
 class ModelSerializerWithUser(ModelSerializer):
@@ -50,12 +52,17 @@ class ApiClassGenerator(object):
 
 
 def get_api_class_from_serializer(class_inst, parent, serializer, api_class_name):
+    filter_fields = []
+    for field in enum_model_fields(class_inst):
+        if type(field) is not GeopositionField:
+            filter_fields.append(field.name)
     return type(
         api_class_name,
         tuple(parent),
         {
             "queryset": class_inst.objects.all(),
             "serializer_class": serializer,
+            "filter_fields": filter_fields,
             # "permission_classes": (permissions.IsAuthenticatedOrReadOnly, ),
         }
     )

@@ -11,3 +11,4 @@ django-ajax-selects
 django-reversion
 django-guardian
 django-mptt
+django-crispy-forms
