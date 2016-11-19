@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url, include
+from tastypie import fields
 from tastypie.api import NamespacedApi
 
 try:
@@ -6,28 +7,30 @@ try:
 except ImportError:
     from tastypie.authorization import DjangoAuthorization as AuthorizationClass
 
-from tastypie.constants import ALL
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import NamespacedModelResource
 
-from djangoautoconf.model_utils.model_attr_utils import model_enumerator
+from djangoautoconf.model_utils.model_attr_utils import model_enumerator, enum_model_fields
 from djangoautoconf.req_with_auth import DjangoUserAuthentication
 from ufs_tools.string_tools import class_name_to_low_case
 
 
 def create_tastypie_resource_class(class_inst, resource_name=None):
-
     if resource_name is None:
         resource_name = class_name_to_low_case(class_inst.__name__)
-    attributes = {"queryset": class_inst.objects.all(), "resource_name": resource_name,
-                  "authentication": DjangoUserAuthentication(), "authorization": AuthorizationClass(),
-                  "filtering": {}, "always_return_data": True}
-    for field in class_inst.__dict__['_meta'].fields:
-        attributes["filtering"].update({field.name: ALL})
+    meta_attributes = {"queryset": class_inst.objects.all(), "resource_name": resource_name,
+                       "authentication": DjangoUserAuthentication(), "authorization": AuthorizationClass(),
+                       "filtering": {}, "always_return_data": True}
+    additional_resource_fields = {}
+    for field in enum_model_fields(class_inst):
+        meta_attributes["filtering"].update({field.name: ALL_WITH_RELATIONS})
+        if field.is_relation and (field.related_model is class_inst):
+            additional_resource_fields[field.name] = fields.ForeignKey('self', field.name, null=True, blank=True)
     # The NamespacedModelResource used with NamespacedApi will ensure the namespace is added when calling reverse to
     # get the resource uri
-    resource_class = type(class_inst.__name__ + "AutoResource", (NamespacedModelResource,), {
-        "Meta": type("Meta", (), attributes)
-    })
+    resource_attributes = {"Meta": type("Meta", (), meta_attributes)}
+    resource_attributes.update(additional_resource_fields)
+    resource_class = type(class_inst.__name__ + "AutoResource", (NamespacedModelResource,), resource_attributes)
     return resource_class
 
 
@@ -54,8 +57,7 @@ def get_tastypie_urls(models, excluded_model_name=('MPTTModel',)):
     url_list = []
     for model in model_enumerator(models, excluded_model_name):
         if hasattr(model, "objects"):
-            resource = create_tastypie_resource(model)
-            v1_api.register(resource)
+            add_model_resource(model, v1_api)
 
     url_list.append(url(r'api/doc/',
                         include('tastypie_swagger.urls'),
@@ -70,3 +72,21 @@ def get_tastypie_urls(models, excluded_model_name=('MPTTModel',)):
 
     p = patterns('', *url_list)
     return p
+
+
+def add_model_resource(model, v1_api):
+    resource = create_tastypie_resource(model)
+    v1_api.register(resource)
+
+
+class TastypieApiGenerator(object):
+    def __init__(self, model):
+        super(TastypieApiGenerator, self).__init__()
+        self.model = model
+
+    def get_url_list(self, v1_api):
+        resource = create_tastypie_resource(self.model)()
+        v1_api.register(resource)
+        url_list = [url(r'^api/',
+                        include(v1_api.urls))]
+        return url_list

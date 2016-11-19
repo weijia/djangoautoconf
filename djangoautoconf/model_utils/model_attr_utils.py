@@ -62,3 +62,15 @@ def is_relation_field(field):
 
 
 enum_model = model_enumerator
+
+
+class ModelsModule(object):
+    def __init__(self):
+        super(ModelsModule, self).__init__()
+        self.models = models
+
+    def get_app_name(self):
+        self.models.__name__.split(".")[0]
+
+    def enum_models(self, excluded_model_name):
+        return model_enumerator(self.models, excluded_model_name)
