@@ -40,9 +40,11 @@ class TastypieResourceGenerator(object):
     def _update_resource_attributes(self):
         for field in enum_model_fields_with_many_to_many(self.model):
             self.meta_attr["filtering"].update({field.name: ALL_WITH_RELATIONS})
+            is_include_full = True
             if field.is_relation:
                 if field.related_model is self.model:
                     target_resource = 'self'
+                    is_include_full = False
                 elif self.registry.is_resource_exists(field.related_model):
                     target_resource = self.registry.get_resource_class(field.related_model)
                 else:
@@ -53,7 +55,7 @@ class TastypieResourceGenerator(object):
                     attribute_class = fields.ForeignKey
 
                 self.additional_resource_class_attr[field.name] = attribute_class(
-                    target_resource, field.name, null=True, blank=True, full=True)
+                    target_resource, field.name, null=True, blank=True, full=is_include_full)
 
 
 class AdvTastypieResourceGenerator(object):
