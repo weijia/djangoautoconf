@@ -3,7 +3,7 @@ import django.core.management as core_management
 from django.db import connection
 
 from device_status import models
-from djangoautoconf.model_utils.model_attr_utils import enum_model
+from djangoautoconf.model_utils.model_attr_utils import enum_models
 
 
 class Command(BaseCommand):
@@ -17,7 +17,7 @@ class Command(BaseCommand):
         if r != "":
             app_module = __import__("%s.models" % r, fromlist="dummy")
             cursor = connection.cursor()
-            for model in enum_model(app_module):
+            for model in enum_models(app_module):
                 try:
                     cursor.execute("DROP TABLE IF EXISTS %s;" % model.objects.model._meta.db_table)
                 except:

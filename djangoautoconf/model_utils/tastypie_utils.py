@@ -78,15 +78,3 @@ def add_model_resource(model, v1_api):
     resource = create_tastypie_resource(model)
     v1_api.register(resource)
 
-
-class TastypieApiGenerator(object):
-    def __init__(self, model):
-        super(TastypieApiGenerator, self).__init__()
-        self.model = model
-
-    def get_url_list(self, v1_api):
-        resource = create_tastypie_resource(self.model)()
-        v1_api.register(resource)
-        url_list = [url(r'^api/',
-                        include(v1_api.urls))]
-        return url_list

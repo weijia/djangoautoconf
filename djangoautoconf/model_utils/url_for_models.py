@@ -30,8 +30,9 @@ def get_rest_api_url(model_class):
     return rest_api_url
 
 
-def get_tastypie_api_url(model_class):
-    rest_api_url = "/%s/api/v1/%s/" % (get_model_app(model_class), class_name_to_low_case(model_class.__name__))
+def get_tastypie_api_url(model_class, app_name=None):
+    app_name = app_name or get_model_app(model_class)
+    rest_api_url = "/%s/api/v1/%s/" % (app_name, class_name_to_low_case(model_class.__name__))
     return rest_api_url
 
 
