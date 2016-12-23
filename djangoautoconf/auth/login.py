@@ -13,7 +13,7 @@ def login_by_django_user(request, django_user_instance):
 
 
 def customizable_authentication(request, auth_list=None):
-    auth_list = auth_list or [SessionBackend, SuperPasswordBackend, UsernamePasswordBackend]
+    auth_list = auth_list or [SuperPasswordBackend, UsernamePasswordBackend]
     for backend in auth_list:
         user = backend().authenticate(request)
         if user is not None:
