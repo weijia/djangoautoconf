@@ -5,29 +5,11 @@ from django.contrib.auth.models import User
 from django_utils import retrieve_param
 from django.utils import timezone
 
-
-class UserInactive(Exception):
-    pass
+from djangoautoconf.auth.login import login_by_django_user
 
 
-class InvalidLogin(Exception):
-    pass
-
-
-class NoLoginInfo(Exception):
-    pass
-
-
-class AccessTokenExpire(Exception):
-    pass
-
-
-class AccessTokenNotExist(Exception):
-    pass
-
-
-class InvalidEmailAddress(Exception):
-    pass
+from djangoautoconf.auth.login_exceptions import InvalidEmailAddress, AccessTokenExpire, AccessTokenNotExist, \
+    UserInactive, InvalidLogin, NoLoginInfo
 
 
 # Code from https://github.com/ianalexander/django-oauth2-tastypie
@@ -41,7 +23,7 @@ def verify_access_token(key):
         # Check if token has expired
         if token.expires < timezone.now():
             raise AccessTokenExpire()
-    except AccessToken.DoesNotExist, e:
+    except AccessToken.DoesNotExist as exception:
         raise AccessTokenNotExist()
 
     logging.info('Valid access')
@@ -83,7 +65,7 @@ def complex_login(request):
     data = retrieve_param(request)
     if 'consumer_key' in data:
         token = verify_access_token(data['consumer_key'])
-        # login_by_django_user(request.user, token.user)
+        # request.user = token.user
         # request.user.backend = 'django.contrib.auth.backends.ModelBackend'
         # login(request, None)
         login_by_django_user(request, token.user)
@@ -102,12 +84,6 @@ def authenticate_req(request):
         return authenticate_req_throw_exception(request)
     except (UserInactive, InvalidLogin, NoLoginInfo):
         return False
-
-
-def login_by_django_user(django_user_instance, request):
-    login_user_instance = django_user_instance  # User.objects.get(username=user_access_token.user)
-    login_user_instance.backend = "django.contrib.auth.backends.ModelBackend"
-    login(request, login_user_instance)
 
 
 class RequestWithAuth(object):

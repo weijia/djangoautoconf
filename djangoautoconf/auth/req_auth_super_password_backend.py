@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from djangoautoconf.auth.req_auth_base_backend import ReqAuthBaeBackend
 from djangoautoconf.django_utils import retrieve_param
 from djangoautoconf.local_key_manager import get_local_key
-from djangoautoconf.req_with_auth import login_by_django_user
 
 
 class SuperPasswordBackend(ReqAuthBaeBackend):
@@ -11,6 +10,8 @@ class SuperPasswordBackend(ReqAuthBaeBackend):
         data = retrieve_param(request)
         if ("password" in data) and ("username" in data):
             if data["password"] == get_local_key("req_auth_key.super_password", 'djangoautoconf.auth'):
-                user = User.objects.get(username=data["username"])
-                login_by_django_user(request, user)
+                request.user = User.objects.get(username=data["username"])
+                request.user.backend = "django.contrib.auth.backends.ModelBackend"
+                return request.user
+        return None
 
