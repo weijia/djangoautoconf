@@ -83,9 +83,10 @@ def complex_login(request):
     data = retrieve_param(request)
     if 'consumer_key' in data:
         token = verify_access_token(data['consumer_key'])
-        request.user = token.user
-        request.user.backend = 'django.contrib.auth.backends.ModelBackend'
-        login(request, None)
+        # login_by_django_user(request.user, token.user)
+        # request.user.backend = 'django.contrib.auth.backends.ModelBackend'
+        # login(request, None)
+        login_by_django_user(request, token.user)
     else:
         assert_username_password(data)
 
@@ -101,6 +102,12 @@ def authenticate_req(request):
         return authenticate_req_throw_exception(request)
     except (UserInactive, InvalidLogin, NoLoginInfo):
         return False
+
+
+def login_by_django_user(django_user_instance, request):
+    login_user_instance = django_user_instance  # User.objects.get(username=user_access_token.user)
+    login_user_instance.backend = "django.contrib.auth.backends.ModelBackend"
+    login(request, login_user_instance)
 
 
 class RequestWithAuth(object):
