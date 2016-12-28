@@ -30,11 +30,11 @@ TEMPLATE_CONTEXT_PROCESSORS += (
     "sekizai.context_processors.sekizai",
 )
 
-LANGUAGE_CODE = 'zh-CN'
-
-LANGUAGES = (
-    ('zh-CN', u'简体中文'), # instead of 'zh-CN'
-)
+# LANGUAGE_CODE = 'zh-CN'
+#
+# LANGUAGES = (
+#     ('zh-CN', u'简体中文'), # instead of 'zh-CN'
+# )
 
 
 # The following is for mayblog instead of wiki. Just keep it.

@@ -3,6 +3,7 @@ import logging
 import sys
 from sys import modules as sys_modules
 
+import django
 from ufs_tools.tuple_tools import remove_duplicated_keep_order
 
 log = logging.getLogger(__name__)
@@ -84,6 +85,7 @@ class ObjectSettingStorage(object):
                 delattr(self.base_settings, attr)
 
     def refine_attributes(self):
+        self.refine_attributes_for_django18()
         for attr in dir(self.base_settings):
             if attr in self.unwanted_attr_names:
                 delattr(self.base_settings, attr)
@@ -112,4 +114,22 @@ class ObjectSettingStorage(object):
     # noinspection PyMethodMayBeStatic
     def get_settings(self):
         return self.base_settings
+
+    def refine_attributes_for_django18(self):
+        attr = "TEMPLATE_CONTEXT_PROCESSORS"
+        target_attr = "TEMPLATES"
+        if (django.VERSION[0] == 1) and (django.VERSION[1] >= 8) and (attr in dir(self.base_settings)):
+            value = getattr(self.base_settings, attr)
+
+            template_value = [
+                {
+                    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                    'APP_DIRS': True,
+                    'OPTIONS': {
+                        'context_processors': value,
+                    }
+                },
+            ]
+            # delattr(self.base_settings, attr)
+            setattr(self.base_settings, target_attr, template_value)
 
