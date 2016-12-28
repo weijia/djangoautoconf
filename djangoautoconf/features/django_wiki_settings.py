@@ -1,6 +1,8 @@
 # coding=utf-8
 from django.utils.translation import gettext
 
+# Requirement: pip install wiki
+
 INSTALLED_APPS += (
     'django.contrib.humanize',
     'django_nyt',
