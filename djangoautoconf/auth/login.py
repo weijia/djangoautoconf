@@ -17,6 +17,7 @@ def customizable_authentication(request, auth_list=None):
     for backend in auth_list:
         user = backend().authenticate(request)
         if user is not None:
+            login_by_django_user(request, user)
             return user
     return None
 
