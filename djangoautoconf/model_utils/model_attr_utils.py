@@ -68,6 +68,12 @@ def app_name_from_models_module(models_module):
     models_module.__name__.split(".")[0]
 
 
+# Ref: http://stackoverflow.com/questions/2429074/how-can-i-get-access-to-a-django-model-field-verbose-name-dynamically
+def get_verbose_name(model, field_name):
+    # noinspection PyProtectedMember
+    return model._meta.get_field_by_name(field_name)[0].verbose_name
+
+
 class ModelsModule(object):
     def __init__(self):
         super(ModelsModule, self).__init__()
