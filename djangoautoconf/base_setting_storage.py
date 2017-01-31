@@ -132,4 +132,15 @@ class ObjectSettingStorage(object):
             ]
             # delattr(self.base_settings, attr)
             setattr(self.base_settings, target_attr, template_value)
-
+            # del self.base_settings.TEMPLATE_CONTEXT_PROCESSORS
+            for template_attr in ["TEMPLATE_STRING_IF_INVALID", "TEMPLATE_DIRS", "TEMPLATE_LOADERS",
+                                  "TEMPLATE_DEBUG", attr]:
+                if hasattr(self.base_settings, template_attr):
+                    try:
+                        delattr(self.base_settings.__class__, template_attr)
+                    except:
+                        pass
+                    try:
+                        delattr(self.base_settings, template_attr)
+                    except:
+                        pass
