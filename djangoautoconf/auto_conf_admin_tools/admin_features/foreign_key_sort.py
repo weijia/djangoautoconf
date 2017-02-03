@@ -1,6 +1,7 @@
 from djangoautoconf.auto_conf_admin_tools.admin_feature_base import AdminFeatureBase
 
 
+# Ref: http://stackoverflow.com/questions/8992865/django-admin-sort-foreign-key-field-list
 def formfield_for_foreignkey(self, db_field, request, **kwargs):
     if db_field.name == self.admin_feature_foreign_key_sort.sort_attribute:
         kwargs["queryset"] = db_field.related_model.objects.order_by(
