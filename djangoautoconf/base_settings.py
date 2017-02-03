@@ -17,5 +17,9 @@ f.configure()
 
 final_settings = f.django_auto_conf.setting_storage.get_settings()
 
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+}
+
 for attr in dir(final_settings):
     vars()[attr] = getattr(final_settings, attr)
