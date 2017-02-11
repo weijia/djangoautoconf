@@ -78,8 +78,7 @@ def include_urls():
             add_app_urls_no_exception(app)
         # Attempt to import the app's urls module.
         try:
-            urls_module = '%s.urls' % app
-            import_module(urls_module)
+            import_app_urls(app)
         except ImportError, e:
             if str(e) != 'No module named urls':
                 # import traceback
@@ -88,6 +87,11 @@ def include_urls():
     local_urls_full_path = os.path.join(settings.DJANGO_AUTO_CONF_LOCAL_DIR, "local_urls")
     if os.path.exists(local_urls_full_path) and os.path.isdir(local_urls_full_path):
         add_urlpatterns_in_file(local_urls_full_path)
+
+
+def import_app_urls(app):
+    urls_module = '%s.urls' % app
+    return import_module(urls_module)
 
 
 def add_urlpatterns_in_file(local_urls_full_path):
@@ -107,12 +111,26 @@ def add_urlpatterns_in_file(local_urls_full_path):
     sys.path.remove(local_urls_full_path)
 
 
+def has_api_url(app_module):
+    # return True
+    for pattern in app_module.urlpatterns:
+        if '^api/' in pattern._regex:
+            return True
+    return False
+
+
 def add_app_urls_no_exception(app):
     try:
         if not ("." in app):
-            app_module = importlib.import_module("%s.urls" % app)
+            app_module = import_app_urls(app)
             if hasattr(app_module, "urlpatterns"):
-                add_url_pattern("^%s/" % app, include('%s.urls' % app, namespace=app))
+                if has_api_url(app_module):
+                    include_param = include('%s.urls' % app,
+                                            namespace=app,  # Used by tastypie swagger API
+                                            )
+                else:
+                    include_param = include('%s.urls' % app)
+                add_url_pattern("^%s/" % app, include_param)
                 create_simple_menu(app)
     except ImportError:
         print "Import %s.urls failed (maybe %s.urls does not exists)." % (app, app)
@@ -157,5 +175,3 @@ def autodiscover():
     # Include default urls first so the root url patterns will not take over the default urls.
     # include_default_urls()
     include_urls()
-
-

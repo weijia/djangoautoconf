@@ -23,9 +23,14 @@ def create_tastypie_resource_class(class_inst, resource_name=None):
                        "filtering": {}, "always_return_data": True}
     additional_resource_fields = {}
     for field in enum_model_fields(class_inst):
+
+        if field.is_relation:
+            if field.related_model is class_inst:
+                additional_resource_fields[field.name] = fields.ForeignKey('self', field.name, null=True, blank=True)
+            else:
+                # Do not add filtering if it is foreign key, because we can not find the foreign key's resource
+                continue
         meta_attributes["filtering"].update({field.name: ALL_WITH_RELATIONS})
-        if field.is_relation and (field.related_model is class_inst):
-            additional_resource_fields[field.name] = fields.ForeignKey('self', field.name, null=True, blank=True)
     # The NamespacedModelResource used with NamespacedApi will ensure the namespace is added when calling reverse to
     # get the resource uri
     resource_attributes = {"Meta": type("Meta", (), meta_attributes)}

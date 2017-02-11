@@ -21,7 +21,10 @@ class ModelSerializerWithUser(ModelSerializer):
 
 
 def get_serializer(class_inst, serializer_parent=[ModelSerializer]):
-    meta_class = type("Meta", tuple(), {"model": class_inst})
+    meta_class = type("Meta", tuple(), {"model": class_inst,
+                                        "fields": '__all__',  # Required by new restframework
+                                        }
+                      )
     serializer_attr_dict = {"Meta": meta_class}
     if hasattr(class_inst, "last_modifier"):
         serializer_attr_dict['last_modifier'] = serializers.PrimaryKeyRelatedField(
