@@ -1,6 +1,5 @@
-import django_filters
 from django.conf.urls import url, patterns, include
-from geoposition.fields import GeopositionField
+
 from rest_framework import serializers
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.serializers import ModelSerializer
@@ -10,6 +9,16 @@ from djangoautoconf.model_utils.model_reversion import add_reversion_before_save
 from ufs_tools.string_tools import class_name_to_low_case
 
 from djangoautoconf.model_utils.model_attr_utils import model_enumerator, enum_model_fields
+
+g_exclude_field_list = []
+
+
+try:
+    from geoposition.fields import GeopositionField
+
+    g_exclude_field_list.append(GeopositionField)
+except:
+    pass
 
 
 class ModelSerializerWithUser(ModelSerializer):
@@ -57,7 +66,12 @@ class ApiClassGenerator(object):
 def get_api_class_from_serializer(class_inst, parent, serializer, api_class_name):
     filter_fields = []
     for field in enum_model_fields(class_inst):
-        if type(field) is not GeopositionField:
+        is_need_exclude = False
+        for exclude_field in g_exclude_field_list:
+            if type(field) is exclude_field:
+                is_need_exclude = True
+                break
+        if is_need_exclude:
             filter_fields.append(field.name)
     return type(
         api_class_name,
