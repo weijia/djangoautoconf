@@ -118,18 +118,28 @@ class ObjectSettingStorage(object):
     def refine_attributes_for_django18(self):
         attr = "TEMPLATE_CONTEXT_PROCESSORS"
         target_attr = "TEMPLATES"
-        if (django.VERSION[0] == 1) and (django.VERSION[1] >= 8) and (attr in dir(self.base_settings)):
+        if self.is_above_or_equal_to_django18() and (attr in dir(self.base_settings)):
             value = getattr(self.base_settings, attr)
 
-            template_value = [
+            default_template_value = [
                 {
                     'BACKEND': 'django.template.backends.django.DjangoTemplates',
                     'APP_DIRS': True,
                     'OPTIONS': {
-                        'context_processors': value,
+                        'context_processors': [],
                     }
                 },
             ]
+
+            template_value = getattr(self.base_settings, "TEMPLATE", default_template_value)
+
+            # The original TEMPLATE setting must have one element if the TEMPLATE setting exists
+            context_processors = template_value[0]
+
+            template_options = context_processors.get("OPTIONS", {'context_processors': []})
+
+            template_options["context_processors"].extend(value)
+
             # delattr(self.base_settings, attr)
             setattr(self.base_settings, target_attr, template_value)
             # del self.base_settings.TEMPLATE_CONTEXT_PROCESSORS
@@ -144,3 +154,6 @@ class ObjectSettingStorage(object):
                         delattr(self.base_settings, template_attr)
                     except:
                         pass
+
+    def is_above_or_equal_to_django18(self):
+        return (django.VERSION[0] == 1) and (django.VERSION[1] >= 8)
