@@ -14,6 +14,20 @@ __author__ = 'weijia'
 log = logging.getLogger(__name__)
 
 
+def get_feature_setting_module_list(features):
+    ordered_import_list = [
+        # self.default_settings_import_str,
+        "djangoautoconf.features.djangoautoconf_settings",
+        # "djangoautoconf.mysql_database"
+    ]
+    for feature in features:
+        ordered_import_list.append("djangoautoconf.features." + feature)
+
+    # ordered_import_list.append("server_base_packages.others.extra_settings.settings")
+
+    return ordered_import_list
+
+
 class DjangoSettingManager(object):
     local_settings_relative_folder = "local/local_settings"
     local_folder_name = "local"
@@ -43,22 +57,9 @@ class DjangoSettingManager(object):
             remove_folder_in_sys_path(folder)
 
     def update_base_settings_with_features(self, features):
-        ordered_import_list = self.get_feature_setting_module_list(features)
+        ordered_import_list = get_feature_setting_module_list(features)
         for one_setting in ordered_import_list:
             self.setting_storage.import_based_on_base_settings(one_setting)
-
-    def get_feature_setting_module_list(self, features):
-        ordered_import_list = [
-                                # self.default_settings_import_str,
-                                "djangoautoconf.features.djangoautoconf_settings",
-                               # "djangoautoconf.mysql_database"
-                               ]
-        for feature in features:
-            ordered_import_list.append("djangoautoconf.features." + feature)
-
-        # ordered_import_list.append("server_base_packages.others.extra_settings.settings")
-
-        return ordered_import_list
 
     def get_existing_secret_key(self, secret_key_folder):
         # from local_keys.secret_key import SECRET_KEY
@@ -93,4 +94,3 @@ class DjangoSettingManager(object):
             # In case the above not work, use the following.
             # Make this unique, and don't share it with anybody.
             return 'd&amp;x%x+^l@qfxm^2o9x)6ct5*cftlcu8xps9b7l3c$ul*n&amp;%p-k'
-

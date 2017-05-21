@@ -131,14 +131,14 @@ class ObjectSettingStorage(object):
                 },
             ]
 
-            template_value = getattr(self.base_settings, "TEMPLATE", default_template_value)
+            template_value = getattr(self.base_settings, "TEMPLATES", default_template_value)
 
             # The original TEMPLATE setting must have one element if the TEMPLATE setting exists
             context_processors = template_value[0]
 
             template_options = context_processors.get("OPTIONS", {'context_processors': []})
 
-            template_options["context_processors"].extend(value)
+            template_options["context_processors"].extend(set(value))
 
             # delattr(self.base_settings, attr)
             setattr(self.base_settings, target_attr, template_value)

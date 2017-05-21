@@ -6,6 +6,7 @@ from django.core.management import BaseCommand
 import sys
 import traceback
 
+from djangoautoconf.cmd_handler_base.database_connection_maintainer import DatabaseConnectionMaintainer
 from djangoautoconf.management.commands.create_default_super_user import get_default_admin_username
 
 __author__ = 'weijia'
@@ -105,3 +106,7 @@ class DjangoCmdBase(BaseCommand):
 
     def msg_loop(self):
         pass
+
+
+class LongRunCmdBase(DjangoCmdBase, DatabaseConnectionMaintainer):
+    pass
