@@ -1,7 +1,4 @@
 import logging
-from optparse import make_option
-
-from django.contrib.auth.models import User
 from django.core.management import BaseCommand
 import sys
 import traceback
@@ -94,9 +91,9 @@ class DjangoCmdBase(BaseCommand):
         #     if not tasks.run_next_task():
         #         logging.debug('waiting for tasks')
         #         time.sleep(sleep)
-        try:
+        if True:  # try:
             self.msg_loop()
-        except:
+        else:  # except:
             traceback.print_exc()
 
     # noinspection PyMethodMayBeStatic

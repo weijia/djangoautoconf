@@ -33,7 +33,8 @@ class ConfigurableAttributeGetter(object):
 def get_local_key(key_name, default_module=None):
     """
     Get local setting for the keys.
-    :param key_name: module path: admin_account.admin_user
+    :param key_name: module path: for example: admin_account.admin_user, then you need to put admin_account.py in
+    local/local_keys/ and add variable admin_user="real admin username"
     :param default_module: If the template can not be directly imported, use this to specify the parent module.
     :return: value for the key
     """

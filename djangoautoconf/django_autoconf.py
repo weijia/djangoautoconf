@@ -55,8 +55,10 @@ class DjangoAutoConf(DjangoSettingManager):
 
     def set_external_app_repositories(self, external_app_repositories):
         if os.path.isabs(external_app_repositories):
+            # print external_app_repositories
             self.external_app_repositories_full_path = external_app_repositories
         else:
+            # print self.root_dir, external_app_repositories, "not abs"
             self.external_app_repositories_full_path = os.path.join(self.root_dir, external_app_repositories)
         self.external_app_repositories = external_app_repositories
         # self.add_extra_setting_relative_folder_for_repo(external_app_repositories)
@@ -105,6 +107,11 @@ class DjangoAutoConf(DjangoSettingManager):
 
     @staticmethod
     def set_settings_env(executable_folder=None):
+        """
+        Add all application folders
+        :param executable_folder: the folder that contains local and external_app_repos
+        :return:
+        """
         executable_folder = executable_folder or get_executable_folder()
         # print "!!!!!!!!!!!!!! executable:", executable_folder
         if os.path.exists(os.path.join(executable_folder, "local/total_settings.py")):

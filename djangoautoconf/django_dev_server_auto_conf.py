@@ -10,7 +10,10 @@ from djangoautoconf import DjangoAutoConf
 class DjangoDevServerAutoConf(object):
     def __init__(self):
         self.external_app_repositories = "external_app_repos"
-        self.root_dir = get_executable_folder()
+        if "ROOT_DIR" in os.environ:
+            self.root_dir = os.environ["ROOT_DIR"]
+        else:
+            self.root_dir = get_executable_folder()
         self.server_base_package_folder_name = "server_base_packages"
         self.django_auto_conf = DjangoAutoConf()
 
