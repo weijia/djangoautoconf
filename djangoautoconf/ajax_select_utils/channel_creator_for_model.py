@@ -7,6 +7,11 @@ from ufs_tools.string_tools import class_name_to_low_case
 
 
 def create_channels_for_related_fields_in_model(model_class):
+    """
+    Create channel for the fields of the model, the channel name can be got by calling get_ajax_config_for_relation_fields
+    :param model_class:
+    :return:
+    """
     need_to_create_channel = []
     for field in enum_model_fields(model_class):
         if type(field) in get_relation_field_types():
@@ -41,12 +46,18 @@ def get_ajax_config_for_relation_fields(model_class):
             else:
                 related_model = field.related_field.model
             field_names.append(field.name)
-            ajax_mapping[field.name] = class_name_to_low_case(related_model.__name__)
+            model_class = related_model
+            ajax_mapping[field.name] = get_low_case_model_class_name(model_class)
 
     for field in enum_model_many_to_many(model_class):
         if type(field) in get_relation_field_types():
-            if field.related_model not in field_names:
+            model_class = field.related_model
+            if model_class not in field_names:
                 field_names.append(field.name)
-                ajax_mapping[field.name] = class_name_to_low_case(field.related_model.__name__)
+                ajax_mapping[field.name] = get_low_case_model_class_name(model_class)
 
     return ajax_mapping
+
+
+def get_low_case_model_class_name(model_class):
+    return class_name_to_low_case(model_class.__name__)

@@ -36,6 +36,12 @@ def get_fields_with_icontains_filter(model_class):
 
 
 def register_channel(model_class, search_fields=()):
+    """
+    Register channel for model
+    :param model_class: model to register channel for
+    :param search_fields:
+    :return:
+    """
     if len(search_fields) == 0:
         search_fields = get_fields_with_icontains_filter(model_class)
     channel_class = type(model_class.__name__ + "LookupChannel",
