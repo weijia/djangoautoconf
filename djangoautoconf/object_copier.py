@@ -3,7 +3,7 @@ from django.core.management import BaseCommand
 # from dj_catalog.models import TestingCatalog, FormalCatalog
 
 
-def copy_object(src_model, target_model):
+def copy_objects(src_model, target_model):
     attr_list = get_model_attr_name_list(src_model)
 
     for field in enum_model_attr(target_model):
