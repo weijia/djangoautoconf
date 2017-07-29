@@ -73,7 +73,7 @@ def include_urls():
 
     for app in enum_app_names():
         mod = import_module(app)
-        # Attempt to import the app's admin module.
+        # Attempt to add app's urls.py automatically to root
         if is_at_least_one_sub_filesystem_item_exists(get_module_path(mod), ["urls.py", "default_settings.py"]):
             add_app_urls_no_exception(app)
         # Attempt to import the app's urls module.
