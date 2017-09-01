@@ -24,7 +24,8 @@ def dump_attrs(obj_instance):
     for attr in dir(obj_instance):
         if attr != attr.upper():
             continue
-        log.debug(attr+" : "+str(getattr(obj_instance, attr)))
+        value = getattr(obj_instance, attr)
+        log.debug(u"%s: %s" % (attr, value))
 
 
 def get_class(django_cb_class_full_name):
