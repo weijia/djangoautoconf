@@ -33,6 +33,7 @@ def create_channels_for_related_fields_in_model(model_class):
 def add_channel_for_models_in_module(models):
     for model_class in model_enumerator(models):
         create_channels_for_related_fields_in_model(model_class)
+        register_channel(model_class)
 
 
 def get_ajax_config_for_relation_fields(model_class):
