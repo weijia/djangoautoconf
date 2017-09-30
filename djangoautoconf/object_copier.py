@@ -4,7 +4,7 @@ from django.core.management import BaseCommand
 
 
 def copy_objects(src_model, target_model):
-    attr_list = get_model_attr_name_list(src_model)
+    attr_list = get_model_attr_name_list(target_model)
 
     for field in enum_model_attr(target_model):
         if field.name not in attr_list:
@@ -15,7 +15,7 @@ def copy_objects(src_model, target_model):
         for attr in attr_list:
             item_dict[attr] = getattr(obj, attr)
 
-        target_model.objects.get_or_create(item_dict)
+        target_model.objects.get_or_create(**item_dict)
 
 
 def get_model_attr_name_list(src_model):
