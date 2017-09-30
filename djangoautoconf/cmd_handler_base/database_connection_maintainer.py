@@ -5,13 +5,18 @@ from django.db import close_old_connections
 
 
 class DatabaseConnectionMaintainer(object):
-    DB_TIMEOUT_SECONDS = 5*60
+    DB_TIMEOUT_SECONDS = 60*60
 
     def __init__(self):
         self.clients = set()
         # self.device_to_protocol = {}
         self.is_recent_db_change_occurred = False
         self.delay_and_execute(self.DB_TIMEOUT_SECONDS, self.close_db_connection_if_needed)
+
+    @staticmethod
+    def force_close_db():
+        print "force close db"
+        close_old_connections()
 
     def close_db_connection_if_needed(self):
         if not self.is_recent_db_change_occurred:
