@@ -7,11 +7,13 @@ from django.db import close_old_connections
 class DatabaseConnectionMaintainer(object):
     DB_TIMEOUT_SECONDS = 60*60
 
-    def __init__(self):
+    def __init__(self, db_timeout=None):
         self.clients = set()
         # self.device_to_protocol = {}
         self.is_recent_db_change_occurred = False
-        self.delay_and_execute(self.DB_TIMEOUT_SECONDS, self.close_db_connection_if_needed)
+        if db_timeout is None:
+            self.db_timeout = self.DB_TIMEOUT_SECONDS
+        self.delay_and_execute(self.db_timeout, self.close_db_connection_if_needed)
 
     @staticmethod
     def force_close_db():
@@ -23,7 +25,7 @@ class DatabaseConnectionMaintainer(object):
             close_old_connections()
             print "db connection closed"
         self.is_recent_db_change_occurred = False
-        self.delay_and_execute(self.DB_TIMEOUT_SECONDS, self.close_db_connection_if_needed)
+        self.delay_and_execute(self.db_timeout, self.close_db_connection_if_needed)
 
     def refresh_timeout(self):
         self.is_recent_db_change_occurred = True
