@@ -33,6 +33,26 @@
 {% block nav-global %}
 {% get_simplemenu as menu %}
     <li class="dropdown">
+        {% block welcome-msg %}
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Welcome,' %} <strong>{% filter force_escape %}{% firstof user.get_short_name user.get_username %}{% endfilter %}</strong> <span class="caret"></span></a>
+        {% endblock %}
+        <ul class="dropdown-menu">
+            {% if site_url %}
+                <li><a href="{{ site_url }}">{% trans 'View site' %}</a></li>
+            {% endif %}
+            {% if user.is_active and user.is_staff %}
+                {% url 'django-admindocs-docroot' as docsroot %}
+                {% if docsroot %}
+                    <li><a href="{{ docsroot }}">{% trans 'Documentation' %}</a></li>
+                {% endif %}
+            {% endif %}
+            {% if user.has_usable_password %}
+            <li><a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a></li>
+            {% endif %}
+            <li><a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
           {% trans "Other apps" %}<span class="caret"></span></a>
       <ul class="dropdown-menu">
