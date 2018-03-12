@@ -90,6 +90,7 @@ class DjangoAutoConf(DjangoSettingManager):
         self.__check_params()
         self.set_settings_env()
         self.load_settings_in_project_template()
+        self.set_project_folders_in_settings()
         self.load_all_extra_settings(features)
         self.setting_storage.add_secret_key(self.get_or_create_secret_key(self.get_local_key_folder()))
         self.update_installed_apps_etc()
@@ -180,12 +181,14 @@ class DjangoAutoConf(DjangoSettingManager):
         self.setting_storage.set_attr("INSTALLED_APPS", tuple(self.installed_app_list))
 
     def update_installed_apps_etc(self):
+        self.install_auto_detected_apps()
+
+    def set_project_folders_in_settings(self):
         self.setting_storage.set_attr("PROJECT_PATH", self.get_project_path())
         # setattr(base_settings, "TEMPLATE_CONTEXT_PROCESSORS", tuple())
         self.setting_storage.set_attr("DJANGO_AUTO_CONF_LOCAL_DIR", os.path.join(
             self.get_project_path(), self.local_folder_name))
         self.setting_storage.set_attr("STATIC_ROOT", os.path.abspath(os.path.join(self.get_project_path(), 'static')))
-        self.install_auto_detected_apps()
 
     def load_all_extra_settings(self, features):
         self.update_base_settings_with_features(features)
