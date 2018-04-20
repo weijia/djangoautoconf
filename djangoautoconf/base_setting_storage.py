@@ -22,6 +22,7 @@ class BaseSettingsHolder(object):
     MEDIA_URL = "/media/"
     MEDIA_ROOT = "/media/"
     MIDDLEWARE_CLASSES = []
+    STATIC_URL = "/static/"
     TEMPLATES = [
                 {
                     'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -97,16 +98,16 @@ class ObjectSettingStorage(object):
     @staticmethod
     def __remove_lower_case_attributes(new_base_settings):
         for attr in dir(new_base_settings):
-            if attr.startswith("__"):
-                continue
-            if attr in ["__class__", "__cmp__", "__contains__", "clear", "copy"]:
-                continue
+            # if attr.startswith("__"):
+            #     continue
+            # if attr in ["__class__", "__cmp__", "__contains__", "clear", "copy"]:
+            #     continue
             if attr == attr.upper():
                 continue
             try:
                 delattr(new_base_settings, attr)
             except:
-                print attr
+                # print attr
                 continue
 
     def remove_empty_list(self):
@@ -188,3 +189,6 @@ class ObjectSettingStorage(object):
 
     def is_above_or_equal_to_django18(self):
         return (django.VERSION[0] == 1) and (django.VERSION[1] >= 8)
+
+    def is_above_or_equal_to_django1_11(self):
+        return (django.VERSION[0] == 1) and (django.VERSION[1] >= 11)

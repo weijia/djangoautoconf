@@ -209,11 +209,13 @@ class DjangoAutoConf(DjangoSettingManager):
                 remove_folder_in_sys_path(app_root_folder)
 
     def load_settings_in_project_template(self):
-        template_root = os.path.join(get_folder(django.__file__), "conf/project_template/")
-        include(template_root)
-        full_path = os.path.join(get_folder(django.__file__), "conf/project_template/project_name/settings.py-tpl")
-        f = open(full_path)
-        module_content = f.read()
-        self.setting_storage.eval_content(module_content)
-        # self.setting_storage.import_based_on_base_settings("project_name.settings")
-        exclude(template_root)
+        if self.setting_storage.is_above_or_equal_to_django1_11():
+            full_path = os.path.join(get_folder(django.__file__), "conf/project_template/project_name/settings.py-tpl")
+            f = open(full_path)
+            module_content = f.read()
+            self.setting_storage.eval_content(module_content)
+        else:
+            template_root = os.path.join(get_folder(django.__file__), "conf/project_template/")
+            include(template_root)
+            self.setting_storage.import_based_on_base_settings("project_name.settings")
+            exclude(template_root)

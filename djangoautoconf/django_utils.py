@@ -3,7 +3,10 @@ import json
 import mimetypes
 from django.http import HttpResponse
 import os
-from django.core.servers.basehttp import FileWrapper
+try:
+    from django.core.servers.basehttp import FileWrapper
+except:
+    from wsgiref.util import FileWrapper
 from django.utils.http import urlquote
 
 
