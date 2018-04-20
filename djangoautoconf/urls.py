@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -20,7 +20,7 @@ from djangoautoconf import auto_conf_urls
 
 auto_conf_urls.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = [
                        # Examples:
                        # url(r'^default_django_15_and_below/', include('default_django_15_and_below.foo.urls')),
 
@@ -33,7 +33,7 @@ urlpatterns = patterns('',
                        # url(r'^obj_sys/', include('obj_sys.urls')),
                        # url("^$", direct_to_template, {"template": "index.html"}, name="home"),
                        # url(r'^accounts/', include('userena.urls')),
-                       )
+                       ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += default_app_url_patterns
