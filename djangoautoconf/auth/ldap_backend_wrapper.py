@@ -11,8 +11,7 @@ class LDAPBackendWrapper(LDAPBackend):
         elif "identification" in kwargs:
             username = kwargs["identification"]
             del kwargs["identification"]
-
         password = kwargs["password"]
         del kwargs["password"]
-        return super(LDAPBackendWrapper, self).authenticate(username, password, **kwargs)
+        return super(LDAPBackendWrapper, self).authenticate(username=username, password=password, **kwargs)
         # return None
