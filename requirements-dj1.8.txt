@@ -1,0 +1,16 @@
+django-extensions
+ufs-tools
+# optional
+django-tastypie
+django-jquery-ui
+django-bootstrap-form
+django-tables2==1.16.0 # version above this will need django >=1.11
+django-tables2-reports
+django-import-export==0.4.3  # 0.4.4 is not compatible with django-admin-bootstrapped, because admin/actions.html is not compatible
+django-ajax-selects
+django-reversion
+django-guardian
+django-mptt
+django-crispy-forms
+django-auth-ldap==1.3.0
+django-tastypie-swagger==0.1.4
