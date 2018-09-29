@@ -73,7 +73,7 @@ def include_urls():
 
     for app in enum_app_names():
         mod = import_module(app)
-        # Attempt to import the app's admin module.
+        # Attempt to add app's urls.py automatically to root
         if is_at_least_one_sub_filesystem_item_exists(get_module_path(mod), ["urls.py", "default_settings.py"]):
             add_app_urls_no_exception(app)
         # Attempt to import the app's urls module.
@@ -114,7 +114,7 @@ def add_urlpatterns_in_file(local_urls_full_path):
 def has_api_url(app_module):
     # return True
     for pattern in app_module.urlpatterns:
-        if '^api/' in pattern._regex:
+        if (pattern._regex is not None) and ('^api/' in pattern._regex):
             return True
     return False
 

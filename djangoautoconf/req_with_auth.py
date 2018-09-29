@@ -70,7 +70,7 @@ def complex_login(request):
         # login(request, None)
         login_by_django_user(request, token.user)
     else:
-        assert_username_password(data)
+        assert_username_password(request)
 
 
 def authenticate_req_throw_exception(request):

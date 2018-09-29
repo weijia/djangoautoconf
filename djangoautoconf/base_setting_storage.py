@@ -21,6 +21,18 @@ class BaseSettingsHolder(object):
     INSTALLED_APPS = ["django.contrib.sites"]
     MEDIA_URL = "/media/"
     MEDIA_ROOT = "/media/"
+    MIDDLEWARE_CLASSES = []
+    STATIC_URL = "/static/"
+    TEMPLATES = [
+                {
+                    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                    'APP_DIRS': True,
+                    'OPTIONS': {
+                        'context_processors': [],
+                    }
+                },
+            ]
+    DEBUG = True
 
 
 class ObjectSettingStorage(object):
@@ -46,6 +58,18 @@ class ObjectSettingStorage(object):
         self.__remove_lower_case_attributes(new_base_settings)
         self.update_base_settings(new_base_settings)
         del sys_modules[module_import_path]
+
+    def eval_content(self, module_file_content):
+        # ######
+        # Inject attributes to builtin and import all other modules
+        # Ref: http://stackoverflow.com/questions/11813287/insert-variable-into-global-namespace-from-within-a-function
+        self.__init_builtin()
+        self.__inject_attr()
+        ctx = {}
+        exec(module_file_content, globals(), ctx)
+        self.__remove_lower_case_attributes(ctx)
+        self.update_base_settings(ctx)
+        self.update_base_settings(ctx)
 
     def __init_builtin(self):
         try:
@@ -74,9 +98,17 @@ class ObjectSettingStorage(object):
     @staticmethod
     def __remove_lower_case_attributes(new_base_settings):
         for attr in dir(new_base_settings):
+            # if attr.startswith("__"):
+            #     continue
+            # if attr in ["__class__", "__cmp__", "__contains__", "clear", "copy"]:
+            #     continue
             if attr == attr.upper():
                 continue
-            delattr(new_base_settings, attr)
+            try:
+                delattr(new_base_settings, attr)
+            except:
+                # print attr
+                continue
 
     def remove_empty_list(self):
         for attr in dir(self.base_settings):
@@ -157,3 +189,6 @@ class ObjectSettingStorage(object):
 
     def is_above_or_equal_to_django18(self):
         return (django.VERSION[0] == 1) and (django.VERSION[1] >= 8)
+
+    def is_above_or_equal_to_django1_11(self):
+        return (django.VERSION[0] == 1) and (django.VERSION[1] >= 11)

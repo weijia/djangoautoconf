@@ -33,6 +33,7 @@ def create_channels_for_related_fields_in_model(model_class):
 def add_channel_for_models_in_module(models):
     for model_class in model_enumerator(models):
         create_channels_for_related_fields_in_model(model_class)
+        register_channel(model_class)
 
 
 def get_ajax_config_for_relation_fields(model_class):
@@ -46,15 +47,14 @@ def get_ajax_config_for_relation_fields(model_class):
             else:
                 related_model = field.related_field.model
             field_names.append(field.name)
-            model_class = related_model
-            ajax_mapping[field.name] = get_low_case_model_class_name(model_class)
+            ajax_mapping[field.name] = get_low_case_model_class_name(related_model)
 
     for field in enum_model_many_to_many(model_class):
         if type(field) in get_relation_field_types():
-            model_class = field.related_model
-            if model_class not in field_names:
+            related_model_class = field.related_model
+            if related_model_class not in field_names:
                 field_names.append(field.name)
-                ajax_mapping[field.name] = get_low_case_model_class_name(model_class)
+                ajax_mapping[field.name] = get_low_case_model_class_name(related_model_class)
 
     return ajax_mapping
 

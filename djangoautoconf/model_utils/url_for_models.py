@@ -18,6 +18,7 @@ def add_all_urls(urlpatterns, models):
     return urlpatterns
 
 
+# noinspection PyProtectedMember
 def get_model_app(model_class):
     # app_folder = os.path.dirname(get_folder(model_class.__file__))
     # name = os.path.basename(app_folder)

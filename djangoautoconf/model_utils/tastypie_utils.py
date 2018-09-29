@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from tastypie import fields
 from tastypie.api import NamespacedApi
 
@@ -75,7 +75,7 @@ def get_tastypie_urls(models, excluded_model_name=('MPTTModel',)):
     url_list.append(url(r'^api/',
                         include(v1_api.urls)))
 
-    p = patterns('', *url_list)
+    p = url_list
     return p
 
 
