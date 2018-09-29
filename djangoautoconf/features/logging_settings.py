@@ -13,7 +13,7 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
             'level': 'ERROR',
             'filters': ['require_debug_false'],
-             # But the emails are plain text by default - HTML is nicer
+            # But the emails are plain text by default - HTML is nicer
             'include_html': True,
         },
         # Log to a text file that can be rotated by logrotate
