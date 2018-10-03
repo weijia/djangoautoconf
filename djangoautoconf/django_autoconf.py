@@ -10,8 +10,8 @@ from ufs_tools.app_tools import get_executable_folder
 from ufs_tools.inspect_utils import get_inspection_frame
 from ufs_tools.libtool import include_all_direct_subfolders, exclude
 
-from auto_conf_utils import dump_attrs, is_at_least_one_sub_filesystem_item_exists, enum_folders
-from django_setting_manager import DjangoSettingManager
+from .auto_conf_utils import dump_attrs, is_at_least_one_sub_filesystem_item_exists, enum_folders
+from .django_setting_manager import DjangoSettingManager
 from ufs_tools.basic_lib_tool import remove_folder_in_sys_path, include
 
 from djangoautoconf.base_setting_storage import ObjectSettingStorage
@@ -116,7 +116,7 @@ class DjangoAutoConf(DjangoSettingManager):
         executable_folder = executable_folder or get_executable_folder()
         # print "!!!!!!!!!!!!!! executable:", executable_folder
         if os.path.exists(os.path.join(executable_folder, "local/total_settings.py")):
-            print "Using total settings"
+            print("Using total settings")
             os.chdir(executable_folder)
             os.environ["DJANGO_SETTINGS_MODULE"] = "local.total_settings"
             os.environ["STATIC_ROOT"] = os.path.join(executable_folder, "static")
@@ -130,7 +130,7 @@ class DjangoAutoConf(DjangoSettingManager):
             raise RootDirNotExist
         if not os.path.exists(self.local_key_folder):
             # logging.getLogger().error("key dir not exist: "+self.key_dir)
-            print "key dir not exist: " + self.local_key_folder
+            print("key dir not exist: " + self.local_key_folder)
             raise LocalKeyFolderNotExist
 
     def get_local_key_folder(self):

@@ -33,4 +33,4 @@ class DjangoDevServerAutoConf(object):
 
 if __name__ == "__main__":
     d = DjangoDevServerAutoConf()
-    print d
+    print(d)
