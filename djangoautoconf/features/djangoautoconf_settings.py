@@ -20,12 +20,12 @@ INSTALLED_APPS = (
     'jquery_ui',
     # 'provider',
     # 'provider.oauth2',
-    'guardian',
+    # 'guardian',
     'djangoautoconf',
     # 'webmanager',
     'compat',
     'import_export',
-    'tastypie_swagger',
+    # 'tastypie_swagger',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -41,7 +41,7 @@ SITE_ID = 1
 
 ROOT_URLCONF = "djangoautoconf.urls"
 
-MEDIA_ROOT=os.path.join(get_executable_folder(), "media")
+MEDIA_ROOT = os.path.join(get_executable_folder(), "media")
 
 DATABASES = {
     'default': {

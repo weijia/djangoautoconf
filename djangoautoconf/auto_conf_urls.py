@@ -79,8 +79,8 @@ def include_urls():
         # Attempt to import the app's urls module.
         try:
             import_app_urls(app)
-        except ImportError, e:
-            if str(e) != 'No module named urls':
+        except ImportError as e:
+            if not ('No module named' in str(e) and 'url' in str(e)):
                 # import traceback
                 traceback.print_exc()
 
@@ -133,8 +133,8 @@ def add_app_urls_no_exception(app):
                 add_url_pattern("^%s/" % app, include_param)
                 create_simple_menu(app)
     except ImportError:
-        print "Import %s.urls failed (maybe %s.urls does not exists)." % (app, app)
-    except Exception, e:
+        print("Import %s.urls failed (maybe %s.urls does not exists)." % (app, app))
+    except Exception as e:
         # import traceback
         traceback.print_exc()
         pass
@@ -147,7 +147,7 @@ def create_simple_menu(app):
         if app in ["admin", "simplemenu"] and not item.is_valid:
             item.is_valid = True
             item.save()
-    except Exception, e:
+    except Exception as e:
         # import traceback
         pass
 

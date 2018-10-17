@@ -3,11 +3,11 @@ import logging
 import os
 
 from django.utils.crypto import get_random_string
-from auto_conf_utils import enum_modules, enum_folders
+from .auto_conf_utils import enum_modules, enum_folders
 from ufs_tools.basic_lib_tool import remove_folder_in_sys_path, include
 from ufs_tools.folder_tool import ensure_dir
 
-from base_setting_storage import ObjectSettingStorage
+from .base_setting_storage import ObjectSettingStorage
 
 __author__ = 'weijia'
 
@@ -81,13 +81,13 @@ class DjangoSettingManager(object):
         try:
             return self.get_existing_secret_key(local_key_folder)
         except ImportError:
-            print "No existing secret key"
+            print("No existing secret key")
             pass
 
         try:
             return self.create_secret_file_and_get_it(local_key_folder)
         except Exception:
-            print "Try to create secret key failed"
+            print("Try to create secret key failed")
             import traceback
 
             traceback.print_exc()

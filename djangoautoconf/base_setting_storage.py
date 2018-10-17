@@ -31,7 +31,9 @@ class BaseSettingsHolder(object):
                     'BACKEND': 'django.template.backends.django.DjangoTemplates',
                     'APP_DIRS': True,
                     'OPTIONS': {
-                        'context_processors': [],
+                        'context_processors': [
+                            "django.contrib.auth.context_processors.auth",
+                        ]
                     }
                 },
             ]
@@ -56,7 +58,7 @@ class ObjectSettingStorage(object):
         try:
             new_base_settings = importlib.import_module(module_import_path)
         except:
-            print "Import module error:", module_import_path
+            print("Import module error:", module_import_path)
             raise
         self.__remove_lower_case_attributes(new_base_settings)
         self.update_base_settings(new_base_settings)
@@ -130,7 +132,10 @@ class ObjectSettingStorage(object):
                 continue
             value = getattr(self.base_settings, attr)
             if (type(value) is list) and len(value) == 0:
-                delattr(self.base_settings, attr)
+                if hasattr(self.base_settings.__class__, attr):
+                    delattr(self.base_settings.__class__, attr)
+                else:
+                    delattr(self.base_settings, attr)
             if type(value) is tuple:
                 setattr(self.base_settings, attr, remove_duplicated_keep_order(value))
 
@@ -201,5 +206,6 @@ class ObjectSettingStorage(object):
     def is_above_or_equal_to_django18(self):
         return (django.VERSION[0] == 1) and (django.VERSION[1] >= 8)
 
+    # noinspection PyMethodMayBeStatic
     def is_above_or_equal_to_django1_11(self):
-        return (django.VERSION[0] == 1) and (django.VERSION[1] >= 11)
+        return not (django.VERSION[0] == 1) and (django.VERSION[1] < 11)
