@@ -1,9 +1,12 @@
 import importlib
 import logging
+import os
 import sys
 from sys import modules as sys_modules
 
 import django
+from ufs_tools import get_folder
+
 from ufs_tools.tuple_tools import remove_duplicated_keep_order
 
 log = logging.getLogger(__name__)
@@ -157,23 +160,31 @@ class ObjectSettingStorage(object):
                 {
                     'BACKEND': 'django.template.backends.django.DjangoTemplates',
                     'APP_DIRS': True,
+                    'DIRS': [
+                        self.root_dir
+                    ],
                     'OPTIONS': {
                         'context_processors': [],
                     }
                 },
             ]
 
-            template_value = getattr(self.base_settings, "TEMPLATES", default_template_value)
+            template_engines = getattr(self.base_settings, "TEMPLATES", default_template_value)
 
             # The original TEMPLATE setting must have one element if the TEMPLATE setting exists
-            context_processors = template_value[0]
+            template_engine0 = template_engines[0]
+            module_template_folder = os.path.join(get_folder(__file__), "templates")
+            if 'DIRS' in template_engine0:
+                template_engine0['DIRS'].append(module_template_folder)
+            else:
+                template_engine0['DIRS'] = [module_template_folder]
 
-            template_options = context_processors.get("OPTIONS", {'context_processors': []})
+            template_options = template_engine0.get("OPTIONS", {'context_processors': []})
 
             template_options["context_processors"].extend(set(value))
 
             # delattr(self.base_settings, attr)
-            setattr(self.base_settings, target_attr, template_value)
+            setattr(self.base_settings, target_attr, template_engines)
             # del self.base_settings.TEMPLATE_CONTEXT_PROCESSORS
             for template_attr in ["TEMPLATE_STRING_IF_INVALID", "TEMPLATE_DIRS", "TEMPLATE_LOADERS",
                                   "TEMPLATE_DEBUG", attr]:
