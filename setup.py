@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='djangoautoconf',
-    version='0.6.36',
+    version='0.6.37',
     description='Create a package for ease setting django project settings.',
     long_description=readme + '\n\n' + history,
     author='Richard Wang',
@@ -47,7 +47,7 @@ setup(
     ],
     package_dir={'djangoautoconf': 'djangoautoconf'},
     # include_package_data=True,
-    package_data={'djangoautoconf': ['templates/*']},
+    # package_data={'djangoautoconf': ['templates/*']},
     install_requires=[
         'django-extensions',
         'ufs-tools',
