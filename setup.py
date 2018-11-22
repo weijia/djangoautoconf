@@ -3,7 +3,7 @@
 
 import os
 import sys
-
+import djangoautoconf
 
 try:
     from setuptools import setup
@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='djangoautoconf',
-    version='0.6.38',
+    version=djangoautoconf.__version__,
     description='Create a package for ease setting django project settings.',
     long_description=readme + '\n\n' + history,
     author='Richard Wang',
@@ -68,6 +68,7 @@ setup(
         'django-userena',
         'python-social-auth',
         'django-settings',
+        'django-filter<2',
         # 'django-oauth2-provider',
     ],
     license="BSD",
