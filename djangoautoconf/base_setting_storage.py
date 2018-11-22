@@ -208,4 +208,4 @@ class ObjectSettingStorage(object):
 
     # noinspection PyMethodMayBeStatic
     def is_above_or_equal_to_django1_11(self):
-        return not (django.VERSION[0] == 1) and (django.VERSION[1] < 11)
+        return not ((django.VERSION[0] == 1) and (django.VERSION[1] < 11))
