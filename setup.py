@@ -68,6 +68,7 @@ setup(
         'django-userena',
         'python-social-auth',
         'django-settings',
+        'django-simplemenu-simplified',
         'django-filter<2',
         # 'django-oauth2-provider',
     ],
