@@ -21,7 +21,9 @@ class BaseSettingsHolder(object):
     AUTHENTICATION_BACKENDS = []
     TEMPLATE_CONTEXT_PROCESSORS = []
     ROOT_URLCONF = "djangoautoconf.urls"
-    INSTALLED_APPS = ["django.contrib.sites"]
+    INSTALLED_APPS = ["django.contrib.sites",
+                      "simplemenu",
+                      ]
     MEDIA_URL = "/media/"
     MEDIA_ROOT = "/media/"
     MIDDLEWARE_CLASSES = []

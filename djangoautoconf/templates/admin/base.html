@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    {% block extrahead %}
+    {% endblock %}
 </head>
 <body>
+{% block nav-global %}
+{% endblock %}
 {% block content %}
 {% endblock %}
 </body>
