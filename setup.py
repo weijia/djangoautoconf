@@ -46,7 +46,7 @@ setup(
         'djangoautoconf.log_utils',
     ],
     package_dir={'djangoautoconf': 'djangoautoconf'},
-    # include_package_data=True,
+    include_package_data=True,
     # package_data={'djangoautoconf': ['templates/*']},
     install_requires=[
         'django-extensions',
