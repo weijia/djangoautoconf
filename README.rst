@@ -82,7 +82,7 @@ TODO
 ### 向我捐助
 如果你觉得本项目对你有用，欢迎请作者一杯茶。
 
-|捐赠weijia2000|_
+|捐赠weijia2000|
 
-.. |捐赠weijia2000| image:: https://img.alipay.com/sys/personalprod/style/mc/btn-index.png
-.. _捐赠weijia2000: https://me.alipay.com/weijia2000
+.. |捐赠weijia2000| image:: https://t.alipayobjects.com/images/mobilecodec/TB1ej3RXXmyMeJjm2EPXXaZrFXa
+
