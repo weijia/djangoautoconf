@@ -12,6 +12,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    "simplemenu",
     # 'south',  # Do not work in SAE
     # 'mptt',
     # 'treenav',
