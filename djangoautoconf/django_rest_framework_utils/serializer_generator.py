@@ -1,4 +1,4 @@
-from django.conf.urls import url, patterns, include
+from django.conf.urls import url, include
 
 from rest_framework import serializers
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
@@ -110,8 +110,7 @@ class ModelProcessorBase(object):
             add_reversion_before_save(model)
             if hasattr(model, "objects"):
                 self.append_urls(model)
-        p = patterns('', *self.url_list)
-        return p
+        return self.url_list
 
     def append_urls(self, model):
         self.url_list.append(self.get_url(model))
@@ -129,7 +128,7 @@ class SerializerUrlGenerator(ModelProcessorBase):
 
     def add_rest_api_urls(self, models):
         if self.url_patterns is None:
-            raise
+            raise "No url_patterns found"
         self.url_patterns += self.get_patterns(models)
         self.url_patterns += url(r'^api-auth/', include('rest_framework.urls',
                                                         namespace='rest_framework')),

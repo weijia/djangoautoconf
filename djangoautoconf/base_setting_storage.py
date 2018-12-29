@@ -21,7 +21,8 @@ class BaseSettingsHolder(object):
     AUTHENTICATION_BACKENDS = []
     TEMPLATE_CONTEXT_PROCESSORS = []
     ROOT_URLCONF = "djangoautoconf.urls"
-    INSTALLED_APPS = ["django.contrib.sites"]
+    INSTALLED_APPS = ["django.contrib.sites",
+                      ]
     MEDIA_URL = "/media/"
     MEDIA_ROOT = "/media/"
     MIDDLEWARE_CLASSES = []
@@ -208,4 +209,4 @@ class ObjectSettingStorage(object):
 
     # noinspection PyMethodMayBeStatic
     def is_above_or_equal_to_django1_11(self):
-        return not (django.VERSION[0] == 1) and (django.VERSION[1] < 11)
+        return not ((django.VERSION[0] == 1) and (django.VERSION[1] < 11))

@@ -49,6 +49,7 @@ class DjangoAutoConf(DjangoSettingManager):
         self.installed_app_list = None
         self.external_app_repositories = None
         self.external_app_repositories_full_path = None
+        self.external_app_folder_name = None
 
     def get_full_path(self, relative_path):
         return os.path.join(self.root_dir, relative_path)

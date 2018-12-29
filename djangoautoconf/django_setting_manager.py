@@ -7,8 +7,6 @@ from .auto_conf_utils import enum_modules, enum_folders
 from ufs_tools.basic_lib_tool import remove_folder_in_sys_path, include
 from ufs_tools.folder_tool import ensure_dir
 
-from .base_setting_storage import ObjectSettingStorage
-
 __author__ = 'weijia'
 
 log = logging.getLogger(__name__)
