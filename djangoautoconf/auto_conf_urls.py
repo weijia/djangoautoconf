@@ -114,7 +114,7 @@ def add_urlpatterns_in_file(local_urls_full_path):
 def has_api_url(app_module):
     # return True
     for pattern in app_module.urlpatterns:
-        if (pattern._regex is not None) and ('^api/' in pattern._regex):
+        if (pattern._regex is not None) and ('^api_domain_needed_signature/' in pattern._regex):
             return True
     return False
 
