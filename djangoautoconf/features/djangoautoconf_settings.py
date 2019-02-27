@@ -4,7 +4,7 @@ from ufs_tools.app_tools import get_executable_folder
 
 INSTALLED_APPS = (
     'bootstrap3',
-    'django_admin_bootstrapped',
+    # 'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -25,7 +25,7 @@ INSTALLED_APPS = (
     'djangoautoconf',
     # 'webmanager',
     'compat',
-    'import_export',
+    # 'import_export',
     # 'tastypie_swagger',
 )
 
@@ -33,8 +33,17 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
 )
 
-AUTHENTICATION_BACKENDS += ('django.contrib.auth.backends.ModelBackend',
-                            'guardian.backends.ObjectPermissionBackend')
+AUTHENTICATION_BACKENDS += (
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+try:
+    import guardian
+    AUTHENTICATION_BACKENDS += (
+        'guardian.backends.ObjectPermissionBackend',
+    )
+except ImportError:
+    pass
 
 ANONYMOUS_USER_ID = -1
 

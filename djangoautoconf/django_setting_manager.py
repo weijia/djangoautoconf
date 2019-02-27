@@ -13,6 +13,8 @@ log = logging.getLogger(__name__)
 
 
 def get_feature_setting_module_list(features):
+    # TODO: combine default settings in 3 places, djangoautoconf.features.djangoautoconf_settings, base_settings,
+    # TODO: and base_settings_storage
     ordered_import_list = [
         # self.default_settings_import_str,
         "djangoautoconf.features.djangoautoconf_settings",
