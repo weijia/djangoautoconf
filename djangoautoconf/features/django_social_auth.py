@@ -3,6 +3,7 @@ from djangoautoconf.local_key_manager import ConfigurableAttributeGetter
 INSTALLED_APPS += (
     'bootstrapform',
     'userenabootstrap',
+    'easy_thumbnails',
     'userena',
     'social.apps.django_app.default',
     'guardian',

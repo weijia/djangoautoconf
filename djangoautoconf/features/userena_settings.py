@@ -4,6 +4,7 @@ __author__ = 'weijia'
 INSTALLED_APPS += (
     'bootstrapform',
     'userenabootstrap',
+    'easy_thumbnails',
     'userena',
 )
 
