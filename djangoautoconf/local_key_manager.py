@@ -30,15 +30,22 @@ class ConfigurableAttributeGetter(object):
         return getattr(m, attr_name)
 
 
-def get_local_key(key_name, default_module=None):
+class ModuleAndVarNameShouldNotHaveDashCharacter(Exception):
+    pass
+
+
+def get_local_key(module_and_var_name, default_module=None):
     """
     Get local setting for the keys.
-    :param key_name: module path: for example: admin_account.admin_user, then you need to put admin_account.py in
-    local/local_keys/ and add variable admin_user="real admin username"
+    :param module_and_var_name: for example: admin_account.admin_user, then you need to put admin_account.py in
+        local/local_keys/ and add variable admin_user="real admin username", module_name_and_var_name should not
+        contain "-" because
     :param default_module: If the template can not be directly imported, use this to specify the parent module.
     :return: value for the key
     """
-    key_name_module_path = key_name.split(".")
+    if "-" in module_and_var_name:
+        raise ModuleAndVarNameShouldNotHaveDashCharacter
+    key_name_module_path = module_and_var_name.split(".")
     module_name = ".".join(key_name_module_path[0:-1])
     attr_name = key_name_module_path[-1]
     c = ConfigurableAttributeGetter(module_name, default_module)
