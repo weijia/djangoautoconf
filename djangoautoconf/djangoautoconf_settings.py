@@ -37,13 +37,13 @@ AUTHENTICATION_BACKENDS += (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-try:
-    import guardian
-    AUTHENTICATION_BACKENDS += (
-        'guardian.backends.ObjectPermissionBackend',
-    )
-except ImportError:
-    pass
+# try:
+#     import guardian
+#     AUTHENTICATION_BACKENDS += (
+#         'guardian.backends.ObjectPermissionBackend',
+#     )
+# except ImportError:
+#     pass
 
 ANONYMOUS_USER_ID = -1
 

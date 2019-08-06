@@ -17,7 +17,7 @@ def get_feature_setting_module_list(features):
     # TODO: and base_settings_storage
     ordered_import_list = [
         # self.default_settings_import_str,
-        "djangoautoconf.features.djangoautoconf_settings",
+        "djangoautoconf.djangoautoconf_settings",
         # "djangoautoconf.mysql_database"
     ]
     for feature in features:
