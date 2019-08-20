@@ -1,7 +1,6 @@
 import importlib
 import logging
 import os
-import sys
 import re
 
 log = logging.getLogger(__name__)
@@ -98,6 +97,6 @@ def enum_folders(parent_folder):
 
 def enum_modules(folder):
     for filename in os.listdir(folder):
-        is_py = re.search('\.py$', filename)
+        is_py = re.search(r'\.py$', filename)
         if is_py and (filename != "__init__.py"):
             yield filename.replace(".py", "")
