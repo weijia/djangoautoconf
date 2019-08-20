@@ -61,7 +61,7 @@ setup(
         'djangorestframework',
         'django-ajax-selects',
         'django-bootstrap3',
-        # 'django-admin-bootstrapped',
+        'django-admin-bootstrapped',
         'django-compat',
         'easy-thumbnails',
         # 'django-userena',
