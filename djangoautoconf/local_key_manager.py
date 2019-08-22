@@ -13,7 +13,7 @@ class ConfigurableAttributeGetter(object):
             try:
                 m = importlib.import_module("%s.%s" % (module_path, self.module_of_attribute))
                 return m
-            except ImportError, e:
+            except ImportError as e:
                 exception = e
         raise exception
 
