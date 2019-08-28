@@ -1,4 +1,7 @@
-import thread
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 
 import time
 
@@ -22,7 +25,7 @@ class DatabaseConnectionMaintainer(object):
 
     @staticmethod
     def force_close_db():
-        print "force close db"
+        print("force close db")
         DatabaseConnectionMaintainer.close_database_connections()
 
     @staticmethod
@@ -33,7 +36,7 @@ class DatabaseConnectionMaintainer(object):
     def close_db_connection_if_needed(self):
         if not self.is_recent_db_change_occurred:
             DatabaseConnectionMaintainer.close_database_connections()
-            print "db connection closed", datetime.now()
+            print("db connection closed", datetime.now())
         self.is_recent_db_change_occurred = False
         self.delay_and_execute(self.db_timeout, self.close_db_connection_if_needed)
 
