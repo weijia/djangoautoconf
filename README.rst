@@ -27,7 +27,7 @@ Installation
     
     
 Create Project
-----------------
+----------------------------
 
 ::
 
@@ -71,7 +71,7 @@ Features
     r.register(UserDefinedModel)
 
 Default behavior
-------------------
+--------------------------------
 * When "/"  is not defined, redirect to all_login app if it is added to INSTALLED_APPS
 
 
@@ -79,10 +79,10 @@ Default behavior
 TODO
 --------
 
-### å‘æˆ‘æåŠ©
-å¦‚æœä½ è§‰å¾—æœ¬é¡¹ç›®å¯¹ä½ æœ‰ç”¨ï¼Œæ¬¢è¿è¯·ä½œè€…ä¸€æ¯èŒ¶ã€‚
+### ÏòÎÒ¾èÖú
+Èç¹ûÄã¾õµÃ±¾ÏîÄ¿¶ÔÄãÓĞÓÃ£¬»¶Ó­Çë×÷ÕßÒ»±­²è¡£
 
-|æèµ weijia2000|
+|¾èÔùweijia2000|
 
-.. |æèµ weijia2000| image:: https://t.alipayobjects.com/images/mobilecodec/TB1ej3RXXmyMeJjm2EPXXaZrFXa
+.. |¾èÔùweijia2000| image:: https://t.alipayobjects.com/images/mobilecodec/TB1ej3RXXmyMeJjm2EPXXaZrFXa
 

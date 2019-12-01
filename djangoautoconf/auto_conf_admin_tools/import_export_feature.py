@@ -1,7 +1,8 @@
 from djangoautoconf.auto_conf_admin_tools.admin_feature_base import AdminFeatureBase
 from django.conf import settings
 
-from djangoautoconf.model_utils.import_export_utils import get_import_export_admin_mixin
+from djangoautoconf.model_utils.import_export_utils import get_import_export_admin_mixin, \
+    get_import_export_admin_with_improved_title_mixin
 
 __author__ = 'weijia'
 
@@ -19,7 +20,10 @@ class ImportExportFeature(AdminFeatureBase):
         if self.is_import_export_supported:
             try:
                 # from import_export.admin import ImportExportActionModelAdmin
-                parent_list.append(get_import_export_admin_mixin(class_inst))
+                if hasattr(class_inst, "use_verbose_as_export_title"):
+                    parent_list.append(get_import_export_admin_with_improved_title_mixin(class_inst))
+                else:
+                    parent_list.append(get_import_export_admin_mixin(class_inst))
             except ImportError:
                 pass
 

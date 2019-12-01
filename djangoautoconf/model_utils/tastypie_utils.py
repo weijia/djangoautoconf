@@ -75,6 +75,9 @@ def get_tastypie_urls(models, excluded_model_name=('MPTTModel',)):
     url_list.append(url(r'^api/',
                         include(v1_api.urls)))
 
+    url_list.append(url(r'^api_domain_needed_signature/',
+                        None))
+
     p = url_list
     return p
 

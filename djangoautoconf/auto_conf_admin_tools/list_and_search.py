@@ -49,7 +49,7 @@ class ListAndSearch(AdminFeatureBase):
                     res.append(field.name)
                 except TypeError:
                     pass
-        except Exception, e:
+        except Exception as e:
             pass
         return res
 
@@ -59,7 +59,7 @@ class ListAndSearch(AdminFeatureBase):
             for field in enum_model_fields(class_inst):
                 if self.is_contain_searchable(field) and not (type(field) in [DateTimeField]):
                     res.append(field.name)
-        except Exception, e:
+        except Exception as e:
             pass
         return res
 

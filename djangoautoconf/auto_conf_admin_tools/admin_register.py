@@ -4,8 +4,14 @@ from django.contrib.admin import ModelAdmin
 from django.db import models
 # from djangoautoconf.auto_conf_admin_tools.additional_attr import AdditionalAdminAttr
 # from djangoautoconf.auto_conf_admin_tools.foreign_key_auto_complete import ForeignKeyAutoCompleteFeature
-from djangoautoconf.auto_conf_admin_tools.guardian_feature import GuardianFeature
-from djangoautoconf.auto_conf_admin_tools.import_export_feature import ImportExportFeature
+try:
+    from djangoautoconf.auto_conf_admin_tools.guardian_feature import GuardianFeature
+except ImportError:
+    GuardianFeature = None
+try:
+    from djangoautoconf.auto_conf_admin_tools.import_export_feature import ImportExportFeature
+except ImportError:
+    ImportExportFeature = None
 from djangoautoconf.auto_conf_admin_tools.list_and_search import ListAndSearch
 # from djangoautoconf.auto_conf_admin_tools.reversion_feature import ReversionFeature
 from ufs_tools.inspect_utils import class_enumerator
@@ -20,9 +26,9 @@ def register_admin_without_duplicated_register(class_inst, admin_class, admin_si
     try:
         if is_need_register(admin_site, class_inst):
             admin_site.register(class_inst, admin_class)
-    except Exception, e:
+    except Exception as e:
         if True:  # not (' is already registered' in e.message):
-            print class_inst, admin_class
+            print(class_inst, admin_class)
             import traceback
 
             traceback.print_exc()
@@ -51,10 +57,14 @@ except ImportError:
 
 
 class AdminRegister(object):
-    default_feature_list = [ListAndSearch,
+    default_feature_list = []
+    default_feature_list_base = [ListAndSearch,
                             ImportExportFeature,
                             GuardianFeature  # , ReversionFeature
                             ]
+    for feature in default_feature_list_base:
+        if feature is not None:
+            default_feature_list.append(feature)
 
     def __init__(self,
                  admin_site_list=default_admin_site_list,

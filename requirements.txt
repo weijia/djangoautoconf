@@ -1,8 +1,9 @@
 django-extensions
+django-jquery-ui
 ufs-tools
+django-compat
 # optional
 django-tastypie
-django-jquery-ui
 django-bootstrap-form
 django-tables2-reports
 django-import-export==0.4.3  # 0.4.4 is not compatible with django-admin-bootstrapped, because admin/actions.html is not compatible
