@@ -83,6 +83,9 @@ class DjangoSettingManager(object):
         except ImportError:
             print("No existing secret key")
             pass
+        except ModuleNotFoundError:
+            print("No existing secret key")
+            pass
 
         try:
             return self.create_secret_file_and_get_it(local_key_folder)
