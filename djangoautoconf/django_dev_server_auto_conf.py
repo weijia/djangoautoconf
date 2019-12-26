@@ -1,10 +1,10 @@
 from ufs_tools.app_tools import get_executable_folder
+import os
+# from ufs_tools import get_folder
+# from ufs_tools.inspect_utils import get_parent_frame_file, get_inspection_frame
+# from ufs_tools.libtool import include_all_direct_subfolders
 
-from ufs_tools import get_folder, os
-from ufs_tools.inspect_utils import get_parent_frame_file, get_inspection_frame
-from ufs_tools.libtool import include_all_direct_subfolders
-
-from djangoautoconf import DjangoAutoConf
+from djangoautoconf.django_autoconf import DjangoAutoConf
 
 
 class DjangoDevServerAutoConf(object):

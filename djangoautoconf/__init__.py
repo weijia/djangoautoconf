@@ -3,6 +3,6 @@
 
 __author__ = 'Richard Wang'
 __email__ = 'richardwangwang@gmail.com'
-__version__ = '1.11.3'
+__version__ = '2.0.2'
 
-from django_autoconf import DjangoAutoConf
+# from .django_autoconf import DjangoAutoConf

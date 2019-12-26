@@ -13,9 +13,11 @@ log = logging.getLogger(__name__)
 
 
 def get_feature_setting_module_list(features):
+    # TODO: combine default settings in 3 places, djangoautoconf.features.djangoautoconf_settings, base_settings,
+    # TODO: and base_settings_storage
     ordered_import_list = [
         # self.default_settings_import_str,
-        "djangoautoconf.features.djangoautoconf_settings",
+        "djangoautoconf.djangoautoconf_settings",
         # "djangoautoconf.mysql_database"
     ]
     for feature in features:
@@ -79,6 +81,9 @@ class DjangoSettingManager(object):
         try:
             return self.get_existing_secret_key(local_key_folder)
         except ImportError:
+            print("No existing secret key")
+            pass
+        except ModuleNotFoundError:
             print("No existing secret key")
             pass
 

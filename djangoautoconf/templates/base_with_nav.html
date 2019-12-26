@@ -18,6 +18,8 @@
     {% endblock %}
 	{% block main %}
     {% endblock %}
+    {% block body %}
+    {% endblock %}
 {% endblock %}
 
 
@@ -32,9 +34,6 @@
 {% block nav-global %}
 {% get_simplemenu as menu %}
     <li class="dropdown">
-        {% block welcome-msg %}
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Welcome,' %} <strong>{% filter force_escape %}{% firstof user.get_short_name user.get_username %}{% endfilter %}</strong> <span class="caret"></span></a>
-        {% endblock %}
         <ul class="dropdown-menu">
             {% if site_url %}
                 <li><a href="{{ site_url }}">{% trans 'View site' %}</a></li>

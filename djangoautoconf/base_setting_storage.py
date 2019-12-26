@@ -25,7 +25,26 @@ class BaseSettingsHolder(object):
                       ]
     MEDIA_URL = "/media/"
     MEDIA_ROOT = "/media/"
-    MIDDLEWARE_CLASSES = []
+
+    MIDDLEWARE_CLASSES = [
+        'django.middleware.security.SecurityMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    ]
+
+    MIDDLEWARE = [
+        'django.middleware.security.SecurityMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    ]
     STATIC_URL = "/static/"
     TEMPLATES = [
                 {
@@ -34,6 +53,7 @@ class BaseSettingsHolder(object):
                     'OPTIONS': {
                         'context_processors': [
                             "django.contrib.auth.context_processors.auth",
+                            'django.contrib.messages.context_processors.messages',
                         ]
                     }
                 },
@@ -58,9 +78,9 @@ class ObjectSettingStorage(object):
         self.__inject_attr()
         try:
             new_base_settings = importlib.import_module(module_import_path)
-        except:
+        except Exception as e:
             print("Import module error:", module_import_path)
-            raise
+            raise e
         self.__remove_lower_case_attributes(new_base_settings)
         self.update_base_settings(new_base_settings)
         del sys_modules[module_import_path]
@@ -204,6 +224,7 @@ class ObjectSettingStorage(object):
                     except:
                         pass
 
+    # noinspection PyMethodMayBeStatic
     def is_above_or_equal_to_django18(self):
         return (django.VERSION[0] == 1) and (django.VERSION[1] >= 8)
 
