@@ -20,21 +20,21 @@ class Command(BaseCommand):
             os.remove("local/total_settings.py")
         except:
             pass
-        print os.getcwd()
+        print(os.getcwd())
         with open("local/total_settings.py", "w") as f:
-            print >>f, "import os"
+            print("import os", file=f)
             for key, value in dump_attrs(settings):
                 if key in ["AUTH_LDAP_USER_SEARCH"]:
                     # Ignore object settings as it will not work if we dump it as string
                     continue
                 if key in ["STATIC_ROOT", "MEDIA_ROOT"]:
-                    print >>f, '%s=os.environ["%s"]' % (key, key)
+                    print('%s=os.environ["%s"]' % (key, key), file=f)
                 if value is None:
                     continue
                 if type(value) in (list, tuple, dict, bool, int, float):
-                    print >>f, key, "=", value
+                    print(key, "=", value, file=f)
                 elif type(value) in (str, ):
-                    print >>f, key, "=", '"'+str(value).replace('\\', '\\\\')+'"'
+                    print(key, "=", '"'+str(value).replace('\\', '\\\\')+'"', file=f)
                 else:
-                    print >>f, key, "=", '"'+str(value).replace('\\', '\\\\')+'"'
-        print "dump completed"
+                    print(key, "=", '"'+str(value).replace('\\', '\\\\')+'"', file=f)
+        print("dump completed")

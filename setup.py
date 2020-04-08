@@ -14,7 +14,10 @@ if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
     sys.exit()
 
-readme = open('README.rst', encoding='utf8', errors='ignore').read()
+try:
+    readme = open('README.rst').read()
+except IOError:
+    readme = open('README.rst', encoding='utf8', errors='ignore').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(

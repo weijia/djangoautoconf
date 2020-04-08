@@ -7,4 +7,4 @@ class Command(BaseCommand):
     help = 'Create command cache for environment where os.listdir is not working'
 
     def handle(self, *args, **options):
-        print "django_commands_dict =", core_management._commands
+        print("django_commands_dict = %s" % core_management._commands)

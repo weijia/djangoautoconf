@@ -11,7 +11,7 @@ class Command(BaseCommand):
     help = 'Create command cache for environment where os.listdir is not working'
 
     def handle(self, *args, **options):
-        print "please input the app you want to delete the its tables?"
+        print("please input the app you want to delete the its tables?")
         r = raw_input()
         # r = "device_status"
         if r != "":
