@@ -79,10 +79,13 @@ Default behavior
 TODO
 --------
 
-### ÏòÎÒ¾èÖú
-Èç¹ûÄã¾õµÃ±¾ÏîÄ¿¶ÔÄãÓĞÓÃ£¬»¶Ó­Çë×÷ÕßÒ»±­²è¡£
+### å‘æˆ‘æåŠ©
+å¦‚æœä½ è§‰å¾—æœ¬é¡¹ç›®å¯¹ä½ æœ‰ç”¨ï¼Œæ¬¢è¿è¯·ä½œè€…ä¸€æ¯èŒ¶ã€‚
 
-|¾èÔùweijia2000|
+|æèµ weijia2000|
 
-.. |¾èÔùweijia2000| image:: https://t.alipayobjects.com/images/mobilecodec/TB1ej3RXXmyMeJjm2EPXXaZrFXa
+.. |æèµ weijia2000| image:: https://t.alipayobjects.com/images/mobilecodec/TB1ej3RXXmyMeJjm2EPXXaZrFXa
 
+Work around for module installation.
+        'django-ajax-selects<3'
+        'python-social-auth<=0.2.21'
