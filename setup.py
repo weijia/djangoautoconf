@@ -61,7 +61,7 @@ setup(
         # 'django-tables2-reports',
         'django-import-export',
         'djangorestframework',
-        'django-ajax-selects',
+        'django-ajax-selects<3',
         'django-bootstrap3',
         # 'django-admin-bootstrapped',  # Only for Django 1.9
         'django-compat',
