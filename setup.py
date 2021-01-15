@@ -68,7 +68,7 @@ setup(
         'easy-thumbnails',
         # 'django-userena',
         # 'django-guardian<=1.4.1', # django-userena 2.0.1 has requirement django-guardian<=1.4.1
-        'python-social-auth',
+        'python-social-auth<=0.2.21',
         'django-settings',
         'django-simplemenu-simplified',
         'django-filter<2',
