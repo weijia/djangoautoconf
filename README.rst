@@ -87,5 +87,5 @@ TODO
 .. |捐赠weijia2000| image:: https://t.alipayobjects.com/images/mobilecodec/TB1ej3RXXmyMeJjm2EPXXaZrFXa
 
 Work around for module installation.
-        'django-ajax-selects<3'
+        'django-ajax-selects<=1.9.1'
         'python-social-auth<=0.2.21'
