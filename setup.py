@@ -51,7 +51,7 @@ setup(
     include_package_data=True,
     # package_data={'djangoautoconf': ['templates/*']},
     install_requires=[
-        'django-extensions',
+        'django-extensions<3',
         'ufs-tools',
         # optional
         'django-tastypie',
@@ -61,7 +61,6 @@ setup(
         # 'django-tables2-reports',
         'django-import-export',
         'djangorestframework',
-        'django-ajax-selects<3',
         'django-bootstrap3',
         # 'django-admin-bootstrapped',  # Only for Django 1.9
         'django-compat',
@@ -72,6 +71,7 @@ setup(
         'django-settings',
         'django-simplemenu-simplified',
         'django-filter<2',
+        'django-ajax-selects<=1.9.1',
         # 'django-oauth2-provider',
     ],
     license="BSD",
