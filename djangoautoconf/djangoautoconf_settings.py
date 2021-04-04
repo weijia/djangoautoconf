@@ -3,7 +3,7 @@ from ufs_tools.app_tools import get_executable_folder
 
 
 INSTALLED_APPS = (
-    'bootstrap3',
+    #'bootstrap3',
     # 'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -18,13 +18,14 @@ INSTALLED_APPS = (
     # 'treenav',
     # 'background_task',
     # 'django_cron',  # Do not work in SAE
-    'jquery_ui',
+    #'jquery_ui',
     # 'provider',
     # 'provider.oauth2',
     # 'guardian',
     'djangoautoconf',
     # 'webmanager',
     'compat',
+    'rest_framework',
     # 'import_export',
     # 'tastypie_swagger',
 )

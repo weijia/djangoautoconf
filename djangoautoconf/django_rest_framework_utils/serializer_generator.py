@@ -5,7 +5,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.serializers import ModelSerializer
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from djangoautoconf.model_utils.model_reversion import add_reversion_before_save
+# from djangoautoconf.model_utils.model_reversion import add_reversion_before_save
 from ufs_tools.string_tools import class_name_to_low_case
 
 from djangoautoconf.model_utils.model_attr_utils import model_enumerator, enum_model_fields
@@ -107,7 +107,7 @@ class ModelProcessorBase(object):
 
     def get_patterns(self, models):
         for model in model_enumerator(models, self.excluded_model_names):
-            add_reversion_before_save(model)
+            # add_reversion_before_save(model)
             if hasattr(model, "objects"):
                 self.append_urls(model)
         return self.url_list

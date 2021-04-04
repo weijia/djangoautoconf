@@ -56,12 +56,12 @@ setup(
         # optional
         'django-tastypie',
         'django-jquery-ui',
-        'django-bootstrap-form',
+        #'django-bootstrap-form',
         # 'django-tables2<1.17',
         # 'django-tables2-reports',
         'django-import-export',
         'djangorestframework',
-        'django-bootstrap3',
+        #'django-bootstrap3',
         # 'django-admin-bootstrapped',  # Only for Django 1.9
         'django-compat',
         'easy-thumbnails',

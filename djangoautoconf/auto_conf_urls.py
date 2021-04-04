@@ -132,8 +132,8 @@ def add_app_urls_no_exception(app):
                     include_param = include('%s.urls' % app)
                 add_url_pattern("^%s/" % app, include_param)
                 create_simple_menu(app)
-    except ImportError:
-        print("Import %s.urls failed (maybe %s.urls does not exists)." % (app, app))
+    #except ImportError:
+    #    print("Import %s.urls failed (maybe %s.urls does not exists)." % (app, app))
     except Exception as e:
         # import traceback
         traceback.print_exc()
