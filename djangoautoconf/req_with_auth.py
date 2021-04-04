@@ -2,7 +2,7 @@ import json
 import logging
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-from django_utils import retrieve_param
+from .django_utils import retrieve_param
 from django.utils import timezone
 
 from djangoautoconf.auth.login import login_by_django_user
