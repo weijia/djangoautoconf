@@ -95,14 +95,14 @@ class RequestWithAuth(object):
     def is_authenticated(self):
         try:
             authenticate_req_throw_exception(self.request)
-            print 'login OK'
+            print('login OK')
             return True
         except UserInactive:
             # Return a 'disabled account' error message
-            print 'disabled account'
+            print('disabled account')
             self.error_dict = {"error": "disabled account"}
         except InvalidLogin:
-            print 'invalid login'
+            print('invalid login')
             self.error_dict = {"error": "invalid login"}
         except NoLoginInfo:
             self.error_dict = {"error": "no username and password"}
@@ -127,5 +127,5 @@ try:
         # Optional but recommended
         def get_identifier(self, request):
             return request.user.username
-except ImportError, e:
+except ImportError as e:
     logging.warn("tastypie not installed, so no DjangoUserAuthentication defined" + e.message)
