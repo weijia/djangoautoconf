@@ -24,7 +24,7 @@ INSTALLED_APPS = (
     # 'guardian',
     'djangoautoconf',
     # 'webmanager',
-    'compat',
+    #'compat',
     # 'import_export',
     # 'tastypie_swagger',
 )
