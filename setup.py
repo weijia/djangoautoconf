@@ -63,7 +63,7 @@ setup(
         'djangorestframework',
         'django-bootstrap3',
         # 'django-admin-bootstrapped',  # Only for Django 1.9
-        'django-compat',
+        # 'django-compat', # Not working for Django 4
         'easy-thumbnails',
         # 'django-userena',
         # 'django-guardian<=1.4.1', # django-userena 2.0.1 has requirement django-guardian<=1.4.1
