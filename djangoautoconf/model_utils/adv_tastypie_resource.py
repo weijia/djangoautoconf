@@ -2,7 +2,8 @@ from tastypie.api import NamespacedApi
 from tastypie.constants import ALL_WITH_RELATIONS
 from tastypie import fields
 from tastypie.resources import NamespacedModelResource
-from django.conf.urls import url, include
+from django.conf.urls import include
+from django.urls import path
 from djangoautoconf.model_utils.model_attr_utils import enum_model_fields, enum_models, \
     enum_model_fields_with_many_to_many, ModelsModule, app_name_from_models_module
 from djangoautoconf.req_with_auth import DjangoUserAuthentication
@@ -92,7 +93,7 @@ class TastypieApiGenerator(object):
         self.v1_api = NamespacedApi(api_name='v1', urlconf_namespace=namespace)
 
     def get_model_api_url_list(self):
-        url_list = [url(r'^api/',
+        url_list = [path(r'^api/',
                         include(self.v1_api.urls))]
         return url_list
 

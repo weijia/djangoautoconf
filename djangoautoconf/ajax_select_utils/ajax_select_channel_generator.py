@@ -1,6 +1,7 @@
 from ajax_select import LookupChannel
 from ajax_select.registry import registry
-from django.conf.urls import url, include
+from django.conf.urls import include
+from django.urls import path
 from ajax_select import urls as ajax_select_urls
 from django.db import models
 from django.db.models import Q
@@ -11,7 +12,7 @@ from ufs_tools.string_tools import class_name_to_low_case
 from djangoautoconf.model_utils.model_attr_utils import enum_model_fields
 
 add_to_root_url_pattern(
-    (url(r'^ajax_select/', include(ajax_select_urls)),)
+    (path(r'^ajax_select/', include(ajax_select_urls)),)
 )
 
 

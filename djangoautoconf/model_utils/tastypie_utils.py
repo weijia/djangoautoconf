@@ -1,4 +1,5 @@
-from django.conf.urls import url, include
+from django.conf.urls import include
+from django.urls import path
 from tastypie import fields
 from tastypie.api import NamespacedApi
 
@@ -64,7 +65,7 @@ def get_tastypie_urls(models, excluded_model_name=('MPTTModel',)):
         if hasattr(model, "objects"):
             add_model_resource(model, v1_api)
 
-    url_list.append(url(r'api/doc/',
+    url_list.append(path(r'api/doc/',
                         include('tastypie_swagger.urls'),
                         kwargs={
                             "tastypie_api_module": v1_api,
@@ -72,10 +73,10 @@ def get_tastypie_urls(models, excluded_model_name=('MPTTModel',)):
                             "version": "1.0"}
                         ),
                     )
-    url_list.append(url(r'^api/',
+    url_list.append(path(r'^api/',
                         include(v1_api.urls)))
 
-    url_list.append(url(r'^api_domain_needed_signature/',
+    url_list.append(path(r'^api_domain_needed_signature/',
                         None))
 
     p = url_list

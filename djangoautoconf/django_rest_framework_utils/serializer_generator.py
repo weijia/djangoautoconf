@@ -1,4 +1,5 @@
-from django.conf.urls import url, include
+from django.conf.urls import include
+from django.urls import path
 
 from rest_framework import serializers
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
@@ -91,7 +92,7 @@ def get_create_api_class(class_inst):
 
 def get_detail_api_class(class_inst):
     """
-    Example: url(r'^checklist_list/(?P<pk>[0-9]+)/$', get_detail_api_class(ChecklistTreeItem).as_view()),
+    Example: path(r'^checklist_list/(?P<pk>[0-9]+)/$', get_detail_api_class(ChecklistTreeItem).as_view()),
     :param class_inst:
     :return:
     """
@@ -121,16 +122,16 @@ class ModelProcessorBase(object):
 
 class SerializerUrlGenerator(ModelProcessorBase):
     def append_urls(self, model):
-        self.url_list.append(url(r'^rest_api/%s/$' % class_name_to_low_case(model.__name__),
+        self.url_list.append(path(r'^rest_api/%s/$' % class_name_to_low_case(model.__name__),
                                  get_create_api_class(model).as_view()))
-        self.url_list.append(url(r'^rest_api/%s/(?P<pk>[0-9]+)/$' % class_name_to_low_case(model.__name__),
+        self.url_list.append(path(r'^rest_api/%s/(?P<pk>[0-9]+)/$' % class_name_to_low_case(model.__name__),
                                  get_detail_api_class(model).as_view()))
 
     def add_rest_api_urls(self, models):
         if self.url_patterns is None:
             raise "No url_patterns found"
         self.url_patterns += self.get_patterns(models)
-        self.url_patterns += url(r'^api-auth/', include('rest_framework.urls',
+        self.url_patterns += path(r'^api-auth/', include('rest_framework.urls',
                                                         namespace='rest_framework')),
         return format_suffix_patterns(self.url_patterns)
 

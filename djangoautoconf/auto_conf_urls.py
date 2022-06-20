@@ -6,7 +6,8 @@ import traceback
 from djangoautoconf.auto_conf_utils import get_module_path, is_at_least_one_sub_filesystem_item_exists
 from ufs_tools.short_decorator.ignore_exception import ignore_exc_with_result
 from djangoautoconf.auto_conf_utils import enum_modules
-from django.conf.urls import include, url
+from django.conf.urls import include
+from django.urls import path
 from importlib import import_module
 
 try:
@@ -48,7 +49,7 @@ def add_url_pattern(default_url_root_path, urls_module):
                 include(admin.site.urls) or
                 RedirectView.as_view(url='/resource_bookmarks') etc.
     """
-    (get_custom_root_url_pattern_container()).insert_to_head(url(default_url_root_path, urls_module))
+    (get_custom_root_url_pattern_container()).insert_to_head(path(default_url_root_path, urls_module))
 
 
 def add_to_root_url_pattern(url_pattern_list):
@@ -81,7 +82,6 @@ def include_urls():
             import_app_urls(app)
         except ImportError as e:
             if not ('No module named' in str(e) and 'url' in str(e)):
-                # import traceback
                 traceback.print_exc()
 
     local_urls_full_path = os.path.join(settings.DJANGO_AUTO_CONF_LOCAL_DIR, "local_urls")
@@ -121,7 +121,7 @@ def has_api_url(app_module):
 
 def add_app_urls_no_exception(app):
     try:
-        if not ("." in app):
+        if "." not in app:
             app_module = import_app_urls(app)
             if hasattr(app_module, "urlpatterns"):
                 if has_api_url(app_module):
@@ -135,9 +135,7 @@ def add_app_urls_no_exception(app):
     except ImportError:
         print("Import %s.urls failed (maybe %s.urls does not exists)." % (app, app))
     except Exception as e:
-        # import traceback
         traceback.print_exc()
-        pass
 
 
 def create_simple_menu(app):

@@ -1,5 +1,6 @@
 import django
-from django.conf.urls import include, url
+from django.conf.urls import include
+from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -34,10 +35,10 @@ else:
                            # url(r'^default_django_15_and_below/', include('default_django_15_and_below.foo.urls')),
 
                            # Uncomment the admin/doc line below to enable admin documentation:
-                           url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+                           path(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
                            # Uncomment the next line to enable the admin:
-                           url(r'^admin/', include(admin.site.urls)),
+                           path(r'^admin/', include(admin.site.urls)),
                            # url(r'^', include('demo.urls')),
                            # url(r'^obj_sys/', include('obj_sys.urls')),
                            # url("^$", direct_to_template, {"template": "index.html"}, name="home"),
