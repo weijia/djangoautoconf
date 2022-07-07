@@ -6,7 +6,8 @@ import traceback
 from djangoautoconf.auto_conf_utils import get_module_path, is_at_least_one_sub_filesystem_item_exists
 from ufs_tools.short_decorator.ignore_exception import ignore_exc_with_result
 from djangoautoconf.auto_conf_utils import enum_modules
-from django.conf.urls import include, url
+from django.conf.urls import include
+from django.urls import re_path
 from importlib import import_module
 
 try:
@@ -48,7 +49,7 @@ def add_url_pattern(default_url_root_path, urls_module):
                 include(admin.site.urls) or
                 RedirectView.as_view(url='/resource_bookmarks') etc.
     """
-    (get_custom_root_url_pattern_container()).insert_to_head(url(default_url_root_path, urls_module))
+    (get_custom_root_url_pattern_container()).insert_to_head(re_path(default_url_root_path, urls_module))
 
 
 def add_to_root_url_pattern(url_pattern_list):
