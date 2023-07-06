@@ -7,7 +7,9 @@ try:
     from django.core.servers.basehttp import FileWrapper
 except:
     from wsgiref.util import FileWrapper
-from django.utils.http import urlquote
+
+from urllib.parse import quote
+django.utils.http.urlquote = quote
 
 
 def get_new_uuid():
