@@ -16,4 +16,4 @@ class ServerSignalTrigger(object):
     def trigger_server_stop_if_needed(self):
         if sys.argv[1] == "runserver":
             before_server_stop.send(sender=self)
-        print "Process exiting"
+        print("Process exiting")

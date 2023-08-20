@@ -24,9 +24,9 @@ def register_admin(admin_class, class_inst, admin_site=admin.site):
     try:
         if not (class_inst in admin_site._registry):
             admin_site.register(class_inst, admin_class)
-    except Exception, e:
+    except Exception as e:
         if True:  # not (' is already registered' in e.message):
-            print class_inst, admin_class
+            print(class_inst, admin_class)
             import traceback
             traceback.print_exc()
 

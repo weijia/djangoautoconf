@@ -3,5 +3,5 @@
 
 __author__ = 'Richard Wang'
 __email__ = 'richardwangwang@gmail.com'
-__version__ = '2.0.11'
+__version__ = '2.0.12'
 
