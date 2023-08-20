@@ -131,8 +131,9 @@ class DjangoAutoConf(DjangoSettingManager):
             raise RootDirNotExist
         if not os.path.exists(self.local_key_folder):
             # logging.getLogger().error("key dir not exist: "+self.key_dir)
-            print("key dir not exist: " + self.local_key_folder)
-            raise LocalKeyFolderNotExist
+            # print("key dir not exist: " + self.local_key_folder)
+            # raise LocalKeyFolderNotExist
+            os.makedirs(self.local_key_folder, 755, True)
 
     def get_local_key_folder(self):
         if self.local_key_folder is None:

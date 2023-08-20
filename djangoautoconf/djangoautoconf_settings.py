@@ -1,9 +1,9 @@
 import os
 from ufs_tools.app_tools import get_executable_folder
+import importlib
 
 
 INSTALLED_APPS = (
-    'bootstrap3',
     # 'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -12,13 +12,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    "simplemenu",
     # 'south',  # Do not work in SAE
     # 'mptt',
     # 'treenav',
     # 'background_task',
     # 'django_cron',  # Do not work in SAE
-    'jquery_ui',
     # 'provider',
     # 'provider.oauth2',
     # 'guardian',
@@ -28,6 +26,18 @@ INSTALLED_APPS = (
     # 'import_export',
     # 'tastypie_swagger',
 )
+
+
+for optional_module in [
+    'bootstrap3',
+    'simplemenu',
+    'jquery_ui'
+]:
+    try:
+        importlib.import_module(optional_module)
+        INSTALLED_APPS.append(optional_module)
+    except:
+        pass
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',

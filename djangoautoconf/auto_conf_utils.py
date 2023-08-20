@@ -89,14 +89,16 @@ def get_module_include_files_config(mod, prefix=None):
 
 def enum_folders(parent_folder):
     logging.debug("Listing folder: "+parent_folder)
-    for folder in os.listdir(parent_folder):
-        full_path = os.path.join(parent_folder, folder)
-        if os.path.isdir(full_path):
-            yield full_path
+    if os.path.exists(parent_folder):
+        for folder in os.listdir(parent_folder):
+            full_path = os.path.join(parent_folder, folder)
+            if os.path.isdir(full_path):
+                yield full_path
 
 
 def enum_modules(folder):
-    for filename in os.listdir(folder):
-        is_py = re.search(r'\.py$', filename)
-        if is_py and (filename != "__init__.py"):
-            yield filename.replace(".py", "")
+    if os.path.exists(folder):
+        for filename in os.listdir(folder):
+            is_py = re.search(r'\.py$', filename)
+            if is_py and (filename != "__init__.py"):
+                yield filename.replace(".py", "")
