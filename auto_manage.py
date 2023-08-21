@@ -1,4 +1,4 @@
-from manage import main
+from original_manage import main
 from djangoautoconf.django_autoconf import DjangoAutoConf
 
 

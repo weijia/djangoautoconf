@@ -16,7 +16,8 @@ RUN python setup.py install
 WORKDIR /usr/src/app
 RUN django-admin startproject commonsite
 WORKDIR /usr/src/app/commonsite
-COPY auto_manage.py .
+RUN mv manage.py original_manage.py
+COPY auto_manage.py manage.py
 
 EXPOSE 8000
-CMD ["python", "auto_manage.py", "runserver", "0.0.0.0:8000"]
+CMD python manage.py migrate; python manage.py runserver 0.0.0.0:8000
